@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
 export default defineConfig({
-  base: '/StadiumIQ/',
+  base: process.env.GITHUB_ACTIONS ? '/StadiumIQ/' : '/',
   plugins: [react()],
   resolve: {
     alias: {

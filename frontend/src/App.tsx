@@ -12,7 +12,7 @@ import { ReportExport } from './components/ReportExport';
 
 export default function App() {
   return (
-    <BrowserRouter basename="/StadiumIQ">
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* ── Public routes ─────────────────────────────────────────── */}
         <Route path="/" element={<LandingPage />} />
