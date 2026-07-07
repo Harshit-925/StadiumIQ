@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Send } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { analyzeVenue } from '../api/client';
+import { pb } from '../api/pocketbase';
 import { venueAnalysisSchema } from '../utils/validation';
 import type { ZodError } from 'zod';
 
@@ -80,6 +81,23 @@ export function InputForm() {
         crowd_score: result.crowd_score,
         overall_grade: result.overall_grade,
       });
+      
+      // Save to PocketBase if authenticated
+      if (pb.authStore.isValid && pb.authStore.model) {
+        try {
+          await pb.collection('history').create({
+            user: pb.authStore.model.id,
+            venue_id: selectedVenue.id,
+            engine_result: result,
+            ai_result: result.ai_insights ? { text: result.ai_insights } : null,
+            fallback_used: result.ai_fallback,
+          });
+        } catch (pbErr) {
+          console.error('Failed to save history to PocketBase:', pbErr);
+          // Non-fatal, just local history will be available
+        }
+      }
+
       toast.success(`Analysis complete — Grade: ${result.overall_grade}`);
     } catch (err) {
       const message =

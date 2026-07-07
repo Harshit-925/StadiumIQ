@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './components/LandingPage';
 import { FanAssistantPage } from './components/FanAssistantPage';
 import { LoginPage } from './components/LoginPage';
@@ -20,14 +19,12 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
-        {/* ── Protected operator routes ──────────────────────────────── */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<OperatorLayout />}>
-            <Route path="/dashboard" element={<CrowdDashboard />} />
-            <Route path="/dashboard/accessibility" element={<AccessibilityPanel />} />
-            <Route path="/dashboard/sustainability" element={<SustainabilityTracker />} />
-            <Route path="/dashboard/report" element={<ReportExport />} />
-          </Route>
+        {/* ── Public operator routes ──────────────────────────────── */}
+        <Route element={<OperatorLayout />}>
+          <Route path="/dashboard" element={<CrowdDashboard />} />
+          <Route path="/dashboard/accessibility" element={<AccessibilityPanel />} />
+          <Route path="/dashboard/sustainability" element={<SustainabilityTracker />} />
+          <Route path="/dashboard/report" element={<ReportExport />} />
         </Route>
       </Routes>
     </BrowserRouter>

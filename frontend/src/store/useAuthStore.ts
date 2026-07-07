@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { pb } from '../api/pocketbase';
 import type { RecordModel } from 'pocketbase';
+import { useAppStore } from './useAppStore';
+import type { HistoryEntry } from '../types';
 
 interface AuthUser {
   id: string;
@@ -27,6 +29,26 @@ function mapRecordToUser(record: RecordModel): AuthUser {
   };
 }
 
+async function syncHistoryFromPB() {
+  try {
+    const records = await pb.collection('history').getFullList({ sort: 'created' });
+    const historyEntries: HistoryEntry[] = records.map((r) => {
+      const engine = r.engine_result as any;
+      return {
+        id: r.id,
+        venue: engine.venue || r.venue_id,
+        timestamp: engine.timestamp,
+        average_density: engine.average_density,
+        crowd_score: engine.crowd_score,
+        overall_grade: engine.overall_grade,
+      };
+    });
+    useAppStore.getState().setHistory(historyEntries);
+  } catch (err) {
+    console.error('Failed to sync history from PocketBase:', err);
+  }
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: pb.authStore.isValid && pb.authStore.model
     ? mapRecordToUser(pb.authStore.model as RecordModel)
@@ -46,6 +68,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true,
         isLoading: false,
       });
+      syncHistoryFromPB();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Login failed. Please try again.';
@@ -72,6 +95,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true,
         isLoading: false,
       });
+      syncHistoryFromPB();
     } catch (err) {
       const message =
         err instanceof Error
@@ -85,6 +109,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     pb.authStore.clear();
     set({ user: null, isAuthenticated: false, error: null });
+    useAppStore.getState().setHistory([]);
   },
 
   clearError: () => {
@@ -99,10 +124,12 @@ pb.authStore.onChange(() => {
       user: mapRecordToUser(pb.authStore.model as RecordModel),
       isAuthenticated: true,
     });
+    syncHistoryFromPB();
   } else {
     useAuthStore.setState({
       user: null,
       isAuthenticated: false,
     });
+    useAppStore.getState().setHistory([]);
   }
 });

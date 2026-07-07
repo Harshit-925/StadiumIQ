@@ -6,7 +6,7 @@
  * - <1024px (portrait tablet/mobile): top bar + bottom tab bar (4 tabs)
  *   Bottom tabs give touch-reliable navigation without hover dependency.
  */
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   Activity,
   LayoutDashboard,
@@ -14,6 +14,7 @@ import {
   Leaf,
   FileText,
   LogOut,
+  LogIn,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useAppStore } from '../store/useAppStore';
@@ -68,10 +69,15 @@ export function OperatorLayout() {
   const logout = useAuthStore((s) => s.logout);
   const selectedVenue = useAppStore((s) => s.selectedVenue);
   const navigate = useNavigate();
+  const location = useLocation();
 
   function handleLogout() {
     logout();
     navigate('/login');
+  }
+
+  function handleLogin() {
+    navigate('/login', { state: { from: location.pathname } });
   }
 
   return (
@@ -92,19 +98,30 @@ export function OperatorLayout() {
         </div>
 
         <div className="flex items-center gap-3">
-          {user && (
-            <span className="hidden text-body-sm text-text-secondary lg:inline">
-              {user.email}
-            </span>
+          {user ? (
+            <>
+              <span className="hidden text-body-sm text-text-secondary lg:inline">
+                {user.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 rounded-input border border-gray-200 px-3 py-1.5 text-body-sm text-text-secondary transition-colors hover:border-gray-300 hover:text-text-primary focus-visible:ring-2 focus-visible:ring-pitch-blue"
+                aria-label="Log out of StadiumIQ"
+              >
+                <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Log Out</span>
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="flex items-center gap-1.5 rounded-input bg-pitch-blue px-4 py-1.5 text-body-sm font-semibold text-white transition-colors hover:bg-pitch-blue-light focus-visible:ring-2 focus-visible:ring-pitch-blue focus-visible:ring-offset-2"
+              aria-label="Log in or register"
+            >
+              <LogIn className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Log In / Register</span>
+            </button>
           )}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 rounded-input border border-gray-200 px-3 py-1.5 text-body-sm text-text-secondary transition-colors hover:border-gray-300 hover:text-text-primary focus-visible:ring-2 focus-visible:ring-pitch-blue"
-            aria-label="Log out of StadiumIQ"
-          >
-            <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Log Out</span>
-          </button>
         </div>
       </header>
 
