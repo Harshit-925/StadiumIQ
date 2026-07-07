@@ -46,9 +46,9 @@ describe('LandingPage', () => {
     expect(hrefs.some((h) => h.includes('/assistant'))).toBe(true);
   });
 
-  it('has an Operator Login link', () => {
+  it('has a Go to Dashboard link', () => {
     renderLanding();
-    const links = screen.getAllByRole('link', { name: /operator login/i });
+    const links = screen.getAllByRole('link', { name: /go to dashboard/i });
     expect(links.length).toBeGreaterThan(0);
   });
 

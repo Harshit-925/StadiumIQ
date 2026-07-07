@@ -93,9 +93,9 @@ class TestAnalyzeEndpoint:
     async def test_analyze_no_auth(
         self, client: AsyncClient, valid_payload: dict[str, Any]
     ) -> None:
-        """Missing Authorization header → 422 (FastAPI validation) or 401."""
+        """Missing Authorization header now returns 200 (public endpoint)."""
         resp = await client.post("/api/analyze", json=valid_payload)
-        assert resp.status_code in (401, 422)
+        assert resp.status_code == 200
 
     async def test_analyze_invalid_venue(self, client: AsyncClient, mock_auth: MagicMock) -> None:
         """Invalid venue_id → 422 validation error."""
