@@ -53,7 +53,7 @@ export function SignupForm() {
       <div className="mb-4">
         <label
           htmlFor="signup-name"
-          className="mb-1.5 block text-label-md font-medium text-text-primary"
+          className="mb-1.5 block text-label-md font-medium text-black"
         >
           Full Name
         </label>
@@ -66,7 +66,7 @@ export function SignupForm() {
           aria-invalid={!!fieldErrors.name}
           aria-describedby={fieldErrors.name ? 'signup-name-error' : undefined}
           autoComplete="name"
-          className="w-full rounded-input border border-gray-200 bg-white px-4 py-2.5 text-body-md text-text-primary placeholder-text-secondary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
+          className="w-full rounded-input border border-gray-300 bg-white px-4 py-2.5 text-body-md text-black placeholder-gray-500 transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
           placeholder="John Smith"
         />
         {fieldErrors.name && (
@@ -83,7 +83,7 @@ export function SignupForm() {
       <div className="mb-4">
         <label
           htmlFor="signup-email"
-          className="mb-1.5 block text-label-md font-medium text-text-primary"
+          className="mb-1.5 block text-label-md font-medium text-black"
         >
           Email Address
         </label>
@@ -96,7 +96,7 @@ export function SignupForm() {
           aria-invalid={!!fieldErrors.email}
           aria-describedby={fieldErrors.email ? 'signup-email-error' : undefined}
           autoComplete="email"
-          className="w-full rounded-input border border-gray-200 bg-white px-4 py-2.5 text-body-md text-text-primary placeholder-text-secondary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
+          className="w-full rounded-input border border-gray-300 bg-white px-4 py-2.5 text-body-md text-black placeholder-gray-500 transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
           placeholder="operator@stadiumiq.com"
         />
         {fieldErrors.email && (
@@ -113,7 +113,7 @@ export function SignupForm() {
       <div className="mb-6">
         <label
           htmlFor="signup-password"
-          className="mb-1.5 block text-label-md font-medium text-text-primary"
+          className="mb-1.5 block text-label-md font-medium text-black"
         >
           Password
         </label>
@@ -128,7 +128,7 @@ export function SignupForm() {
             fieldErrors.password ? 'signup-password-error' : undefined
           }
           autoComplete="new-password"
-          className="w-full rounded-input border border-gray-200 bg-white px-4 py-2.5 text-body-md text-text-primary placeholder-text-secondary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
+          className="w-full rounded-input border border-gray-300 bg-white px-4 py-2.5 text-body-md text-black placeholder-gray-500 transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
           placeholder="Minimum 8 characters"
         />
         {fieldErrors.password && (
