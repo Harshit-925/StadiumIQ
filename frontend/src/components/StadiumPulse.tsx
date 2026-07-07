@@ -47,12 +47,6 @@ const RINGS = [
   { rx: 14, ry: 10, opacity: 0.28, delay: 1.5, fill: '#0B2545', pulseClass: 'pulse-safe' },
 ] as const;
 
-const TIER_FILL: Record<Tier, string> = {
-  safe:     '#1E9E63',
-  moderate: '#E0A430',
-  warning:  '#E07B30',
-  critical: '#D64545',
-};
 
 export function StadiumPulse({ variant, worstTier = 'safe', className = '' }: StadiumPulseProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
