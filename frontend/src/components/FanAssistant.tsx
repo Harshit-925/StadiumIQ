@@ -164,10 +164,10 @@ export const FanAssistant = memo(function FanAssistant() {
             style={{ height: '480px' }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
               <div className="flex items-center gap-2">
                 <Bot className="h-5 w-5 text-fifa-gold" aria-hidden="true" />
-                <span className="text-sm font-semibold text-white">Fan Assistant</span>
+                <span className="text-sm font-semibold text-text-primary">Fan Assistant</span>
                 <span className="rounded-pill bg-crowd-safe/20 px-2 py-0.5 text-xs text-crowd-safe">
                   Live
                 </span>
@@ -175,7 +175,7 @@ export const FanAssistant = memo(function FanAssistant() {
 
               {/* Language selector */}
               <div className="flex items-center gap-1.5">
-                <Globe2 className="h-3.5 w-3.5 text-white/40" aria-hidden="true" />
+                <Globe2 className="h-3.5 w-3.5 text-text-secondary" aria-hidden="true" />
                 <label htmlFor="fan-assist-lang" className="sr-only">
                   Response language
                 </label>
@@ -183,7 +183,7 @@ export const FanAssistant = memo(function FanAssistant() {
                   id="fan-assist-lang"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-                  className="rounded bg-white/[0.05] px-1.5 py-0.5 text-xs text-white/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-stadium-blue"
+                  className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-text-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-stadium-blue"
                 >
                   {LANGUAGES.map((lang) => (
                     <option key={lang} value={lang}>
@@ -208,17 +208,17 @@ export const FanAssistant = memo(function FanAssistant() {
               ))}
               {isLoading && (
                 <div className="flex items-center gap-2" role="status" aria-label="Thinking…">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100">
                     <Loader2 className="h-4 w-4 animate-spin text-fifa-gold" aria-hidden="true" />
                   </div>
-                  <span className="text-xs text-white/40">Thinking…</span>
+                  <span className="text-xs text-text-secondary">Thinking…</span>
                 </div>
               )}
               <div ref={bottomRef} />
             </div>
 
             {/* Input area */}
-            <div className="border-t border-white/10 p-3">
+            <div className="border-t border-gray-200 p-3">
               <div className="flex items-center gap-2">
                 <label htmlFor="fan-assist-input" className="sr-only">
                   Ask a question
@@ -234,7 +234,7 @@ export const FanAssistant = memo(function FanAssistant() {
                   maxLength={500}
                   disabled={isLoading}
                   aria-describedby="fan-assist-hint"
-                  className="flex-1 rounded-input border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-white placeholder-white/30 focus-visible:border-stadium-blue focus-visible:outline-none disabled:opacity-50"
+                  className="flex-1 rounded-input border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-text-primary placeholder-text-secondary/50 focus-visible:border-stadium-blue focus-visible:outline-none disabled:opacity-50"
                 />
                 <button
                   onClick={() => void handleSend()}
@@ -245,7 +245,7 @@ export const FanAssistant = memo(function FanAssistant() {
                   <Send className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
-              <p id="fan-assist-hint" className="mt-1 text-xs text-white/30">
+              <p id="fan-assist-hint" className="mt-1 text-xs text-text-secondary">
                 Press Enter to send · {selectedVenue.name}
               </p>
             </div>
