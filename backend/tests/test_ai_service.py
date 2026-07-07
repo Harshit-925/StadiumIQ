@@ -6,7 +6,7 @@ All tests mock the Gemini client — no live AI calls are made.
 from __future__ import annotations
 
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.services.ai_service import (
     _build_fallback_text,
@@ -82,7 +82,7 @@ class TestGenerateCrowdInsights:
         mock_response.text = "Great analysis of stadium conditions."
 
         mock_client = MagicMock()
-        mock_client.models.generate_content.return_value = mock_response
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
             "app.services.ai_service._get_client", return_value=mock_client
@@ -98,7 +98,7 @@ class TestGenerateCrowdInsights:
     async def test_fallback_on_exception(self) -> None:
         """When AI raises, returns fallback text with fallback_used=True."""
         mock_client = MagicMock()
-        mock_client.models.generate_content.side_effect = RuntimeError("API down")
+        mock_client.aio.models.generate_content = AsyncMock(side_effect=RuntimeError("API down"))
 
         with patch(
             "app.services.ai_service._get_client", return_value=mock_client
@@ -117,7 +117,7 @@ class TestGenerateCrowdInsights:
         mock_response.text = ""
 
         mock_client = MagicMock()
-        mock_client.models.generate_content.return_value = mock_response
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
             "app.services.ai_service._get_client", return_value=mock_client
@@ -155,7 +155,7 @@ class TestGenerateFanResponse:
         mock_response.text = "Gates open 3 hours before kickoff."
 
         mock_client = MagicMock()
-        mock_client.models.generate_content.return_value = mock_response
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
             "app.services.ai_service._get_client", return_value=mock_client
@@ -173,7 +173,7 @@ class TestGenerateFanResponse:
     async def test_fallback_on_exception(self) -> None:
         """AI failure → generic fallback with fallback_used=True."""
         mock_client = MagicMock()
-        mock_client.models.generate_content.side_effect = ConnectionError("offline")
+        mock_client.aio.models.generate_content = AsyncMock(side_effect=ConnectionError("offline"))
 
         with patch(
             "app.services.ai_service._get_client", return_value=mock_client
@@ -192,7 +192,7 @@ class TestGenerateFanResponse:
         mock_response.text = "Estadio Azteca info..."
 
         mock_client = MagicMock()
-        mock_client.models.generate_content.return_value = mock_response
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         venue_ctx = {"name": "Estadio Azteca", "city": "Mexico City", "capacity": 83000}
 
@@ -208,7 +208,7 @@ class TestGenerateFanResponse:
 
         assert fallback is False
         # Verify the prompt included venue context
-        call_args = mock_client.models.generate_content.call_args
+        call_args = mock_client.aio.models.generate_content.call_args
         prompt = call_args.kwargs.get("contents") or call_args[1].get("contents", "")
         assert "Azteca" in str(prompt)
 
