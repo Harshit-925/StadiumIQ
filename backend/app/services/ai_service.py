@@ -10,12 +10,14 @@ from __future__ import annotations
 import logging
 import re
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from google import genai
-from google.genai.types import GenerateContentResponse
 
 from app.core.config import get_settings
+
+if TYPE_CHECKING:
+    from google.genai.types import GenerateContentResponse
 
 logger = logging.getLogger("stadiumiq")
 

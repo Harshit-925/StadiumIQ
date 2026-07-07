@@ -14,9 +14,15 @@ from typing import Any
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.core.auth import get_current_user, get_optional_user
+from app.core.auth import get_optional_user
 from app.core.config import get_settings
-from app.core.rate_limit import RATE_LIMIT_AI, RATE_LIMIT_FAN_ASSIST_AUTH, RATE_LIMIT_FAN_ASSIST_PUBLIC, _fan_assist_key, limiter
+from app.core.rate_limit import (
+    RATE_LIMIT_AI,
+    RATE_LIMIT_FAN_ASSIST_AUTH,
+    RATE_LIMIT_FAN_ASSIST_PUBLIC,
+    _fan_assist_key,
+    limiter,
+)
 from app.engine.calculator import analyze_venue, get_venue_info
 from app.models.schemas import (
     FanAssistRequest,
