@@ -14,7 +14,7 @@ from typing import Any
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.core.auth import get_optional_user
+from app.core.auth import get_current_user, get_optional_user
 from app.core.config import get_settings
 from app.core.rate_limit import (
     RATE_LIMIT_AI,
@@ -79,7 +79,7 @@ async def health() -> HealthResponse:
 async def analyze(
     request: Request,
     body: VenueAnalysisRequest,
-    user: dict[str, Any] | None = Depends(get_optional_user),
+    user: dict[str, Any] = Depends(get_current_user),
 ) -> VenueAnalysisResponse:
     """Run a full stadium operations analysis.
 

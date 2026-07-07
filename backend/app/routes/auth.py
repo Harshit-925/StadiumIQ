@@ -133,8 +133,8 @@ async def login(body: LoginRequest, response: Response) -> LoginResponse:
     )
 
 
-@auth_router.post("/logout")
-async def logout(response: Response) -> dict[str, Any]:
+@auth_router.post("/logout", status_code=204)
+async def logout(response: Response) -> None:
     """Clear the session cookie, logging the user out.
 
     Deletes the HttpOnly cookie by setting Max-Age=0 and an empty value.
@@ -150,4 +150,4 @@ async def logout(response: Response) -> dict[str, Any]:
         path="/",
     )
     logger.info("User logged out — cookie cleared")
-    return {"detail": "Successfully logged out"}
+    return None
