@@ -14,7 +14,7 @@ from typing import Any
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.core.auth import get_current_user, get_optional_user
+from app.core.auth import get_optional_user
 from app.core.config import get_settings
 from app.core.rate_limit import (
     RATE_LIMIT_AI,
@@ -31,7 +31,7 @@ from app.models.schemas import (
     VenueAnalysisRequest,
     VenueAnalysisResponse,
 )
-from app.services import ai_service, pocketbase_client
+from app.services import ai_service
 
 logger = logging.getLogger("stadiumiq")
 
