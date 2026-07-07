@@ -138,7 +138,7 @@ def create_app() -> FastAPI:
 
         # Catch-all route for React Router client-side routing
         @app.get("/{full_path:path}", include_in_schema=False)
-        async def serve_frontend(full_path: str):
+        async def serve_frontend(full_path: str) -> FileResponse:
             # Check if it's a specific file request (like favicon.ico, etc.)
             file_path = os.path.join(static_dir, full_path)
             if full_path and os.path.isfile(file_path):

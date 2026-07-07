@@ -146,7 +146,7 @@ async def analyze(
                 }
             )
 
-        return {
+        return VenueAnalysisResponse(**{
             "venue": venue_info.get("name", body.venue_id),
             "timestamp": datetime.now(UTC).isoformat(),
             "overall_grade": readiness.get("grade", "N/A"),
@@ -167,7 +167,7 @@ async def analyze(
             "recycling_rate": waste.get("diversion_rate_pct", 0.0) / 100.0,
             "ai_insights": ai_text,
             "ai_fallback": fallback_used,
-        }
+        })
 
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

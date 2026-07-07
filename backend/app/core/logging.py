@@ -50,7 +50,7 @@ class JSONFormatter(logging.Formatter):
 
         # Merge any structured extras the caller attached.
         if hasattr(record, "extra_data"):
-            log_entry.update(record.extra_data)  # type: ignore[arg-type]
+            log_entry.update(record.extra_data)
 
         if record.exc_info and record.exc_info[1] is not None:
             log_entry["exception"] = self.formatException(record.exc_info)

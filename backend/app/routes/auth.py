@@ -104,7 +104,7 @@ async def login(body: LoginRequest, response: Response) -> LoginResponse:
 
     data = pb_response.json()
     token: str = data.get("token", "")
-    record: dict = data.get("record", {})
+    record: dict[str, Any] = data.get("record", {})
 
     # ── Set the HttpOnly cookie ───────────────────────────────────────────
     # Secure=True → only sent over HTTPS (browser enforces in production).
@@ -133,7 +133,7 @@ async def login(body: LoginRequest, response: Response) -> LoginResponse:
 
 
 @auth_router.post("/logout")
-async def logout(response: Response) -> dict:
+async def logout(response: Response) -> dict[str, Any]:
     """Clear the session cookie, logging the user out.
 
     Deletes the HttpOnly cookie by setting Max-Age=0 and an empty value.
