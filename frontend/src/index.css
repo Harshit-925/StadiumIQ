@@ -1,0 +1,240 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Google Fonts (non-render-blocking) ────────────────────────────────── */
+/* Loaded via <link rel="preload"> in index.html — font-display:swap set     */
+/* via the Google Fonts URL query string parameter.                          */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-base-bg text-text-primary font-body;
+    min-height: 100dvh;
+  }
+
+  /* Tabular figures for all numeric data — prevents layout shift on updates */
+  .font-data,
+  [class*='font-data'] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+
+/* ─── Skip Link ─────────────────────────────────────────────────────────── */
+.skip-link {
+  @apply absolute left-4 top-4 z-[100] rounded-input bg-pitch-blue px-4 py-2 text-sm font-semibold text-white;
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ─── Card Surface ──────────────────────────────────────────────────────── */
+.card-surface {
+  @apply rounded-card bg-surface;
+  box-shadow: 0 1px 3px rgba(11, 25, 69, 0.08), 0 4px 16px rgba(11, 25, 69, 0.04);
+}
+
+.card-surface-hover {
+  @apply card-surface transition-shadow duration-150;
+}
+
+.card-surface-hover:hover {
+  box-shadow: 0 4px 12px rgba(11, 25, 69, 0.12), 0 8px 32px rgba(11, 25, 69, 0.08);
+}
+
+/* ─── Tier Badge ────────────────────────────────────────────────────────── */
+.tier-badge {
+  @apply inline-flex items-center gap-1.5 rounded-pill px-2.5 py-0.5 text-label-md font-semibold;
+}
+
+.tier-badge-safe     { @apply bg-crowd-safe/10 text-crowd-safe border border-crowd-safe/20; }
+.tier-badge-moderate { @apply bg-crowd-moderate/10 text-crowd-moderate border border-crowd-moderate/20; }
+.tier-badge-warning  { @apply bg-crowd-warning/10 text-crowd-warning border border-crowd-warning/20; }
+.tier-badge-critical { @apply bg-crowd-critical/10 text-crowd-critical border border-crowd-critical/20; }
+
+/* ─── Tier Pulse Keyframes (landing page animated version only) ─────────── */
+/* These ONLY fire when the element has the class — and that class is only   */
+/* applied on the landing page. The operator dashboard uses static fills.    */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes pulse-safe {
+    0%, 100% { opacity: 0.35; }
+    50%       { opacity: 0.55; }
+  }
+
+  @keyframes pulse-moderate {
+    0%, 100% { opacity: 0.35; }
+    50%       { opacity: 0.60; }
+  }
+
+  @keyframes pulse-warning {
+    0%, 100% { opacity: 0.30; }
+    50%       { opacity: 0.65; }
+  }
+
+  @keyframes pulse-critical {
+    0%, 100% { opacity: 0.25; }
+    50%       { opacity: 0.70; }
+  }
+
+  .pulse-safe     { animation: pulse-safe     3.0s ease-in-out infinite; }
+  .pulse-moderate { animation: pulse-moderate 2.5s ease-in-out infinite; }
+  .pulse-warning  { animation: pulse-warning  2.0s ease-in-out infinite; }
+  .pulse-critical { animation: pulse-critical 1.5s ease-in-out infinite; }
+}
+
+/* When reduced-motion is active, pulses render as static fills (no animation) */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-safe, .pulse-moderate, .pulse-warning, .pulse-critical {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* ─── Focus Rings ────────────────────────────────────────────────────────── */
+/* Visible focus rings for keyboard navigation — never removed, only styled  */
+:focus-visible {
+  @apply outline-none ring-2 ring-pitch-blue ring-offset-2 ring-offset-surface;
+}
+
+/* ─── Form Elements ─────────────────────────────────────────────────────── */
+.form-input {
+  @apply block w-full rounded-input border border-gray-200 bg-surface px-3 py-2.5
+         text-body-md text-text-primary placeholder-text-secondary/60
+         transition-colors duration-150;
+}
+
+.form-input:focus {
+  @apply border-pitch-blue outline-none ring-2 ring-pitch-blue/20;
+}
+
+.form-input:disabled {
+  @apply bg-gray-50 text-text-secondary cursor-not-allowed;
+}
+
+.form-label {
+  @apply block mb-1.5 text-label-lg text-text-primary;
+}
+
+/* ─── Primary Button ────────────────────────────────────────────────────── */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-input
+         bg-pitch-blue px-4 py-2.5 text-label-lg text-white
+         transition-all duration-150;
+}
+
+.btn-primary:hover:not(:disabled) {
+  @apply bg-pitch-blue-light;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.btn-primary:focus-visible {
+  @apply ring-2 ring-pitch-blue ring-offset-2;
+}
+
+/* ─── Gold CTA Button (one per screen maximum) ──────────────────────────── */
+.btn-gold {
+  @apply inline-flex items-center justify-center gap-2 rounded-input
+         bg-trophy-gold px-5 py-3 text-label-lg font-semibold text-white
+         transition-all duration-150;
+}
+
+.btn-gold:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.btn-gold:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ─── Glass Surface (fan assistant floating panel only) ──────────────────── */
+.glass-surface {
+  @apply rounded-card bg-surface;
+  box-shadow: 0 8px 32px rgba(11, 25, 69, 0.16), 0 2px 8px rgba(11, 25, 69, 0.08);
+}
+
+/* ─── Ambient gradient (landing page hero background) ─────────────────────  */
+.ambient-gradient {
+  @apply pointer-events-none absolute inset-0 overflow-hidden;
+}
+
+/* ─── Progress Bars ─────────────────────────────────────────────────────── */
+.progress-track {
+  @apply h-2 w-full overflow-hidden rounded-pill bg-gray-100;
+}
+
+.progress-fill-safe     { @apply h-full rounded-pill bg-crowd-safe transition-all duration-500; }
+.progress-fill-moderate { @apply h-full rounded-pill bg-crowd-moderate transition-all duration-500; }
+.progress-fill-warning  { @apply h-full rounded-pill bg-crowd-warning transition-all duration-500; }
+.progress-fill-critical { @apply h-full rounded-pill bg-crowd-critical transition-all duration-500; }
+.progress-fill-blue     { @apply h-full rounded-pill bg-pitch-blue transition-all duration-500; }
+.progress-fill-green    { @apply h-full rounded-pill bg-stadium-green transition-all duration-500; }
+
+/* ─── Status dot ─────────────────────────────────────────────────────────── */
+.status-dot {
+  @apply h-2 w-2 flex-shrink-0 rounded-full;
+}
+
+.status-dot-live {
+  @apply status-dot bg-crowd-safe;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .status-dot-live {
+    animation: ping-live 2s ease-in-out infinite;
+  }
+
+  @keyframes ping-live {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+}
+
+/* ─── Print styles (ReportExport) ────────────────────────────────────────── */
+@media print {
+  .no-print,
+  nav,
+  aside,
+  header,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+
+  .card-surface {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+}

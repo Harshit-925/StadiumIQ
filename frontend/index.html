@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="StadiumIQ — AI-powered operations intelligence platform for FIFA World Cup 2026™. Real-time crowd safety analytics, multilingual fan assistance, accessibility compliance, and sustainability tracking across all 16 host venues."
+    />
+    <meta name="theme-color" content="#0B2545" />
+
+    <!-- ── Fonts: preconnect first, then non-render-blocking load ───────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload: hints browser to start fetching before render -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    />
+
+    <!-- Non-render-blocking load via media=print swap trick -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+
+    <!-- Fallback for browsers with JS disabled -->
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      />
+    </noscript>
+
+    <title>StadiumIQ — FIFA World Cup 2026 Operations Intelligence</title>
+  </head>
+  <body>
+    <!-- Skip navigation link — visible on first tab press, screen-reader accessible -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

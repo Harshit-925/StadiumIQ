@@ -1,0 +1,14 @@
+title = "StadiumIQ Gitleaks Config"
+
+[allowlist]
+  description = "Allow example/placeholder values"
+  regexes = [
+    '''your_key_here''',
+    '''your_.*_here''',
+    '''CHANGE_ME''',
+    '''example\.com''',
+  ]
+  paths = [
+    '''.env\.example''',
+    '''\.gitleaks\.toml''',
+  ]

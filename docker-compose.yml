@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  pocketbase:
+    image: alpine:3.19
+    container_name: stadiumiq-pocketbase
+    working_dir: /pb
+    volumes:
+      - pb_data:/pb/pb_data
+      - ./pb_migrations:/pb/pb_migrations
+    ports:
+      - "8090:8090"
+    command: >
+      sh -c "
+        apk add --no-cache curl unzip &&
+        curl -fsSL https://github.com/pocketbase/pocketbase/releases/download/v0.22.12/pocketbase_0.22.12_linux_amd64.zip -o /tmp/pb.zip &&
+        unzip -o /tmp/pb.zip -d /pb &&
+        rm /tmp/pb.zip &&
+        /pb/pocketbase serve --http=0.0.0.0:8090 --migrationsDir=/pb/pb_migrations
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stadiumiq-app
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+    env_file:
+      - .env
+    environment:
+      - POCKETBASE_URL=http://pocketbase:8090
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pb_data:

@@ -1,0 +1,61 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 800 600"
+  role="img"
+  aria-label="Stylized top-down view of a FIFA World Cup 2026 stadium bowl"
+>
+  <title>Stadium Bowl — StadiumIQ</title>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="#F7F9FC"/>
+
+  <!-- Outer bowl ring -->
+  <ellipse cx="400" cy="300" rx="360" ry="270" fill="#0B2545" opacity="0.08"/>
+
+  <!-- Tier 1 — Upper stands -->
+  <ellipse cx="400" cy="300" rx="330" ry="248" fill="#0B2545" opacity="0.12"/>
+
+  <!-- Tier 2 — Mid stands -->
+  <ellipse cx="400" cy="300" rx="280" ry="210" fill="#0B2545" opacity="0.10"/>
+
+  <!-- Tier 3 — Lower stands -->
+  <ellipse cx="400" cy="300" rx="220" ry="165" fill="#1E7A46" opacity="0.15"/>
+
+  <!-- Tier 4 — Field level -->
+  <ellipse cx="400" cy="300" rx="160" ry="120" fill="#1E7A46" opacity="0.20"/>
+
+  <!-- Pitch -->
+  <rect x="260" y="230" width="280" height="140" rx="8" fill="#1E7A46" opacity="0.55"/>
+
+  <!-- Centre circle -->
+  <circle cx="400" cy="300" r="32" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+
+  <!-- Centre spot -->
+  <circle cx="400" cy="300" r="3" fill="#FFFFFF" opacity="0.8"/>
+
+  <!-- Halfway line -->
+  <line x1="400" y1="232" x2="400" y2="368" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+
+  <!-- Pitch outline -->
+  <rect x="260" y="230" width="280" height="140" rx="8" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+
+  <!-- Penalty areas -->
+  <rect x="260" y="268" width="64" height="64" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+  <rect x="476" y="268" width="64" height="64" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Goal areas -->
+  <rect x="260" y="282" width="28" height="36" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+  <rect x="512" y="282" width="28" height="36" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- StadiumIQ wordmark -->
+  <text
+    x="400"
+    y="530"
+    font-family="Inter, system-ui, sans-serif"
+    font-size="18"
+    font-weight="800"
+    fill="#0B2545"
+    text-anchor="middle"
+    opacity="0.5"
+  >StadiumIQ</text>
+</svg>
