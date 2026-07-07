@@ -2,6 +2,7 @@
 
 Provides four rate-limit tiers:
 - Fan-assist (public/unauthenticated): 5 requests/minute per IP
+- Fan-assist (authenticated operator): 10 requests/minute per user ID
 - AI routes (authenticated):           10 requests/minute
 - Write routes:                         30 requests/minute
 - Read routes:                          60 requests/minute
@@ -12,14 +13,39 @@ production runs on memory:// (should use Redis).
 
 import logging
 
+from fastapi import Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from app.core.config import get_settings
+from app.routes.auth import COOKIE_NAME
 
 logger = logging.getLogger("stadiumiq")
 
 settings = get_settings()
+
+
+def _fan_assist_key(request: Request) -> str:
+    """Auth-aware key function for the fan-assist endpoint.
+
+    Authenticated callers (cookie or Bearer header present) are keyed by
+    a prefix + token fragment so they share the operator limit (10/min),
+    not the public per-IP limit (5/min).  Falls back to remote IP for
+    anonymous callers.
+    """
+    token: str | None = request.cookies.get(COOKIE_NAME)
+    if not token:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[len("Bearer "):]
+
+    if token:
+        # Key on a prefix + first 16 chars — enough to identify a session,
+        # not enough to reconstruct the full token.
+        return f"authenticated:{token[:16]}"
+
+    return get_remote_address(request)
+
 
 limiter = Limiter(
     key_func=get_remote_address,
@@ -30,6 +56,8 @@ limiter = Limiter(
 # ── Rate-limit string constants (used in route decorators) ───────────────
 # Public endpoint — no auth required, tighter per-IP limit to prevent abuse
 RATE_LIMIT_FAN_ASSIST_PUBLIC = "5/minute"
+# Authenticated fan-assist — operator overlay during live events
+RATE_LIMIT_FAN_ASSIST_AUTH = "10/minute"
 # Authenticated AI endpoints
 RATE_LIMIT_AI = "10/minute"
 RATE_LIMIT_WRITE = "30/minute"

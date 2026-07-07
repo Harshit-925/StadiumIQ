@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.core.auth import get_current_user, get_optional_user
 from app.core.config import get_settings
-from app.core.rate_limit import RATE_LIMIT_AI, RATE_LIMIT_FAN_ASSIST_PUBLIC, limiter
+from app.core.rate_limit import RATE_LIMIT_AI, RATE_LIMIT_FAN_ASSIST_AUTH, RATE_LIMIT_FAN_ASSIST_PUBLIC, _fan_assist_key, limiter
 from app.engine.calculator import analyze_venue, get_venue_info
 from app.models.schemas import (
     FanAssistRequest,
@@ -181,7 +181,8 @@ async def analyze(
 
 
 @router.post("/fan-assist", response_model=FanAssistResponse)
-@limiter.limit(RATE_LIMIT_FAN_ASSIST_PUBLIC)
+@limiter.limit(RATE_LIMIT_FAN_ASSIST_AUTH, key_func=_fan_assist_key)  # 10/min authenticated
+@limiter.limit(RATE_LIMIT_FAN_ASSIST_PUBLIC)  # 5/min anonymous (IP fallback)
 async def fan_assist(
     request: Request,
     body: FanAssistRequest,

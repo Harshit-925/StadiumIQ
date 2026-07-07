@@ -32,13 +32,20 @@ const STATIC_TIER_COLORS: Record<Tier, string> = {
   critical: 'rgba(214, 69, 69, 0.06)',
 };
 
-/** Ellipse rings for the animated landing page version */
+/** Ellipse rings for the animated landing page version.
+ *  Each ring uses a distinct hue progressing from outer (stadium-green)
+ *  to inner (pitch-blue), making the 4 seating tiers visually distinct.
+ */
 const RINGS = [
-  { rx: 48, ry: 38, opacity: 0.18, delay: 0,    tier: 'safe' as Tier },
-  { rx: 36, ry: 28, opacity: 0.22, delay: 0.4,  tier: 'safe' as Tier },
-  { rx: 24, ry: 18, opacity: 0.26, delay: 0.8,  tier: 'safe' as Tier },
-  { rx: 14, ry: 10, opacity: 0.30, delay: 1.2,  tier: 'safe' as Tier },
-];
+  // Outermost — stadium-green tint (upper terrace)
+  { rx: 48, ry: 38, opacity: 0.14, delay: 0,   fill: '#1E7A46', pulseClass: 'pulse-safe' },
+  // Second ring — blue-green blend (middle tier)
+  { rx: 36, ry: 28, opacity: 0.18, delay: 0.5, fill: '#1A5C7A', pulseClass: 'pulse-moderate' },
+  // Third ring — pitch-blue tint (lower tier)
+  { rx: 24, ry: 18, opacity: 0.22, delay: 1.0, fill: '#0F3A6B', pulseClass: 'pulse-safe' },
+  // Innermost — deep navy (field-level)
+  { rx: 14, ry: 10, opacity: 0.28, delay: 1.5, fill: '#0B2545', pulseClass: 'pulse-safe' },
+] as const;
 
 const TIER_FILL: Record<Tier, string> = {
   safe:     '#1E9E63',
@@ -85,9 +92,9 @@ export function StadiumPulse({ variant, worstTier = 'safe', className = '' }: St
             cy="40"
             rx={ring.rx}
             ry={ring.ry}
-            fill={TIER_FILL[ring.tier]}
+            fill={ring.fill}
             opacity={ring.opacity}
-            className={shouldReduceMotion ? '' : 'pulse-safe'}
+            className={shouldReduceMotion ? '' : ring.pulseClass}
             style={
               shouldReduceMotion
                 ? {}
