@@ -95,3 +95,12 @@ jobs:
 
       - name: Build Docker image
         run: docker compose build app
+
+      - name: Start Docker containers
+        run: docker compose up -d
+
+      - name: Smoke Test (Health Endpoint)
+        run: |
+          # Wait for services to be ready
+          sleep 5
+          curl --fail http://localhost:8000/api/health

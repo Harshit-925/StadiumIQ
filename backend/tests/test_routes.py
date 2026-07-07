@@ -6,12 +6,12 @@ All external services (auth, AI, PocketBase) are mocked via conftest fixtures.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
-from unittest.mock import MagicMock
 
 import pytest
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
+    from unittest.mock import MagicMock
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  HEALTH                                                                ║
