@@ -6,6 +6,7 @@ All external services (auth, AI, PocketBase) are mocked via conftest fixtures.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -59,9 +60,9 @@ class TestAnalyzeEndpoint:
     async def test_analyze_success(
         self,
         client: AsyncClient,
-        mock_auth,
-        mock_genai,
-        mock_pocketbase,
+        mock_auth: MagicMock,
+        mock_genai: MagicMock,
+        mock_pocketbase: MagicMock,
         valid_payload: dict[str, Any],
     ) -> None:
         """Full pipeline success: engine → AI → save → response."""
@@ -95,7 +96,7 @@ class TestAnalyzeEndpoint:
         resp = await client.post("/api/analyze", json=valid_payload)
         assert resp.status_code in (401, 422)
 
-    async def test_analyze_invalid_venue(self, client: AsyncClient, mock_auth) -> None:
+    async def test_analyze_invalid_venue(self, client: AsyncClient, mock_auth: MagicMock) -> None:
         """Invalid venue_id → 422 validation error."""
         payload = {
             "venue_id": "invalid_venue",
@@ -113,7 +114,7 @@ class TestAnalyzeEndpoint:
         assert resp.status_code == 422
 
     async def test_analyze_invalid_density_range(
-        self, client: AsyncClient, mock_auth
+        self, client: AsyncClient, mock_auth: MagicMock
     ) -> None:
         """Density > 10 → 422 validation error."""
         payload = {
@@ -131,7 +132,7 @@ class TestAnalyzeEndpoint:
         )
         assert resp.status_code == 422
 
-    async def test_analyze_missing_fields(self, client: AsyncClient, mock_auth) -> None:
+    async def test_analyze_missing_fields(self, client: AsyncClient, mock_auth: MagicMock) -> None:
         """Missing required fields → 422."""
         resp = await client.post(
             "/api/analyze",
@@ -152,8 +153,8 @@ class TestFanAssistEndpoint:
     async def test_fan_assist_success(
         self,
         client: AsyncClient,
-        mock_auth,
-        mock_genai,
+        mock_auth: MagicMock,
+        mock_genai: MagicMock,
     ) -> None:
         """Successful fan-assist request returns response text."""
         payload = {
@@ -175,8 +176,8 @@ class TestFanAssistEndpoint:
     async def test_fan_assist_with_venue(
         self,
         client: AsyncClient,
-        mock_auth,
-        mock_genai,
+        mock_auth: MagicMock,
+        mock_genai: MagicMock,
     ) -> None:
         """Fan-assist with venue context succeeds."""
         payload = {
@@ -192,7 +193,7 @@ class TestFanAssistEndpoint:
         assert resp.status_code == 200
         assert resp.json()["language"] == "es"
 
-    async def test_fan_assist_no_auth(self, client: AsyncClient, mock_genai) -> None:
+    async def test_fan_assist_no_auth(self, client: AsyncClient, mock_genai: MagicMock) -> None:
         """Fan-assist is a PUBLIC endpoint — no auth required.
 
         Unauthenticated callers must receive 200 (not 401/422). This is the
@@ -204,7 +205,7 @@ class TestFanAssistEndpoint:
         data = resp.json()
         assert "response" in data
 
-    async def test_fan_assist_empty_query(self, client: AsyncClient, mock_auth) -> None:
+    async def test_fan_assist_empty_query(self, client: AsyncClient, mock_auth: MagicMock) -> None:
         """Empty query → 422 validation error."""
         payload = {"query": "", "language": "en"}
         resp = await client.post(
@@ -215,7 +216,7 @@ class TestFanAssistEndpoint:
         assert resp.status_code == 422
 
     async def test_fan_assist_query_too_long(
-        self, client: AsyncClient, mock_auth
+        self, client: AsyncClient, mock_auth: MagicMock
     ) -> None:
         """Query exceeding 500 chars → 422."""
         payload = {"query": "x" * 501, "language": "en"}
