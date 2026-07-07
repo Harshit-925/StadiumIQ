@@ -19,7 +19,7 @@ def get_csp_value() -> str:
     return (
         "default-src 'self'; "
         "script-src 'self'; "
-        "style-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         f"connect-src 'self' https://generativelanguage.googleapis.com {pb_url} {pb_ws}; "
         "img-src 'self' data:; "
         "font-src 'self' https://fonts.gstatic.com"
