@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING
 
 import httpx
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -125,9 +127,6 @@ def create_app() -> FastAPI:
 
     # ── Frontend Static Files (for Docker / Production) ──────────────────
     import os
-
-    from fastapi.responses import FileResponse
-    from fastapi.staticfiles import StaticFiles
 
     # Path to the built frontend (relative to /app in Docker)
     static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "dist")
