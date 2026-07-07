@@ -15,6 +15,10 @@
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white" alt="Python 3.11+">
 </p>
 
+<p align="center">
+  <strong>🚀 Live Demo: <a href="https://harshit-925.github.io/StadiumIQ/">https://harshit-925.github.io/StadiumIQ/</a></strong>
+</p>
+
 ---
 
 ## Documentation
