@@ -21,17 +21,31 @@
 
 ---
 
-## The FIFA World Cup 2026 Challenge
+## Chosen Vertical
 
-StadiumIQ was built specifically to address the challenge: *"Build a GenAI-enabled solution that enhances stadium operations and the overall tournament experience for fans, organizers, volunteers, or venue staff. The solution must leverage Generative AI to improve navigation, crowd management, accessibility, transportation, sustainability, multilingual assistance, operational intelligence, or real-time decision support during the FIFA World Cup 2026."*
+**Operational Intelligence & Real-time Decision Support for Venue Staff.**
 
-Here is how StadiumIQ tackles these core pillars:
+We chose this vertical because providing venue directors with immediate, actionable data is the most critical component of stadium operations. Our solution centers entirely on the venue operations director. It utilizes a robust deterministic engine to assess crowd safety, accessibility, and sustainability, and layers Generative AI on top to produce instantaneous executive briefings. While multilingual fan assistance, accessibility compliance, and sustainability tracking are full-featured modules, they are positioned as supporting pillars that ultimately feed into this central Operational Intelligence dashboard.
 
-*   **Operational Intelligence & Real-time Decision Support:** The Operations Dashboard provides venue staff with real-time analytics. The **AI Narration Layer** (powered by Google Gemini) automatically translates complex numerical data (crowd density, egress times, compliance metrics) into clear, actionable executive summaries, empowering directors to make rapid, informed decisions.
-*   **Crowd Management & Navigation:** The **Crowd Safety Engine** computes real-time pax/m² across various stadium zones, anticipating bottlenecks and triggering dynamic status alerts. Combined with **Evacuation Modeling**, it helps proactively manage crowd flow and verifies adherence to the strict 8-minute NFPA egress safety standard.
-*   **Multilingual Assistance:** The **Multilingual Fan Assistant** leverages GenAI to provide instantaneous, context-aware answers to fan inquiries in their native language. By providing a natural language interface for stadium rules, ticketing, and amenity locations, the AI assistant breaks down communication barriers for a diverse international audience.
-*   **Accessibility:** The platform guarantees inclusivity via continuous **ADA Seat Verification** (monitoring the 1% seating mandate). Additionally, the digital interfaces themselves are built to strict accessibility standards (ARIA-live regions, full keyboard navigation, reduced motion), ensuring venue staff and volunteers of all abilities can operate the command center flawlessly.
-*   **Sustainability:** To help meet the ambitious sustainability goals of the 2026 tournament, the **Sustainability Tracking** module monitors waste diversion analytics in real-time, actively evaluating operations against the 90% diversion target to promote an eco-friendly event.
+## Approach & Logic
+
+StadiumIQ employs a **deterministic-engine-first** design. The core calculations—such as real-time crowd density (pax/m²), egress times (via NFPA 101 formulas), and ADA compliance ratios—are strictly deterministic and evaluated within `calculator.py`. 
+
+Generative AI is layered on top purely for **narration and translation**, rather than driving the numerical assessments. This architectural choice ensures absolute operational reliability. If the AI service experiences an outage, high latency, or rate-limiting, the system falls back gracefully, providing the operator with raw, un-narrated engine data without compromising life-safety monitoring.
+
+## How It Works
+
+1. **Data Ingestion:** Venue staff log into the command center, which pulls live (simulated) zone capacity data for the selected stadium.
+2. **Deterministic Analysis:** The Crowd Safety Engine processes this data to compute density heatmaps, evacuation times, accessibility seating ratios, and waste diversion metrics.
+3. **AI Narration:** The AI Narration Layer (powered by Google Gemini) translates these numerical evaluations into a clear, conversational executive summary tailored for rapid consumption by the venue director.
+4. **Multilingual Support:** As a supplementary feature, a public-facing fan assistant answers inquiries in multiple languages, utilizing the same deterministic engine outputs as its ground truth to ensure consistency between operator and fan data.
+
+## Assumptions Made
+
+- **Simulated Data Feed:** Zone-level crowd counts are simulated/mocked via the UI in the absence of live turnstile integrations or computer vision camera feeds.
+- **Stadium Specifications:** Venue capacity, exit widths, and wheelchair seating figures are sourced from general public stadium specifications rather than official, classified FIFA venue documents.
+- **AI Availability:** Google Gemini API key availability is assumed for full functionality; however, deterministic fallback logic is in place for outages.
+- **ADA Data:** Wheelchair seating figures are illustrative estimates per venue, not formally audited ADA compliance data.
 
 ## Documentation
 
