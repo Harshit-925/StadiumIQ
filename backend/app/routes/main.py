@@ -79,7 +79,7 @@ async def health() -> HealthResponse:
 async def analyze(
     request: Request,
     body: VenueAnalysisRequest,
-    user: dict[str, Any] = Depends(get_current_user),
+    user: dict[str, Any] | None = Depends(get_optional_user),
 ) -> VenueAnalysisResponse:
     """Run a full stadium operations analysis.
 
@@ -106,19 +106,6 @@ async def analyze(
 
         # 2. AI insights (never crashes)
         ai_text, fallback_used = await ai_service.generate_crowd_insights(engine_result)
-
-        # 3. Persist to PocketBase (never crashes the request)
-        token = ""
-        auth_header = request.headers.get("authorization", "")
-        if auth_header.startswith("Bearer "):
-            token = auth_header[len("Bearer ") :]
-
-        await pocketbase_client.save_result(
-            user_token=token,
-            engine_result=engine_result,
-            ai_result={"insights": ai_text, "fallback_used": fallback_used},
-            fallback_used=fallback_used,
-        )
 
         readiness = engine_result.get("readiness", {})
         evacuation = engine_result.get("evacuation", {})
