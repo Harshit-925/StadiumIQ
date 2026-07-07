@@ -61,6 +61,16 @@ export function LoginPage() {
         </Link>
       </p>
 
+      <p className="mt-2 text-body-sm text-text-secondary">
+        Want to try without saving?{' '}
+        <Link
+          to="/dashboard"
+          className="font-semibold text-pitch-blue hover:underline focus-visible:outline-none focus-visible:underline"
+        >
+          Continue as Guest
+        </Link>
+      </p>
+
       <Link
         to="/"
         className="mt-4 text-label-sm text-text-secondary hover:text-text-primary transition-colors"

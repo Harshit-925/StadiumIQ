@@ -144,10 +144,10 @@ export function LandingPage() {
               Fan Assistant
             </Link>
             <Link
-              to="/login"
+              to="/dashboard"
               className="flex items-center gap-1 rounded-input border border-gray-200 px-4 py-2 text-body-sm text-text-secondary transition-colors hover:border-gray-300 hover:text-text-primary"
             >
-              Operator Login
+              Go to Dashboard
               <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </nav>
@@ -217,10 +217,10 @@ export function LandingPage() {
                 Try Fan Assistant — Free
               </Link>
               <Link
-                to="/login"
+                to="/dashboard"
                 className="flex items-center gap-2 rounded-input px-6 py-3 text-body-md text-pitch-blue transition-colors hover:bg-pitch-blue/5"
               >
-                Operator Login
+                Go to Dashboard
                 <ChevronRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </motion.div>
@@ -280,8 +280,8 @@ export function LandingPage() {
               FIFA World Cup 2026™ Operations Platform · 16 Venues · 3 Countries
             </p>
             <nav aria-label="Footer navigation">
-              <Link to="/login" className="text-label-sm text-text-primary/50 hover:text-text-primary transition-colors">
-                Operator Login
+              <Link to="/dashboard" className="text-label-sm text-text-primary/50 hover:text-text-primary transition-colors">
+                Go to Dashboard
               </Link>
             </nav>
           </div>
