@@ -151,7 +151,10 @@ Formulas from the core domain engine (`calculator.py`):
 git clone https://github.com/Harshit-925/StadiumIQ.git
 cd StadiumIQ
 
-# 2. Build and start the complete stack via Docker Compose
+# 2. Set up the environment variables
+cp .env.example .env
+
+# 3. Build and start the complete stack via Docker Compose
 docker compose up --build -d
 ```
 

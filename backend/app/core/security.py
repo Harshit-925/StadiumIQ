@@ -8,17 +8,22 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.core.config import get_settings
+
 # ── Header values as constants so tests can assert against them ──────────
 HSTS_VALUE = "max-age=31536000"
-CSP_VALUE = (
-    "default-src 'self'; "
-    "script-src 'self'; "
-    "style-src 'self' 'unsafe-inline'; "
-    "connect-src 'self' https://generativelanguage.googleapis.com "
-    "http://localhost:8090 ws://localhost:8090; "
-    "img-src 'self' data:; "
-    "font-src 'self' https://fonts.gstatic.com"
-)
+def get_csp_value() -> str:
+    settings = get_settings()
+    pb_url = settings.pocketbase_url
+    pb_ws = pb_url.replace("http://", "ws://").replace("https://", "wss://")
+    return (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        f"connect-src 'self' https://generativelanguage.googleapis.com {pb_url} {pb_ws}; "
+        "img-src 'self' data:; "
+        "font-src 'self' https://fonts.gstatic.com"
+    )
 PERMISSIONS_POLICY_VALUE = "camera=(), microphone=(), geolocation=()"
 
 
@@ -51,6 +56,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Permissions-Policy"] = PERMISSIONS_POLICY_VALUE
         response.headers["Strict-Transport-Security"] = HSTS_VALUE
-        response.headers["Content-Security-Policy"] = CSP_VALUE
+        response.headers["Content-Security-Policy"] = get_csp_value()
 
         return response

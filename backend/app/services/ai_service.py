@@ -136,7 +136,7 @@ async def generate_crowd_insights(
 
     try:
         client = _get_client()
-        response: GenerateContentResponse = client.models.generate_content(
+        response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
         )
@@ -150,6 +150,8 @@ async def generate_crowd_insights(
             )
             return _build_fallback_text(engine_result), True
 
+        if len(_insight_cache) > 1000:
+            _insight_cache.clear()
         _insight_cache[cache_key] = (text, time.time())
         return text, False
 
@@ -210,7 +212,7 @@ async def generate_fan_response(
 
     try:
         client = _get_client()
-        response: GenerateContentResponse = client.models.generate_content(
+        response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
         )

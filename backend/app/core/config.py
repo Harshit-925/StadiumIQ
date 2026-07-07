@@ -19,6 +19,7 @@ class Settings(BaseSettings):
         rate_limit_storage_uri: URI for rate limit storage backend.
         pocketbase_url: URL of the PocketBase instance.
         app_version: Semantic version of the application.
+        frontend_urls: Comma-separated list of allowed frontend URLs.
     """
 
     model_config = SettingsConfigDict(
@@ -34,6 +35,10 @@ class Settings(BaseSettings):
     rate_limit_storage_uri: str = "memory://"
     pocketbase_url: str = "http://localhost:8090"
     app_version: str = "1.0.0"
+    frontend_urls: str = "http://localhost:5173,http://localhost:3000"
+
+    def get_allowed_origins(self) -> list[str]:
+        return [url.strip() for url in self.frontend_urls.split(",") if url.strip()]
 
 
 @lru_cache(maxsize=1)
