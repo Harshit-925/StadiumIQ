@@ -93,6 +93,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create .env file for Docker
+        run: cp .env.example .env
+
       - name: Build Docker image
         run: docker compose build app
 

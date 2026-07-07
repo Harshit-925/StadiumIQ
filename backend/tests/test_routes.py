@@ -10,8 +10,9 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 if TYPE_CHECKING:
-    from httpx import AsyncClient
     from unittest.mock import MagicMock
+
+    from httpx import AsyncClient
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  HEALTH                                                                ║
