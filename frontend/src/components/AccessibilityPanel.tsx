@@ -103,7 +103,7 @@ export function AccessibilityPanel() {
                 <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
                   Ratio
                 </th>
-                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide hidden sm:table-cell">
+                <th scope="col" className="hidden w-40 px-4 py-3 text-left font-medium uppercase tracking-wide text-text-secondary text-label-md sm:table-cell">
                   vs. ADA 1%
                 </th>
                 <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">

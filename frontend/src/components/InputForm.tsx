@@ -152,7 +152,7 @@ export function InputForm() {
                       handleZoneDensityChange(index, parseFloat(e.target.value))
                     }
                     aria-label={`Zone ${index + 1} density: ${density} pax per square meter`}
-                    className="h-2 flex-1 cursor-pointer appearance-none rounded-pill bg-gray-100 accent-pitch-blue"
+                    className="min-w-0 h-2 flex-1 cursor-pointer appearance-none rounded-pill bg-gray-100 accent-pitch-blue"
                   />
                   <span
                     className={`w-12 shrink-0 text-right text-sm font-mono font-medium ${getDensityColor(density)}`}
