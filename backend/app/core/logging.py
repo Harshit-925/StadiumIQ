@@ -49,10 +49,11 @@ class JSONFormatter(logging.Formatter):
         }
 
         # Merge any structured extras the caller attached.
-        if hasattr(record, "extra_data"):
-            log_entry.update(record.extra_data)
+        extra_data = getattr(record, "extra_data", None)
+        if isinstance(extra_data, dict):
+            log_entry.update(extra_data)
 
-        if record.exc_info and record.exc_info[1] is not None:
+        if record.exc_info:
             log_entry["exception"] = self.formatException(record.exc_info)
 
         return json.dumps(log_entry, default=str)
@@ -82,6 +83,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         rid = uuid.uuid4().hex
         token = request_id_ctx.set(rid)
         start = time.perf_counter()
+        response: Response | None = None
 
         try:
             response = await call_next(request)
@@ -98,11 +100,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
             log_data: dict[str, Any] = {
                 "method": request.method,
                 "path": request.url.path,
-                "status": (
-                    getattr(response, "status_code", 500)
-                    if "response" in dir()
-                    else 500
-                ),
+                "status": response.status_code if response else 500,
                 "duration_ms": duration_ms,
             }
             status_code = log_data["status"]
