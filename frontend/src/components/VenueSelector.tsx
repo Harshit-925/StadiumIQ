@@ -7,14 +7,14 @@ export function VenueSelector() {
   const setSelectedVenue = useAppStore((s) => s.setSelectedVenue);
 
   return (
-    <div className="glass-surface p-4 sm:p-6">
+    <div className="card-surface p-4 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label
             htmlFor="venue-select"
-            className="mb-1.5 flex items-center gap-2 text-sm font-medium text-white/80"
+            className="mb-1.5 flex items-center gap-2 text-sm font-medium text-text-primary"
           >
-            <MapPin className="h-4 w-4 text-stadium-blue" aria-hidden="true" />
+            <MapPin className="h-4 w-4 text-pitch-blue" aria-hidden="true" />
             Select Venue
           </label>
           <select
@@ -22,7 +22,7 @@ export function VenueSelector() {
             value={selectedVenue.id}
             onChange={(e) => setSelectedVenue(e.target.value)}
             aria-label="Select a FIFA World Cup 2026 venue"
-            className="w-full rounded-input border border-white/10 bg-dark-surface px-4 py-2.5 text-white transition-colors focus:border-stadium-blue focus:outline-none focus:ring-2 focus:ring-stadium-blue/50"
+            className="w-full rounded-input border border-gray-200 bg-surface px-4 py-2.5 text-text-primary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
           >
             {Object.entries(VENUE_GROUPS).map(([country, venues]) => (
               <optgroup key={country} label={`🏟️ ${country}`}>
@@ -36,24 +36,24 @@ export function VenueSelector() {
           </select>
         </div>
 
-        <div className="flex flex-wrap gap-4 text-sm text-white/60">
+        <div className="flex flex-wrap gap-4 text-sm text-text-secondary">
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-white/80">Capacity:</span>
-            <span className="text-fifa-gold">
+            <span className="font-medium text-text-primary">Capacity:</span>
+            <span className="text-trophy-gold">
               {selectedVenue.capacity.toLocaleString()}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-white/80">Zones:</span>
-            <span className="text-fifa-gold">{selectedVenue.zones}</span>
+            <span className="font-medium text-text-primary">Zones:</span>
+            <span className="text-trophy-gold">{selectedVenue.zones}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-white/80">Exit Width:</span>
-            <span className="text-fifa-gold">{selectedVenue.exit_width_m}m</span>
+            <span className="font-medium text-text-primary">Exit Width:</span>
+            <span className="text-trophy-gold">{selectedVenue.exit_width_m}m</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-white/80">Wheelchair:</span>
-            <span className="text-fifa-gold">{selectedVenue.wheelchair_seats}</span>
+            <span className="font-medium text-text-primary">Wheelchair:</span>
+            <span className="text-trophy-gold">{selectedVenue.wheelchair_seats}</span>
           </div>
         </div>
       </div>

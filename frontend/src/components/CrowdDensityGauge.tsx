@@ -46,11 +46,11 @@ export function CrowdDensityGauge({ density }: CrowdDensityGaugeProps) {
 
   return (
     <div
-      className="glass-surface p-6"
+      className="card-surface p-6"
       role="img"
       aria-label={ariaLabel}
     >
-      <h3 className="mb-4 text-center text-sm font-medium text-white/80">
+      <h3 className="mb-4 text-center text-sm font-medium text-text-primary">
         Average Crowd Density
       </h3>
 
@@ -157,7 +157,7 @@ export function CrowdDensityGauge({ density }: CrowdDensityGaugeProps) {
         <p className={`text-3xl font-bold ${classification.textColor}`}>
           {density.toFixed(2)}
         </p>
-        <p className="text-sm text-white/50">pax/m²</p>
+        <p className="text-sm text-text-primary/50">pax/m²</p>
         <span
           className={`mt-2 inline-block rounded-pill px-3 py-1 text-xs font-medium ${classification.textColor}`}
           style={{

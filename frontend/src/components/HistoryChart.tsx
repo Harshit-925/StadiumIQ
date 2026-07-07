@@ -38,10 +38,10 @@ interface ChartPoint {
 const TableFallback = memo(function TableFallback({ data }: { data: ChartPoint[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left text-xs text-white/70">
+      <table className="w-full text-left text-xs text-text-secondary">
         <caption className="sr-only">Analysis history data table</caption>
         <thead>
-          <tr className="border-b border-white/10">
+          <tr className="border-b border-gray-200">
             <th scope="col" className="py-2 pr-4 font-medium">Time</th>
             <th scope="col" className="py-2 pr-4 font-medium">Venue</th>
             <th scope="col" className="py-2 pr-4 font-medium">Avg Density (pax/m²)</th>
@@ -80,13 +80,13 @@ const CustomTooltip = ({
   const point = payload[0]?.payload;
   return (
     <div
-      className="glass-surface border border-white/10 p-3 text-xs text-white/80"
+      className="card-surface border border-gray-200 p-3 text-xs text-text-primary"
       role="tooltip"
     >
-      <p className="font-semibold text-white">{point?.venue}</p>
+      <p className="font-semibold text-text-primary">{point?.venue}</p>
       <p>Time: {label}</p>
       <p>Density: <span style={{ color: densityColor(payload[0]?.value ?? 0) }}>{(payload[0]?.value ?? 0).toFixed(2)} pax/m²</span></p>
-      <p>Grade: <span className="font-bold text-white">{point?.grade}</span></p>
+      <p>Grade: <span className="font-bold text-text-primary">{point?.grade}</span></p>
     </div>
   );
 };
@@ -109,8 +109,8 @@ export const HistoryChart = memo(function HistoryChart() {
 
   if (chartData.length === 0) {
     return (
-      <div className="glass-surface flex h-40 items-center justify-center p-6">
-        <p className="text-sm text-white/40">
+      <div className="card-surface flex h-40 items-center justify-center p-6">
+        <p className="text-sm text-text-secondary/70">
           No history yet — run an analysis to see trends.
         </p>
       </div>
@@ -118,11 +118,11 @@ export const HistoryChart = memo(function HistoryChart() {
   }
 
   return (
-    <div className="glass-surface p-4">
+    <div className="card-surface p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-white/80">
+        <h3 className="text-sm font-medium text-text-primary">
           Crowd Density Trend
-          <span className="ml-2 text-xs text-white/40">
+          <span className="ml-2 text-xs text-text-secondary/70">
             ({chartData.length} {chartData.length === 1 ? 'reading' : 'readings'})
           </span>
         </h3>
@@ -130,7 +130,7 @@ export const HistoryChart = memo(function HistoryChart() {
           onClick={() => setShowTable((v) => !v)}
           aria-pressed={showTable}
           aria-label={showTable ? 'Switch to chart view' : 'Switch to table view (accessible)'}
-          className="flex items-center gap-1.5 rounded border border-white/10 px-2.5 py-1 text-xs text-white/50 transition-colors hover:border-white/20 hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stadium-blue"
+          className="flex items-center gap-1.5 rounded border border-gray-200 px-2.5 py-1 text-xs text-text-primary/50 transition-colors hover:border-gray-300 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stadium-blue"
         >
           {showTable ? (
             <>

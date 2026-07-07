@@ -62,18 +62,18 @@ function GoalRow({ spec, current }: { spec: GoalSpec; current: number | null }) 
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {met === null ? (
-            <TrendingUp className="h-4 w-4 flex-shrink-0 text-white/30" aria-hidden="true" />
+            <TrendingUp className="h-4 w-4 flex-shrink-0 text-text-primary/30" aria-hidden="true" />
           ) : met ? (
             <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-crowd-safe" aria-hidden="true" />
           ) : (
             <XCircle className="h-4 w-4 flex-shrink-0 text-crowd-critical" aria-hidden="true" />
           )}
-          <span className="truncate text-xs text-white/80">{spec.label}</span>
+          <span className="truncate text-xs text-text-primary">{spec.label}</span>
         </div>
         <span
           className={`flex-shrink-0 text-xs font-semibold ${
             met === null
-              ? 'text-white/30'
+              ? 'text-text-primary/30'
               : met
               ? 'text-crowd-safe'
               : 'text-crowd-critical'
@@ -90,7 +90,7 @@ function GoalRow({ spec, current }: { spec: GoalSpec; current: number | null }) 
 
       {/* Progress bar */}
       <div
-        className="h-1.5 w-full overflow-hidden rounded-pill bg-white/10"
+        className="h-1.5 w-full overflow-hidden rounded-pill bg-gray-100"
         role="progressbar"
         aria-valuenow={Math.round(progressPct)}
         aria-valuemin={0}
@@ -109,7 +109,7 @@ function GoalRow({ spec, current }: { spec: GoalSpec; current: number | null }) 
         />
       </div>
 
-      <p className="text-xs text-white/30 leading-tight">{spec.description}</p>
+      <p className="text-xs text-text-primary/30 leading-tight">{spec.description}</p>
     </div>
   );
 }
@@ -128,16 +128,16 @@ export const GoalTracker = memo(function GoalTracker() {
   return (
     <section
       aria-label="Safety goals tracker"
-      className="glass-surface space-y-4 p-4"
+      className="card-surface space-y-4 p-4"
     >
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Target className="h-4 w-4 text-stadium-blue" aria-hidden="true" />
-          <h3 className="text-sm font-semibold text-white">Safety Goals</h3>
+          <Target className="h-4 w-4 text-pitch-blue" aria-hidden="true" />
+          <h3 className="text-sm font-semibold text-text-primary">Safety Goals</h3>
         </div>
         {analysisResult && (
           <span
-            className="text-xs text-white/50"
+            className="text-xs text-text-primary/50"
             aria-label={`${metCount} of ${GOALS.length} goals met`}
           >
             {metCount}/{GOALS.length} met
@@ -156,7 +156,7 @@ export const GoalTracker = memo(function GoalTracker() {
       </div>
 
       {!analysisResult && (
-        <p className="text-xs text-white/30 text-center pt-1">
+        <p className="text-xs text-text-primary/30 text-center pt-1">
           Run an analysis to track goals.
         </p>
       )}

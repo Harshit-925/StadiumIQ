@@ -101,16 +101,16 @@ export function InputForm() {
       initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.4 }}
-      className="glass-surface p-6"
+      className="card-surface p-6"
     >
-      <h2 className="mb-4 text-lg font-semibold text-white">
+      <h2 className="mb-4 text-lg font-semibold text-text-primary">
         Crowd Analysis Input
       </h2>
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Zone Densities */}
         <fieldset className="mb-6">
-          <legend className="mb-3 text-sm font-medium text-white/80">
+          <legend className="mb-3 text-sm font-medium text-text-primary">
             Zone Densities (pax/m²)
           </legend>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -118,7 +118,7 @@ export function InputForm() {
               <div key={index}>
                 <label
                   htmlFor={`zone-density-${index}`}
-                  className="mb-1 block text-xs text-white/60"
+                  className="mb-1 block text-xs text-text-secondary"
                 >
                   Zone {index + 1}
                 </label>
@@ -134,7 +134,7 @@ export function InputForm() {
                       handleZoneDensityChange(index, parseFloat(e.target.value))
                     }
                     aria-label={`Zone ${index + 1} density: ${density} pax per square meter`}
-                    className="h-2 flex-1 cursor-pointer appearance-none rounded-pill bg-white/10 accent-stadium-blue"
+                    className="h-2 flex-1 cursor-pointer appearance-none rounded-pill bg-gray-100 accent-pitch-blue"
                   />
                   <span
                     className={`w-10 text-right text-sm font-mono font-medium ${getDensityColor(density)}`}
@@ -156,7 +156,7 @@ export function InputForm() {
         <div className="mb-4">
           <label
             htmlFor="total-spectators"
-            className="mb-1.5 block text-sm font-medium text-white/80"
+            className="mb-1.5 block text-sm font-medium text-text-primary"
           >
             Total Spectators
           </label>
@@ -173,9 +173,9 @@ export function InputForm() {
                 ? 'spectators-error'
                 : 'spectators-hint'
             }
-            className="w-full rounded-input border border-white/10 bg-white/5 px-4 py-2.5 text-white transition-colors focus:border-stadium-blue focus:outline-none focus:ring-2 focus:ring-stadium-blue/50"
+            className="w-full rounded-input border border-gray-200 bg-base-bg px-4 py-2.5 text-text-primary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
           />
-          <p id="spectators-hint" className="mt-1 text-xs text-white/40">
+          <p id="spectators-hint" className="mt-1 text-xs text-text-secondary/70">
             Max capacity: {selectedVenue.capacity.toLocaleString()}
           </p>
           {fieldErrors.total_spectators && (
@@ -190,7 +190,7 @@ export function InputForm() {
           <div>
             <label
               htmlFor="waste-recycled"
-              className="mb-1.5 block text-sm font-medium text-white/80"
+              className="mb-1.5 block text-sm font-medium text-text-primary"
             >
               Waste Recycled (kg)
             </label>
@@ -201,13 +201,13 @@ export function InputForm() {
               value={wasteRecycled}
               onChange={(e) => setWasteRecycled(parseFloat(e.target.value) || 0)}
               aria-required="true"
-              className="w-full rounded-input border border-white/10 bg-white/5 px-4 py-2.5 text-white transition-colors focus:border-stadium-blue focus:outline-none focus:ring-2 focus:ring-stadium-blue/50"
+              className="w-full rounded-input border border-gray-200 bg-base-bg px-4 py-2.5 text-text-primary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
             />
           </div>
           <div>
             <label
               htmlFor="total-waste"
-              className="mb-1.5 block text-sm font-medium text-white/80"
+              className="mb-1.5 block text-sm font-medium text-text-primary"
             >
               Total Waste (kg)
             </label>
@@ -218,14 +218,14 @@ export function InputForm() {
               value={totalWaste}
               onChange={(e) => setTotalWaste(parseFloat(e.target.value) || 0)}
               aria-required="true"
-              className="w-full rounded-input border border-white/10 bg-white/5 px-4 py-2.5 text-white transition-colors focus:border-stadium-blue focus:outline-none focus:ring-2 focus:ring-stadium-blue/50"
+              className="w-full rounded-input border border-gray-200 bg-base-bg px-4 py-2.5 text-text-primary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
             />
           </div>
         </div>
 
         {/* Risk Level */}
         <fieldset className="mb-6">
-          <legend className="mb-2 text-sm font-medium text-white/80">
+          <legend className="mb-2 text-sm font-medium text-text-primary">
             Risk Level
           </legend>
           <div className="flex gap-6">
@@ -237,9 +237,9 @@ export function InputForm() {
                 value="low"
                 checked={riskLevel === 'low'}
                 onChange={() => setRiskLevel('low')}
-                className="h-4 w-4 accent-stadium-blue"
+                className="h-4 w-4 accent-pitch-blue"
               />
-              <label htmlFor="risk-low" className="text-sm text-white/70">
+              <label htmlFor="risk-low" className="text-sm text-text-secondary">
                 Low Risk
               </label>
             </div>
@@ -253,7 +253,7 @@ export function InputForm() {
                 onChange={() => setRiskLevel('high')}
                 className="h-4 w-4 accent-crowd-critical"
               />
-              <label htmlFor="risk-high" className="text-sm text-white/70">
+              <label htmlFor="risk-high" className="text-sm text-text-secondary">
                 High Risk
               </label>
             </div>
@@ -265,7 +265,7 @@ export function InputForm() {
           type="submit"
           disabled={isLoading}
           aria-busy={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-input bg-stadium-blue px-6 py-3 font-semibold text-white transition-colors hover:bg-stadium-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-input bg-pitch-blue px-6 py-3 font-semibold text-white transition-colors hover:bg-pitch-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>

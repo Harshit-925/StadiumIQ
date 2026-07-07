@@ -83,13 +83,13 @@ export const ReportExport = memo(function ReportExport() {
   }, [result, isExporting]);
 
   return (
-    <section aria-label="Export report" className="glass-surface space-y-4 p-4">
+    <section aria-label="Export report" className="card-surface space-y-4 p-4">
       <div className="flex items-center gap-2">
-        <FileText className="h-4 w-4 text-stadium-blue" aria-hidden="true" />
-        <h3 className="text-sm font-semibold text-white">Export Report</h3>
+        <FileText className="h-4 w-4 text-pitch-blue" aria-hidden="true" />
+        <h3 className="text-sm font-semibold text-text-primary">Export Report</h3>
       </div>
 
-      <p className="text-xs text-white/50 leading-relaxed">
+      <p className="text-xs text-text-primary/50 leading-relaxed">
         Download a plain-text operations report including crowd metrics, evacuation
         assessment, accessibility compliance, and AI insights.
       </p>
@@ -108,7 +108,7 @@ export const ReportExport = memo(function ReportExport() {
             ? 'Report exported'
             : 'Export operations report as text file'
         }
-        className="flex w-full items-center justify-center gap-2 rounded-input border border-white/10 py-2.5 text-sm text-white/70 transition-all hover:border-stadium-blue hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stadium-blue"
+        className="flex w-full items-center justify-center gap-2 rounded-input border border-gray-200 py-2.5 text-sm text-text-secondary transition-all hover:border-stadium-blue hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stadium-blue"
       >
         {isExporting ? (
           <>
@@ -129,7 +129,7 @@ export const ReportExport = memo(function ReportExport() {
       </button>
 
       {!result && (
-        <p className="text-center text-xs text-white/30">
+        <p className="text-center text-xs text-text-primary/30">
           Run an analysis first to enable export.
         </p>
       )}

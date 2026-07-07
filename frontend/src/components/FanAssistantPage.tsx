@@ -60,7 +60,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
         aria-hidden="true"
       >
         {isUser ? (
-          <User className="h-4 w-4 text-white" />
+          <User className="h-4 w-4 text-text-primary" />
         ) : (
           <Bot className="h-4 w-4 text-stadium-green" />
         )}
@@ -68,7 +68,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
       <div
         className={`max-w-[80%] rounded-2xl px-4 py-3 text-body-sm leading-relaxed ${
           isUser
-            ? 'rounded-br-sm bg-pitch-blue text-white'
+            ? 'rounded-br-sm bg-pitch-blue text-text-primary'
             : 'rounded-bl-sm bg-gray-100 text-text-primary'
         }`}
       >

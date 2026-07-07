@@ -33,25 +33,25 @@ function GradeDisplay({ grade }: { grade: string }) {
       }
       className={`flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br ${getGradeColor(grade)}`}
     >
-      <span className="text-3xl font-bold text-white">{grade}</span>
+      <span className="text-3xl font-bold text-text-primary">{grade}</span>
     </motion.div>
   );
 }
 
 function SkeletonLoader() {
   return (
-    <div className="glass-surface animate-pulse p-6" role="status" aria-label="Loading results">
+    <div className="card-surface animate-pulse p-6" role="status" aria-label="Loading results">
       <div className="mb-4 flex items-center gap-4">
-        <div className="h-20 w-20 rounded-full bg-white/10" />
+        <div className="h-20 w-20 rounded-full bg-gray-100" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 w-32 rounded bg-white/10" />
-          <div className="h-3 w-48 rounded bg-white/10" />
+          <div className="h-4 w-32 rounded bg-gray-100" />
+          <div className="h-3 w-48 rounded bg-gray-100" />
         </div>
       </div>
       <div className="space-y-3">
-        <div className="h-3 w-full rounded bg-white/10" />
-        <div className="h-3 w-3/4 rounded bg-white/10" />
-        <div className="h-3 w-1/2 rounded bg-white/10" />
+        <div className="h-3 w-full rounded bg-gray-100" />
+        <div className="h-3 w-3/4 rounded bg-gray-100" />
+        <div className="h-3 w-1/2 rounded bg-gray-100" />
       </div>
       <span className="visually-hidden">Loading analysis results…</span>
     </div>
@@ -78,16 +78,16 @@ function ZoneDensityBar({
 
   return (
     <div className="flex items-center gap-3">
-      <span className="w-16 text-xs text-white/60">Zone {zoneId}</span>
+      <span className="w-16 text-xs text-text-secondary">Zone {zoneId}</span>
       <div className="flex-1">
-        <div className="h-2.5 w-full overflow-hidden rounded-pill bg-white/10">
+        <div className="h-2.5 w-full overflow-hidden rounded-pill bg-gray-100">
           <div
             className={`h-full rounded-pill transition-all ${getBarColor(density)}`}
             style={{ width: `${widthPercent}%` }}
           />
         </div>
       </div>
-      <span className="w-24 text-right text-xs text-white/60">
+      <span className="w-24 text-right text-xs text-text-secondary">
         {density.toFixed(1)} pax/m² · {classification}
       </span>
     </div>
@@ -116,7 +116,7 @@ export function ResultsPanel() {
       <div
         role="alert"
         aria-live="assertive"
-        className="glass-surface border-crowd-critical/30 p-6"
+        className="card-surface border-crowd-critical/30 p-6"
       >
         <div className="flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 text-crowd-critical" aria-hidden="true" />
@@ -128,9 +128,9 @@ export function ResultsPanel() {
 
   if (!analysisResult) {
     return (
-      <div className="glass-surface p-6 text-center">
-        <Shield className="mx-auto mb-3 h-12 w-12 text-white/20" aria-hidden="true" />
-        <p className="text-white/50">
+      <div className="card-surface p-6 text-center">
+        <Shield className="mx-auto mb-3 h-12 w-12 text-text-primary/20" aria-hidden="true" />
+        <p className="text-text-primary/50">
           Select a venue and run an analysis to see results.
         </p>
       </div>
@@ -140,19 +140,19 @@ export function ResultsPanel() {
   const result = analysisResult;
 
   return (
-    <div aria-live="polite" className="glass-surface space-y-6 p-6">
+    <div aria-live="polite" className="card-surface space-y-6 p-6">
       {/* Header: Grade + Score */}
       <div className="flex items-center gap-4">
         <GradeDisplay grade={result.overall_grade} />
         <div>
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-semibold text-text-primary">
             {result.venue} Analysis
           </h3>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-text-secondary">
             Score: {result.crowd_score.toFixed(1)} / 100 · Avg Density:{' '}
             {result.average_density.toFixed(2)} pax/m²
           </p>
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-text-secondary/70">
             {new Date(result.timestamp).toLocaleString()}
           </p>
         </div>
@@ -160,8 +160,8 @@ export function ResultsPanel() {
 
       {/* Zone Density Breakdown */}
       <div>
-        <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-white/80">
-          <Shield className="h-4 w-4 text-stadium-blue" aria-hidden="true" />
+        <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-text-primary">
+          <Shield className="h-4 w-4 text-pitch-blue" aria-hidden="true" />
           Zone Density Breakdown
         </h3>
         <div className="space-y-2">
@@ -178,12 +178,12 @@ export function ResultsPanel() {
 
       {/* Evacuation Assessment */}
       <div className="flex items-start gap-3">
-        <Clock className="mt-0.5 h-4 w-4 text-stadium-blue" aria-hidden="true" />
+        <Clock className="mt-0.5 h-4 w-4 text-pitch-blue" aria-hidden="true" />
         <div>
-          <h3 className="text-sm font-medium text-white/80">
+          <h3 className="text-sm font-medium text-text-primary">
             Evacuation Assessment
           </h3>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-text-secondary">
             Estimated time: {result.evacuation_time_minutes.toFixed(1)} minutes
             {' · '}
             <span
@@ -204,14 +204,14 @@ export function ResultsPanel() {
       {/* Accessibility Compliance */}
       <div className="flex items-start gap-3">
         <Accessibility
-          className="mt-0.5 h-4 w-4 text-stadium-blue"
+          className="mt-0.5 h-4 w-4 text-pitch-blue"
           aria-hidden="true"
         />
         <div>
-          <h3 className="text-sm font-medium text-white/80">
+          <h3 className="text-sm font-medium text-text-primary">
             Accessibility Compliance
           </h3>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-text-secondary">
             Wheelchair ratio: {(result.wheelchair_ratio * 100).toFixed(2)}%
             {' · '}
             <span
@@ -233,10 +233,10 @@ export function ResultsPanel() {
       <div className="flex items-start gap-3">
         <Leaf className="mt-0.5 h-4 w-4 text-crowd-safe" aria-hidden="true" />
         <div>
-          <h3 className="text-sm font-medium text-white/80">
+          <h3 className="text-sm font-medium text-text-primary">
             Sustainability Metrics
           </h3>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-text-secondary">
             Recycling rate: {(result.recycling_rate * 100).toFixed(1)}% ·
             Sustainability score: {result.sustainability_score.toFixed(1)}/100
           </p>
@@ -245,8 +245,8 @@ export function ResultsPanel() {
 
       {/* AI Insights */}
       <div className="rounded-input border border-white/5 bg-white/[0.02] p-4">
-        <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-white/80">
-          <Sparkles className="h-4 w-4 text-fifa-gold" aria-hidden="true" />
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-text-primary">
+          <Sparkles className="h-4 w-4 text-trophy-gold" aria-hidden="true" />
           AI Insights
           {result.ai_fallback && (
             <span className="rounded-pill bg-crowd-warning/20 px-2 py-0.5 text-xs text-crowd-warning">
@@ -254,7 +254,7 @@ export function ResultsPanel() {
             </span>
           )}
         </h3>
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/60">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
           {result.ai_insights}
         </p>
       </div>

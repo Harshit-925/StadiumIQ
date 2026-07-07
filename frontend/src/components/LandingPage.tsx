@@ -271,16 +271,16 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-white/70" aria-hidden="true" />
-              <span className="text-body-sm font-semibold text-white">
+              <Activity className="h-5 w-5 text-text-secondary" aria-hidden="true" />
+              <span className="text-body-sm font-semibold text-text-primary">
                 Stadium<span className="text-trophy-gold">IQ</span>
               </span>
             </div>
-            <p className="text-center text-label-sm text-white/40">
+            <p className="text-center text-label-sm text-text-secondary/70">
               FIFA World Cup 2026™ Operations Platform · 16 Venues · 3 Countries
             </p>
             <nav aria-label="Footer navigation">
-              <Link to="/login" className="text-label-sm text-white/50 hover:text-white/80 transition-colors">
+              <Link to="/login" className="text-label-sm text-text-primary/50 hover:text-text-primary transition-colors">
                 Operator Login
               </Link>
             </nav>

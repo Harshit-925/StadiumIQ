@@ -78,15 +78,15 @@ function BenchmarkRow({
   return (
     <div className="space-y-2" role="listitem">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-white/70">{label}</span>
+        <span className="text-text-secondary">{label}</span>
         <div className="flex items-center gap-3 text-right">
-          <span className="text-white/40">
-            <span className="text-white/20">Target:</span> {benchmarkDisplay}
+          <span className="text-text-secondary/70">
+            <span className="text-text-primary/20">Target:</span> {benchmarkDisplay}
           </span>
           <span
             className={
               better === null
-                ? 'text-white/30'
+                ? 'text-text-primary/30'
                 : better
                 ? 'font-semibold text-crowd-safe'
                 : 'font-semibold text-crowd-warning'
@@ -103,7 +103,7 @@ function BenchmarkRow({
       </div>
 
       {/* Stacked bar: benchmark (ghost) + yours */}
-      <div className="relative h-2 overflow-hidden rounded-pill bg-white/10" aria-hidden="true">
+      <div className="relative h-2 overflow-hidden rounded-pill bg-gray-100" aria-hidden="true">
         {/* Benchmark marker */}
         <div
           className="absolute top-0 h-full rounded-pill bg-white/20"
@@ -137,10 +137,10 @@ export const ComparisonBar = memo(function ComparisonBar() {
   );
 
   return (
-    <section aria-label="Benchmark comparison" className="glass-surface space-y-4 p-4">
+    <section aria-label="Benchmark comparison" className="card-surface space-y-4 p-4">
       <div className="flex items-center gap-2">
-        <BarChart2 className="h-4 w-4 text-stadium-blue" aria-hidden="true" />
-        <h3 className="text-sm font-semibold text-white">vs. FIFA Benchmarks</h3>
+        <BarChart2 className="h-4 w-4 text-pitch-blue" aria-hidden="true" />
+        <h3 className="text-sm font-semibold text-text-primary">vs. FIFA Benchmarks</h3>
       </div>
 
       <div className="space-y-4" role="list" aria-label="Benchmark rows">
@@ -157,12 +157,12 @@ export const ComparisonBar = memo(function ComparisonBar() {
         ))}
       </div>
 
-      <p className="text-xs text-white/30">
+      <p className="text-xs text-text-primary/30">
         Benchmarks: G. Keith Still crowd science, ADA Standards, EPA 90% diversion target.
       </p>
 
       {!result && (
-        <p className="text-xs text-white/30 text-center">
+        <p className="text-xs text-text-primary/30 text-center">
           Run an analysis to compare.
         </p>
       )}
