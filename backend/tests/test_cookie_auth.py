@@ -12,9 +12,11 @@ asserted — they are not just stated in a design doc.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from httpx import AsyncClient
+if TYPE_CHECKING:
+    from httpx import AsyncClient
 
 # ── Shared helpers ───────────────────────────────────────────────────────
 

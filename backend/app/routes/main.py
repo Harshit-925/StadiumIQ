@@ -8,15 +8,22 @@ Routes:
 
 
 import logging
+from contextlib import suppress
 from datetime import UTC, datetime
 from typing import Any
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.core.auth import get_current_user, get_optional_user
+from app.core.auth import get_optional_user
 from app.core.config import get_settings
-from app.core.rate_limit import RATE_LIMIT_AI, RATE_LIMIT_FAN_ASSIST_AUTH, RATE_LIMIT_FAN_ASSIST_PUBLIC, _fan_assist_key, limiter
+from app.core.rate_limit import (
+    RATE_LIMIT_AI,
+    RATE_LIMIT_FAN_ASSIST_AUTH,
+    RATE_LIMIT_FAN_ASSIST_PUBLIC,
+    _fan_assist_key,
+    limiter,
+)
 from app.engine.calculator import analyze_venue, get_venue_info
 from app.models.schemas import (
     FanAssistRequest,
@@ -73,7 +80,7 @@ async def health() -> HealthResponse:
 async def analyze(
     request: Request,
     body: VenueAnalysisRequest,
-    user: dict[str, Any] | None = Depends(get_optional_user),
+    user: dict[str, Any] | None = Depends(get_optional_user),  # noqa: B008
 ) -> VenueAnalysisResponse:
     """Run a full stadium operations analysis.
 
@@ -186,7 +193,7 @@ async def analyze(
 async def fan_assist(
     request: Request,
     body: FanAssistRequest,
-    user: dict[str, Any] | None = Depends(get_optional_user),
+    user: dict[str, Any] | None = Depends(get_optional_user),  # noqa: B008
 ) -> FanAssistResponse:
     """AI-powered fan question-and-answer assistant.
 
@@ -208,10 +215,8 @@ async def fan_assist(
     try:
         venue_context = None
         if body.venue_id:
-            try:
+            with suppress(ValueError):
                 venue_context = get_venue_info(body.venue_id)
-            except ValueError:
-                pass  # non-critical — proceed without venue context
 
         text, fallback_used = await ai_service.generate_fan_response(
             query=body.query,

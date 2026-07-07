@@ -6,8 +6,7 @@ tests never hit live services.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -15,6 +14,9 @@ from httpx import ASGITransport, AsyncClient
 
 from app.core.auth import get_current_user
 from app.main import create_app
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
 
 # ── Fixed fake user returned by mock_auth ────────────────────────────────
 FAKE_USER: dict[str, Any] = {

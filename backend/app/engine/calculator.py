@@ -473,10 +473,7 @@ def grade_venue_readiness(
     access = assess_accessibility_compliance(
         venue["wheelchair_seats"], venue["capacity"]
     )
-    if access["meets_ada"]:
-        access_score = 100.0
-    else:
-        access_score = max(0.0, round((access["ratio"] / WHEELCHAIR_RATIO) * 100, 2))
+    access_score = 100.0 if access["meets_ada"] else max(0.0, round(access["ratio"] / WHEELCHAIR_RATIO * 100, 2))
 
     # ── Sustainability score (20%) ───────────────────────────────────────
     waste = calculate_waste_diversion_rate(waste_recycled_kg, waste_total_kg)
