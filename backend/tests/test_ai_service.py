@@ -5,6 +5,7 @@ All tests mock the Gemini client — no live AI calls are made.
 
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 from app.services.ai_service import (
@@ -16,7 +17,7 @@ from app.services.ai_service import (
 
 # ── Shared test data ────────────────────────────────────────────────────
 
-SAMPLE_ENGINE_RESULT: dict = {
+SAMPLE_ENGINE_RESULT: dict[str, Any] = {
     "venue": {"name": "MetLife Stadium", "city": "New York/NJ", "capacity": 82500},
     "readiness": {"grade": "C", "score": 72.5, "recommendations": ["Improve exits"]},
     "evacuation": {

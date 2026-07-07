@@ -5,7 +5,7 @@ All external services (auth, AI, PocketBase) are mocked via conftest fixtures.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -45,7 +45,7 @@ class TestAnalyzeEndpoint:
     """Tests for POST /api/analyze."""
 
     @pytest.fixture()
-    def valid_payload(self) -> dict:
+    def valid_payload(self) -> dict[str, Any]:
         """Standard valid request body."""
         return {
             "venue_id": "metlife",
@@ -62,7 +62,7 @@ class TestAnalyzeEndpoint:
         mock_auth,
         mock_genai,
         mock_pocketbase,
-        valid_payload: dict,
+        valid_payload: dict[str, Any],
     ) -> None:
         """Full pipeline success: engine → AI → save → response."""
         resp = await client.post(
@@ -89,7 +89,7 @@ class TestAnalyzeEndpoint:
         assert isinstance(data["zone_analyses"], list)
 
     async def test_analyze_no_auth(
-        self, client: AsyncClient, valid_payload: dict
+        self, client: AsyncClient, valid_payload: dict[str, Any]
     ) -> None:
         """Missing Authorization header → 422 (FastAPI validation) or 401."""
         resp = await client.post("/api/analyze", json=valid_payload)
