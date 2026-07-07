@@ -36,10 +36,10 @@ async function syncHistoryFromPB() {
       const engine = r.engine_result as {
         venue?: string;
         venue_id?: string;
-        timestamp?: string;
-        average_density?: number;
-        crowd_score?: number;
-        overall_grade?: string;
+        timestamp: string;
+        average_density: number;
+        crowd_score: number;
+        overall_grade: string;
       };
       return {
         id: r.id,
