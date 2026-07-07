@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/stadium.svg" width="120" alt="StadiumIQ Logo">
+  <img src="https://api.iconify.design/twemoji:stadium.svg" width="120" alt="StadiumIQ Logo">
   <h1>StadiumIQ</h1>
   <p><strong>FIFA World Cup 2026™ Stadium Operations Command Center</strong></p>
 </div>
