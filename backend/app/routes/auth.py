@@ -10,6 +10,7 @@ The raw PocketBase token is never exposed to client-side JavaScript.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import httpx
 from fastapi import APIRouter, HTTPException, Response
