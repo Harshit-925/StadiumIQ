@@ -33,7 +33,14 @@ async function syncHistoryFromPB() {
   try {
     const records = await pb.collection('history').getFullList({ sort: 'created' });
     const historyEntries: HistoryEntry[] = records.map((r) => {
-      const engine = r.engine_result as any;
+      const engine = r.engine_result as {
+        venue?: string;
+        venue_id?: string;
+        timestamp?: string;
+        average_density?: number;
+        crowd_score?: number;
+        overall_grade?: string;
+      };
       return {
         id: r.id,
         venue: engine.venue || r.venue_id,
