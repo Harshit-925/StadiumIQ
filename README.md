@@ -21,6 +21,18 @@
 
 ---
 
+## The FIFA World Cup 2026 Challenge
+
+StadiumIQ was built specifically to address the challenge: *"Build a GenAI-enabled solution that enhances stadium operations and the overall tournament experience for fans, organizers, volunteers, or venue staff. The solution must leverage Generative AI to improve navigation, crowd management, accessibility, transportation, sustainability, multilingual assistance, operational intelligence, or real-time decision support during the FIFA World Cup 2026."*
+
+Here is how StadiumIQ tackles these core pillars:
+
+*   **Operational Intelligence & Real-time Decision Support:** The Operations Dashboard provides venue staff with real-time analytics. The **AI Narration Layer** (powered by Google Gemini) automatically translates complex numerical data (crowd density, egress times, compliance metrics) into clear, actionable executive summaries, empowering directors to make rapid, informed decisions.
+*   **Crowd Management & Navigation:** The **Crowd Safety Engine** computes real-time pax/m² across various stadium zones, anticipating bottlenecks and triggering dynamic status alerts. Combined with **Evacuation Modeling**, it helps proactively manage crowd flow and verifies adherence to the strict 8-minute NFPA egress safety standard.
+*   **Multilingual Assistance:** The **Multilingual Fan Assistant** leverages GenAI to provide instantaneous, context-aware answers to fan inquiries in their native language. By providing a natural language interface for stadium rules, ticketing, and amenity locations, the AI assistant breaks down communication barriers for a diverse international audience.
+*   **Accessibility:** The platform guarantees inclusivity via continuous **ADA Seat Verification** (monitoring the 1% seating mandate). Additionally, the digital interfaces themselves are built to strict accessibility standards (ARIA-live regions, full keyboard navigation, reduced motion), ensuring venue staff and volunteers of all abilities can operate the command center flawlessly.
+*   **Sustainability:** To help meet the ambitious sustainability goals of the 2026 tournament, the **Sustainability Tracking** module monitors waste diversion analytics in real-time, actively evaluating operations against the 90% diversion target to promote an eco-friendly event.
+
 ## Documentation
 
 For deep-dives into the engineering standards and compliance matrices behind this project, refer to the following documents:
