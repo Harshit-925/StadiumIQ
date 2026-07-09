@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <strong>🚀 Live Demo: <a href="https://harshit-925.github.io/StadiumIQ/">https://harshit-925.github.io/StadiumIQ/</a></strong>
+  <strong>🚀 Live Demo: <a href="https://stadium-iq-eight.vercel.app/">https://stadium-iq-eight.vercel.app/</a></strong>
 </p>
 
 ---
