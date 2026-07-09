@@ -73,7 +73,7 @@ For deep-dives into the engineering standards and compliance matrices behind thi
                            │
 ┌──────────────────────────▼─────────────────────────────┐
 │                   INFRASTRUCTURE                       │
-│  Auth & DB: PocketBase | Caching & Rate Limits: Redis  │
+│  Auth & DB: Supabase (PostgreSQL)                      │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -93,7 +93,7 @@ graph TD
     end
 
     subgraph Infrastructure
-        PB[(PocketBase DB & Auth)]
+        SB[(Supabase Auth & PostgreSQL)]
         Gemini[Google Gemini API]
     end
 
@@ -102,9 +102,9 @@ graph TD
     Sec --> Routes
     Routes --> Engine
     Routes --> AI
-    Routes --> PB
+    Routes --> SB
     AI -->|Narrative Request| Gemini
-    Auth -->|Token Refresh| PB
+    Auth -->|Token Mgmt| SB
 ```
 
 ## Features
@@ -124,7 +124,7 @@ graph TD
 
 | Entity | Primary Role | Key Fields |
 |---|---|---|
-| `users` (PocketBase built-in) | Operator authentication | `id`, `email`, `passwordHash`, `name` |
+| `auth.users` (Supabase) | Operator authentication | `id`, `email` |
 | `venues` | Core static stadium data | `id`, `name`, `capacity`, `exit_width_m`, `wheelchair_seats` |
 | `analysis_results` | Snapshot of engine evaluations | `venue_id`, `crowd_score`, `readiness_grade`, `timestamp` |
 | `fan_queries` (Logs) | Ephemeral AI query tracking | `query_text`, `language`, `source`, `fallback_used` |
@@ -133,11 +133,9 @@ graph TD
 
 | Category | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|:---:|
-| **Health** | `GET` | `/api/health` | Service connectivity check (Backend + PocketBase). | ❌ |
+| **Health** | `GET` | `/api/health` | Service connectivity check (Backend + Supabase). | ❌ |
 | **Analysis** | `POST` | `/api/analyze` | Runs pure-function engine and generates AI insights. | ✅ |
 | **Fan Assistance** | `POST` | `/api/fan-assist` | Multilingual AI stadium guide with venue context. | ❌ |
-| **Auth** | `POST` | `/api/auth/login` | Validates credentials and sets `HttpOnly` cookie. | ❌ |
-| **Auth** | `POST` | `/api/auth/logout` | Clears `HttpOnly` session cookie via max-age expiry. | ❌ |
 
 ## Calculation Methodology
 
@@ -152,8 +150,8 @@ Formulas from the core domain engine (`calculator.py`):
 
 ## Security Features
 
-*   **No Hand-Rolled Auth**: Delegated completely to PocketBase's robust internal identity system.
-*   **XSS Protection via Strict Cookies**: Auth tokens are stored strictly as `HttpOnly; Secure; SameSite=Strict` cookies and are never exposed to `localStorage` or `sessionStorage`.
+*   **No Hand-Rolled Auth**: Delegated completely to Supabase's robust GoTrue identity system.
+*   **Stateless JWT Verification**: Backend performs zero-network JWT validation using the Supabase JWT Secret.
 *   **Dual Rate Limiting**:
     *   `/api/analyze` (Authenticated): 10 requests per minute by token prefix.
     *   `/api/fan-assist` (Public/Anonymous): 5 requests per minute by IP address.
@@ -184,14 +182,20 @@ cd StadiumIQ
 # 2. Set up the environment variables
 cp .env.example .env
 
-# 3. Build and start the complete stack via Docker Compose
-docker compose up --build -d
+# 3. Backend Setup
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:create_app --reload
+
+# 4. Frontend Setup
+cd frontend
+npm install
+npm run dev
 ```
 
 The application will be available at:
-*   Frontend: `http://localhost:8000`
+*   Frontend: `http://localhost:5173`
 *   Backend API: `http://localhost:8000/api`
-*   PocketBase Admin: `http://localhost:8090/_/`
 
 ### Environment Variables
 Configure your `.env` file in the project root:
@@ -201,7 +205,9 @@ GEMINI_API_KEY=your_key_here
 ENVIRONMENT=development
 USE_AI=true
 RATE_LIMIT_STORAGE_URI=memory://
-POCKETBASE_URL=http://localhost:8090
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_JWT_SECRET=your_jwt_secret
 ```
 
 ## Testing
@@ -222,7 +228,7 @@ npm run test
 
 **Coverage Areas:**
 *   Pure deterministic edge-case testing for the `calculator.py` operations engine.
-*   Auth router tests specifically asserting the presence of `HttpOnly` and `SameSite` cookie flags.
+*   Stateless JWT validation and Supabase background task testing.
 *   AI Service fallback simulations when Google GenAI is unavailable.
 *   UI rendering states, accessibility properties, and protected layout routing.
 
