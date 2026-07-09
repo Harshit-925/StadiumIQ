@@ -17,3 +17,4 @@ pip-audit==2.7.3
 email-validator==2.2.0
 ruff>=0.4.0
 mypy>=1.10.0
+bandit>=1.8.3
