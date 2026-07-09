@@ -3,8 +3,7 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
 export default defineConfig({
-  // Always use '/' — works for Vercel and local dev.
-  // (GitHub Pages deployment is handled separately via the pages.yml workflow.)
+
   base: '/',
   plugins: [react()],
   resolve: {
