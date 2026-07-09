@@ -238,10 +238,10 @@ class TestStaticRoutes:
         # This simulates `%2e%2e/%2e%2e/etc/passwd`
         payload = "%2e%2e/%2e%2e/etc/passwd"
         resp = await client.get(f"/{payload}")
-        
-        # If the vulnerability existed, this would return 404 (file not found locally) 
+
+        # If the vulnerability existed, this would return 404 (file not found locally)
         # or the file contents if it existed.
-        # With the fix, any path that resolves outside the static_dir falls through 
+        # With the fix, any path that resolves outside the static_dir falls through
         # to the React Router catch-all (which returns index.html, giving a 200).
         # However, if frontend/dist doesn't exist (like in backend-only CI jobs),
         # the route isn't registered and returns 404. Both are safe.
