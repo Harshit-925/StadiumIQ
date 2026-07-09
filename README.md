@@ -9,6 +9,7 @@
     <img src="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml/badge.svg" alt="CI/CD Status">
   </a>
   <img src="https://img.shields.io/badge/coverage-88%25-brightgreen.svg" alt="Coverage: 88%">
+  <img src="https://img.shields.io/badge/tests-192_passing-brightgreen.svg" alt="Tests: 192">
   <a href="https://github.com/Harshit-925/StadiumIQ/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
   </a>
@@ -17,7 +18,8 @@
 </p>
 
 <p align="center">
-  <strong>🚀 Live Demo: <a href="https://stadium-iq-eight.vercel.app/">https://stadium-iq-eight.vercel.app/</a></strong>
+  <strong>🚀 Live Demo: <a href="https://stadium-iq-eight.vercel.app/">https://stadium-iq-eight.vercel.app/</a></strong><br/>
+  <em>(Note: The free-tier backend sleeps after inactivity. The first request may take 30-60 seconds to cold-start.)</em>
 </p>
 
 ---

@@ -23,8 +23,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://stadiumiq-backend.onrender.com",
-    "VITE_SUPABASE_URL": "https://your-project-ref.supabase.co",
-    "VITE_SUPABASE_ANON_KEY": "your_supabase_anon_key"
+    "VITE_API_URL": "https://stadiumiq-backend.onrender.com"
   }
 }
