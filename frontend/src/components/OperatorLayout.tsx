@@ -81,7 +81,22 @@ export function OperatorLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-base-bg">
+    <div className="min-h-screen relative bg-base-bg">
+      {/* ── Background Video ─────────────────────────────────────────── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-base-bg">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="h-full w-full object-cover opacity-30 mix-blend-multiply"
+        >
+          <source src="/assets/stadium_bg.mp4" type="video/mp4" />
+        </video>
+        {/* Vignette / Edge Shadow to blend with base-bg */}
+        <div className="absolute inset-0 shadow-[inset_0_0_150px_80px_rgba(247,249,252,1)]" />
+      </div>
+
       {/* ── Top Bar ────────────────────────────────────────────────────── */}
       <header
         className="fixed inset-x-0 top-0 z-30 flex h-[60px] items-center justify-between border-b border-gray-200 bg-surface px-4 sm:px-6"
@@ -140,7 +155,7 @@ export function OperatorLayout() {
       {/* ── Main Content ─────────────────────────────────────────────── */}
       <main
         id="main-content"
-        className="pt-[60px] pb-[64px] lg:ml-[260px] lg:pb-0"
+        className="relative z-10 pt-[60px] pb-[64px] lg:ml-[260px] lg:pb-0"
         tabIndex={-1}
       >
         <Outlet />
