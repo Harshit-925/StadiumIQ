@@ -2,7 +2,7 @@
 
 Routes:
 - GET  /api/health    — health check (no auth, no rate limit)
-- POST /api/analyze   — stadium analysis (auth + 10/min rate limit)
+- POST /api/analyze   — stadium analysis (no auth required, saves if logged in, 10/min rate limit)
 - POST /api/fan-assist — fan Q&A assistant (no auth required, 5/min per-IP limit)
 """
 

@@ -118,7 +118,7 @@ graph TD
 | **Sustainability Tracking** | Waste Diversion Analytics | Tracks and evaluates diversion rates against the World Cup 2026 sustainability target of 90%. |
 | **Multilingual Fan Assistant** | AI Contextual Q&A | An unauthenticated, rate-limited portal allowing fans to query stadium rules and facilities in multiple languages. |
 | **AI Narration Layer** | Automatic Operator Briefings | Converts numerical engine data into conversational executive summaries for stadium directors. |
-| **Security** | Zero-JS Tokens | Ensures authentication tokens are stored via `HttpOnly`, `Secure`, `SameSite=Strict` cookies, completely blocking XSS token theft. |
+| **Security** | Standard JWT Auth | Uses standard Supabase session management backed by `localStorage` for fast, scalable auth state. |
 | **Testing & CI** | Security Audits & Coverage | Features strict CI/CD with `pip-audit`, `npm audit`, `mypy --strict`, and boundary testing. |
 
 ## Data Entities
@@ -135,7 +135,7 @@ graph TD
 | Category | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|:---:|
 | **Health** | `GET` | `/api/health` | Service connectivity check (Backend + Supabase). | ❌ |
-| **Analysis** | `POST` | `/api/analyze` | Runs pure-function engine and generates AI insights. | ✅ |
+| **Analysis** | `POST` | `/api/analyze` | Runs pure-function engine and generates AI insights. Saves results if logged in. | ❌ |
 | **Fan Assistance** | `POST` | `/api/fan-assist` | Multilingual AI stadium guide with venue context. | ❌ |
 
 ## Calculation Methodology
