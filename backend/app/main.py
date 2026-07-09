@@ -144,10 +144,23 @@ def create_app() -> FastAPI:
         # Catch-all route for React Router client-side routing
         @app.get("/{full_path:path}", include_in_schema=False)
         async def serve_frontend(full_path: str) -> FileResponse:
-            # Check if it's a specific file request (like favicon.ico, etc.)
-            file_path = os.path.join(static_dir, full_path)
-            if full_path and os.path.isfile(file_path):
-                return FileResponse(file_path)
+            # Resolve the requested path and the static root to their real,
+            # absolute forms so "." / ".." segments (raw or percent-encoded)
+            # are collapsed. We then require the resolved path to still live
+            # *inside* static_dir before serving it — otherwise os.path.join()
+            # would happily walk outside the intended directory (e.g. via
+            # "%2e%2e/%2e%2e/etc/passwd") and FileResponse would serve
+            # arbitrary files off disk.
+            static_dir_real = os.path.realpath(static_dir)
+            requested_path = os.path.realpath(os.path.join(static_dir, full_path))
+
+            is_within_static_dir = (
+                requested_path == static_dir_real
+                or requested_path.startswith(static_dir_real + os.sep)
+            )
+
+            if full_path and is_within_static_dir and os.path.isfile(requested_path):
+                return FileResponse(requested_path)
 
             # For all other routes, serve index.html to let React Router handle it
             return FileResponse(os.path.join(static_dir, "index.html"))
