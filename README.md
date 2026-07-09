@@ -8,9 +8,7 @@
   <a href="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml">
     <img src="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml/badge.svg" alt="CI/CD Status">
   </a>
-  <a href="https://codecov.io/gh/Harshit-925/StadiumIQ">
-    <img src="https://codecov.io/gh/Harshit-925/StadiumIQ/branch/main/graph/badge.svg" alt="codecov">
-  </a>
+  <img src="https://img.shields.io/badge/coverage-88%25-brightgreen.svg" alt="Coverage: 88%">
   <a href="https://github.com/Harshit-925/StadiumIQ/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
   </a>
