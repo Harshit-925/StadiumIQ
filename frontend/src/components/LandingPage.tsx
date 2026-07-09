@@ -21,7 +21,6 @@ import {
   ChevronRight,
   Activity,
 } from 'lucide-react';
-import { StadiumPulse } from './StadiumPulse';
 
 // Removed lazy-loaded Three.js scene (was StadiumBowl3D)
 
@@ -111,15 +110,6 @@ export function LandingPage() {
       opacity: 1,
       y: 0,
       transition: { duration: shouldReduceMotion ? 0 : 0.6, ease: 'easeOut' },
-    },
-  };
-
-  // Pulse fades in first (delay 0 via CSS transition, before stagger)
-  const pulseVariant = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: shouldReduceMotion ? 0 : 0.8, ease: 'easeOut' },
     },
   };
 
