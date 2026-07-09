@@ -68,7 +68,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
       <div
         className={`max-w-[80%] rounded-2xl px-4 py-3 text-body-sm leading-relaxed ${
           isUser
-            ? 'rounded-br-sm bg-pitch-blue text-text-primary'
+            ? 'rounded-br-sm bg-pitch-blue text-white'
             : 'rounded-bl-sm bg-gray-100 text-text-primary'
         }`}
       >
@@ -306,7 +306,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
                 maxLength={500}
                 disabled={isLoading}
                 aria-describedby="fan-page-hint"
-                className="form-input pl-10 pr-4"
+                className="form-input !pl-10 pr-4"
               />
             </div>
             <button
