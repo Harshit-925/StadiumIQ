@@ -93,8 +93,8 @@ export function AccessibilityPanel() {
 
       {/* Venue table */}
       <section aria-label="Per-venue accessibility compliance">
-        <div className="card-surface overflow-hidden">
-          <table className="w-full" aria-label="Wheelchair seating compliance by venue">
+        <div className="card-surface overflow-x-auto">
+          <table className="w-full min-w-[600px]" aria-label="Wheelchair seating compliance by venue">
             <thead>
               <tr className="border-b border-gray-100">
                 <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
@@ -103,10 +103,10 @@ export function AccessibilityPanel() {
                 <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
                   Ratio
                 </th>
-                <th scope="col" className="hidden px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide sm:table-cell">
+                <th scope="col" className="hidden px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide sm:table-cell w-48">
                   vs. ADA 1%
                 </th>
-                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
+                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide w-48">
                   Status
                 </th>
               </tr>
