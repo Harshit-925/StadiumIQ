@@ -5,7 +5,7 @@
 ### Backend (FastAPI)
 - **Async I/O**: All routes use `async/await` for non-blocking request handling
 - **Pure engine**: `calculator.py` is CPU-only (no I/O) — sub-millisecond for all computations
-- **No polling**: PocketBase realtime subscriptions replace periodic API polling
+- **AI caching**: 60-second in-memory cache on insight generation to minimize Gemini API calls
 
 ### Frontend (Vite + React 18)
 - **Tree-shaking**: Vite automatically eliminates dead code in production builds
@@ -47,8 +47,8 @@
 - **AI monitoring**: Every fallback event logged with reason and duration
 - **Rate limit monitoring**: Every 429 response logged for capacity planning
 
-## PocketBase Efficiency
+## Supabase Efficiency
 
-- **Realtime subscriptions**: WebSocket-based live updates (no polling overhead)
-- **Per-user API rules**: Database-level filtering (not application-level) — O(1) auth check
-- **Single binary**: PocketBase runs as one process with embedded SQLite — minimal resource usage
+- **Managed cloud database**: Supabase runs PostgreSQL on dedicated infra — no overhead of managing a local database process
+- **Row-Level Security**: Authorization enforced at the DB layer, not the application layer — efficient and tamper-proof
+- **Anon key / service key separation**: Frontend uses the rate-limited anon key; sensitive writes go through the backend service role key only

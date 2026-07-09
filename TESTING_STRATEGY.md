@@ -2,7 +2,7 @@
 
 ## Overview
 
-StadiumIQ uses a multi-layer testing strategy targeting **85%+ backend coverage** and comprehensive frontend accessibility testing. Both Gemini AI and PocketBase are fully mocked in tests — no live services required.
+StadiumIQ uses a multi-layer testing strategy targeting **85%+ backend coverage** and comprehensive frontend accessibility testing. Both Gemini AI and Supabase are fully mocked in tests — no live services required.
 
 ## AI Model
 
@@ -20,7 +20,7 @@ The AI service uses **Gemini 2.5 Flash** (`gemini-2.5-flash`) for narrative gene
 | `test_engine.py` | Unit | Every calculator function with exact numeric assertions |
 | `test_routes.py` | Integration | HTTP endpoints, status codes, auth boundaries, rate limiting |
 | `test_ai_service.py` | Unit | AI narrative generation + 429/failure fallback path |
-| `test_auth.py` | Unit | Token verification via PocketBase auth-refresh callback |
+| `test_supabase_client.py` | Unit | Supabase persistence layer (save_result) with mocked httpx |
 
 ### Frontend (Vitest + jest-axe)
 
@@ -45,9 +45,10 @@ The AI service uses **Gemini 2.5 Flash** (`gemini-2.5-flash`) for narrative gene
 | External Service | Mock Location | What's Mocked |
 |-----------------|---------------|---------------|
 | Gemini AI | `backend/tests/conftest.py::mock_genai` | `google.genai` client — tests never hit live API |
-| PocketBase | `backend/tests/conftest.py::mock_pocketbase` | `httpx` calls to PocketBase REST API |
+| Supabase | `backend/tests/test_supabase_client.py` | `httpx` calls to Supabase REST API mocked |
 | Auth | `backend/tests/conftest.py::mock_auth` | `get_current_user` returns fixed test user |
-| PocketBase SDK | `frontend/tests/` | `pocketbase` module mocked in Vitest |
+| Supabase JS | `frontend/tests/` | `../src/api/supabase` module mocked in Vitest |
+| HTMLMediaElement | `frontend/tests/LandingPage.test.tsx` | `play`, `pause`, `load` mocked for jsdom video compat |
 | Three.js / StadiumBowl3D | `frontend/tests/` | `StadiumBowl3D` lazy-import mocked with static div in LandingPage tests |
 | Browser APIs | `frontend/tests/setup.ts` | `IntersectionObserver`, `ResizeObserver`, `scrollIntoView`, `URL.createObjectURL` |
 

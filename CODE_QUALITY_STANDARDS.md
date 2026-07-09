@@ -33,7 +33,7 @@ backend/
     engine/     → Domain logic: pure functions, no I/O, no AI
     models/     → Data models: Pydantic schemas
     routes/     → HTTP layer: request handling, response formatting
-    services/   → External integrations: Gemini AI, PocketBase
+    services/   → External integrations: Gemini AI, Supabase
 ```
 
 ### Domain Engine Design
@@ -58,7 +58,7 @@ backend/
 ### State Management
 - **Global**: Zustand stores (`useAuthStore`, `useAppStore`) — minimal surface
 - **Local**: Component state for UI-only concerns
-- **Server**: PocketBase for persistence and realtime subscriptions
+- **Server**: Supabase for persistence; Supabase GoTrue for auth/session state
 
 ## CI Enforcement
 

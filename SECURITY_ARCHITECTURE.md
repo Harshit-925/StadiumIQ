@@ -8,7 +8,7 @@ StadiumIQ implements defense-in-depth security across all layers: authentication
 
 | Threat | Mitigation | Implementation |
 |--------|-----------|----------------|
-| Unauthorized data access | PocketBase built-in auth + per-user API rules | `backend/app/core/auth.py`, `pb_migrations/` |
+| Unauthorized data access | Supabase GoTrue JWT auth + Row-Level Security | `backend/app/core/auth.py` |
 | Cross-site scripting (XSS) | Content-Security-Policy header | `backend/app/core/security.py` |
 | Clickjacking | X-Frame-Options: DENY | `backend/app/core/security.py` |
 | MIME type sniffing | X-Content-Type-Options: nosniff | `backend/app/core/security.py` |
@@ -39,8 +39,7 @@ script-src 'self';
 style-src 'self' 'unsafe-inline';          # framer-motion uses inline style.transform
 connect-src 'self'
   https://generativelanguage.googleapis.com  # Gemini API
-  http://localhost:8090                      # PocketBase REST
-  ws://localhost:8090;                       # PocketBase realtime
+  https://*.supabase.co;                     # Supabase Auth & DB
 img-src 'self' data:;
 font-src 'self' https://fonts.gstatic.com;
 ```
@@ -49,17 +48,20 @@ font-src 'self' https://fonts.gstatic.com;
 
 ## Authentication Model
 
-- **Provider**: PocketBase's built-in `users` auth collection
-- **No hand-rolled code**: Password hashing, token issuance, and session handling are all internal to PocketBase
-- **Token verification**: FastAPI verifies tokens via PocketBase's `auth-refresh` callback endpoint (no shared JWT secret)
+- **Provider**: Supabase GoTrue (managed, battle-tested auth service)
+- **No hand-rolled code**: Password hashing, token issuance, and session handling are all managed by Supabase
+- **Token verification**: FastAPI verifies Supabase JWTs using the `SUPABASE_JWT_SECRET` environment variable
+- **Frontend**: Uses `@supabase/supabase-js` with the anon key only; service role key stays backend-only
 - **See**: `backend/app/core/auth.py`
 
-## Authorization (API Rules)
+## Authorization
 
-All PocketBase collections enforce per-user ownership at the database layer:
+Supabase Row-Level Security (RLS) is enabled on all tables. Policies enforce per-user ownership at the database layer:
 
-```
-List/View/Create/Update/Delete: user = @request.auth.id
+```sql
+CREATE POLICY "Users can only see their own data"
+  ON history FOR ALL
+  USING (auth.uid() = user_id);
 ```
 
 This means a signed-in user can only ever see/modify their own data, enforced server-side.

@@ -1,24 +1,17 @@
 version: "3.9"
 
-services:
-  pocketbase:
-    build:
-      context: ./pb_migrations
-      dockerfile: Dockerfile
-    container_name: stadiumiq-pocketbase
-    volumes:
-      - pb_data:/pb/pb_data
-      - ./pb_migrations:/pb/pb_migrations
-    ports:
-      - "8090:8090"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8090/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    restart: unless-stopped
+# ── StadiumIQ local development stack ──────────────────────────────────────
+# Runs only the FastAPI backend. The frontend is served separately via
+# `npm run dev` (Vite dev server on port 5173).
+#
+# Database/Auth: Supabase (cloud) — configure via .env file.
+# Production:    Backend → Render, Frontend → Vercel.
+#
+# Usage:
+#   cp .env.example .env   # fill in Supabase credentials and Gemini API key
+#   docker compose up --build
 
+services:
   app:
     build:
       context: .
@@ -26,15 +19,12 @@ services:
     container_name: stadiumiq-app
     ports:
       - "8000:8000"
-      - "5173:5173"
     env_file:
       - .env
-    environment:
-      - POCKETBASE_URL=http://pocketbase:8090
-    depends_on:
-      pocketbase:
-        condition: service_healthy
     restart: unless-stopped
-
-volumes:
-  pb_data:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
