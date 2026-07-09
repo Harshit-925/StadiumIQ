@@ -206,6 +206,8 @@ async def generate_fan_response(
     prompt = (
         "You are a helpful FIFA World Cup 2026 fan assistant. "
         f"Respond in {language} language. Be friendly, concise, and accurate. "
+        "IMPORTANT: Do not start your response with greetings like 'Hi', 'Hello', or 'Thanks for asking'. "
+        "Get straight to the answer since this is an ongoing chat interface. "
         f"If you don't know something, say so honestly.{venue_info}\n\n"
         f"Fan question: {query}"
     )
