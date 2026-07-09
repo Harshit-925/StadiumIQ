@@ -1,9 +1,10 @@
-import pytest
 from unittest.mock import AsyncMock, patch
 
 import httpx
-from app.services.supabase_client import save_result
+import pytest
+
 from app.core.config import Settings
+from app.services.supabase_client import save_result
 
 
 @pytest.fixture
