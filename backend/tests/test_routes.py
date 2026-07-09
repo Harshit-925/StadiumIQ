@@ -1,6 +1,6 @@
 """Route-level integration tests for StadiumIQ API.
 
-All external services (auth, AI, PocketBase) are mocked via conftest fixtures.
+All external services (auth, AI, Supabase) are mocked via conftest fixtures.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ class TestHealthEndpoint:
         assert resp.status_code == 200
         data = resp.json()
         assert "status" in data
-        assert "pocketbase" in data
+        assert "supabase" in data
         assert "version" in data
 
     async def test_health_no_auth_required(self, client: AsyncClient) -> None:

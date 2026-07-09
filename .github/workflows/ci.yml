@@ -40,7 +40,9 @@ jobs:
         env:
           ENVIRONMENT: test
           GEMINI_API_KEY: ""
-          POCKETBASE_URL: http://localhost:8090
+          SUPABASE_URL: ""
+          SUPABASE_JWT_SECRET: "test-jwt-secret-for-unit-tests-only"
+          SUPABASE_SERVICE_ROLE_KEY: ""
 
   frontend:
     name: Frontend Tests & Quality

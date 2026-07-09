@@ -1,7 +1,7 @@
 /**
  * LoginPage — Clean light-theme operator login.
  * Wraps the existing LoginForm with page-level layout and heading.
- * No auth token stored in localStorage — PocketBase httpOnly cookie.
+ * No auth token stored in localStorage manually — Supabase SDK manages session automatically.
  */
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

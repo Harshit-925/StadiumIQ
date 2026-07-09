@@ -1,17 +1,27 @@
 """Tests for the authentication dependency (auth.py).
 
-Mocks httpx calls to PocketBase — never hits a live auth service.
+Verifies JWT validation via PyJWT — never hits a live Supabase service.
 """
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+import time
+from unittest.mock import MagicMock, patch
 
-import httpx
+import jwt
 import pytest
 from fastapi import HTTPException
 
 from app.core.auth import get_current_user
+from tests.conftest import TEST_JWT_SECRET, make_test_token
+
+
+def _patch_secret(secret: str = TEST_JWT_SECRET):
+    """Context manager: patch settings.supabase_jwt_secret."""
+    mock_settings = MagicMock()
+    mock_settings.supabase_jwt_secret = secret
+    return patch("app.core.auth.get_settings", return_value=mock_settings)
+
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  VALID TOKEN                                                           ║
@@ -19,50 +29,42 @@ from app.core.auth import get_current_user
 
 
 class TestValidToken:
-    """Tests where PocketBase accepts the token."""
+    """Tests where a well-formed Supabase JWT is presented."""
 
     async def test_valid_token_returns_user(self) -> None:
-        """A valid bearer token should return the user record."""
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "record": {
-                "id": "user_abc",
-                "email": "alice@example.com",
-                "name": "Alice",
-            },
-            "token": "refreshed_token",
-        }
+        """A valid bearer token should return the decoded JWT payload."""
+        token = make_test_token()
+        with _patch_secret():
+            user = await get_current_user(authorization=f"Bearer {token}")
 
-        mock_instance = AsyncMock()
-        mock_instance.post.return_value = mock_response
-        mock_instance.__aenter__ = AsyncMock(return_value=mock_instance)
-        mock_instance.__aexit__ = AsyncMock(return_value=False)
+        assert user["sub"] == "test_user_123"
+        assert user["email"] == "test@example.com"
 
-        with patch("app.core.auth.httpx.AsyncClient", return_value=mock_instance):
-            user = await get_current_user(authorization="Bearer valid_token_123")
+    async def test_valid_token_via_cookie(self) -> None:
+        """A valid token supplied via cookie should also be accepted."""
+        token = make_test_token()
+        with _patch_secret():
+            user = await get_current_user(
+                authorization=None,
+                stadiumiq_token=token,
+            )
 
-        assert user["id"] == "user_abc"
-        assert user["email"] == "alice@example.com"
+        assert user["sub"] == "test_user_123"
 
-    async def test_valid_token_without_record_key(self) -> None:
-        """PocketBase response without 'record' key → uses full data."""
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "id": "user_xyz",
-            "email": "bob@example.com",
-        }
+    async def test_cookie_takes_precedence_over_header(self) -> None:
+        """When both cookie and header are present, cookie wins."""
+        cookie_payload = {"sub": "cookie_user", "email": "cookie@example.com"}
+        cookie_token = make_test_token(user=cookie_payload)
+        header_payload = {"sub": "header_user", "email": "header@example.com"}
+        header_token = make_test_token(user=header_payload)
 
-        mock_instance = AsyncMock()
-        mock_instance.post.return_value = mock_response
-        mock_instance.__aenter__ = AsyncMock(return_value=mock_instance)
-        mock_instance.__aexit__ = AsyncMock(return_value=False)
+        with _patch_secret():
+            user = await get_current_user(
+                authorization=f"Bearer {header_token}",
+                stadiumiq_token=cookie_token,
+            )
 
-        with patch("app.core.auth.httpx.AsyncClient", return_value=mock_instance):
-            user = await get_current_user(authorization="Bearer another_token")
-
-        assert user["id"] == "user_xyz"
+        assert user["sub"] == "cookie_user"
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
@@ -71,40 +73,43 @@ class TestValidToken:
 
 
 class TestInvalidToken:
-    """Tests where PocketBase rejects the token."""
+    """Tests where the JWT is rejected."""
 
     async def test_expired_token_raises_401(self) -> None:
-        """PocketBase returns 401 → HTTPException 401."""
-        mock_response = MagicMock()
-        mock_response.status_code = 401
-        mock_response.text = "Token expired"
+        """An expired JWT should return HTTP 401."""
+        payload = {
+            "sub": "user_expired",
+            "email": "x@example.com",
+            "exp": int(time.time()) - 10,  # already expired
+            "iat": int(time.time()) - 3610,
+        }
+        expired_token = jwt.encode(payload, TEST_JWT_SECRET, algorithm="HS256")
 
-        mock_instance = AsyncMock()
-        mock_instance.post.return_value = mock_response
-        mock_instance.__aenter__ = AsyncMock(return_value=mock_instance)
-        mock_instance.__aexit__ = AsyncMock(return_value=False)
-
-        with patch("app.core.auth.httpx.AsyncClient", return_value=mock_instance):
+        with _patch_secret():
             with pytest.raises(HTTPException) as exc_info:
-                await get_current_user(authorization="Bearer expired_token")
+                await get_current_user(authorization=f"Bearer {expired_token}")
+            assert exc_info.value.status_code == 401
+            assert "expired" in exc_info.value.detail.lower()
+
+    async def test_wrong_secret_raises_401(self) -> None:
+        """A JWT signed with a different secret should be rejected."""
+        token = make_test_token(secret="wrong-secret")
+
+        with _patch_secret(secret=TEST_JWT_SECRET):
+            with pytest.raises(HTTPException) as exc_info:
+                await get_current_user(authorization=f"Bearer {token}")
             assert exc_info.value.status_code == 401
 
-    async def test_network_error_raises_401(self) -> None:
-        """httpx network error → HTTPException 401 (service unavailable)."""
-        mock_instance = AsyncMock()
-        mock_instance.post.side_effect = httpx.ConnectError("Connection refused")
-        mock_instance.__aenter__ = AsyncMock(return_value=mock_instance)
-        mock_instance.__aexit__ = AsyncMock(return_value=False)
-
-        with patch("app.core.auth.httpx.AsyncClient", return_value=mock_instance):
+    async def test_malformed_token_raises_401(self) -> None:
+        """A garbled token string should return HTTP 401."""
+        with _patch_secret():
             with pytest.raises(HTTPException) as exc_info:
-                await get_current_user(authorization="Bearer some_token")
+                await get_current_user(authorization="Bearer not.a.real.jwt")
             assert exc_info.value.status_code == 401
-            assert "unavailable" in exc_info.value.detail.lower()
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  MISSING / MALFORMED TOKEN                                             ║
+# ║  MISSING / MALFORMED HEADER                                            ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 
@@ -113,18 +118,28 @@ class TestMissingToken:
 
     async def test_no_bearer_prefix_raises_401(self) -> None:
         """Authorization without 'Bearer ' prefix → 401."""
-        with pytest.raises(HTTPException) as exc_info:
-            await get_current_user(authorization="Basic abc123")
-        assert exc_info.value.status_code == 401
+        with _patch_secret():
+            with pytest.raises(HTTPException) as exc_info:
+                await get_current_user(authorization="Basic abc123")
+            assert exc_info.value.status_code == 401
 
     async def test_empty_token_raises_401(self) -> None:
         """'Bearer ' with empty token → 401."""
-        with pytest.raises(HTTPException) as exc_info:
-            await get_current_user(authorization="Bearer ")
-        assert exc_info.value.status_code == 401
+        with _patch_secret():
+            with pytest.raises(HTTPException) as exc_info:
+                await get_current_user(authorization="Bearer ")
+            assert exc_info.value.status_code == 401
 
     async def test_just_bearer_keyword_raises_401(self) -> None:
-        """Just the word 'Bearer' without space → 401."""
-        with pytest.raises(HTTPException) as exc_info:
-            await get_current_user(authorization="Bearertoken")
-        assert exc_info.value.status_code == 401
+        """Just 'Bearer' without space → 401."""
+        with _patch_secret():
+            with pytest.raises(HTTPException) as exc_info:
+                await get_current_user(authorization="Bearertoken")
+            assert exc_info.value.status_code == 401
+
+    async def test_no_auth_at_all_raises_401(self) -> None:
+        """No header and no cookie → 401."""
+        with _patch_secret():
+            with pytest.raises(HTTPException) as exc_info:
+                await get_current_user(authorization=None, stadiumiq_token=None)
+            assert exc_info.value.status_code == 401

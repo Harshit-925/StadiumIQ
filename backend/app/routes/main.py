@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.core.auth import get_optional_user
 from app.core.config import get_settings
@@ -31,7 +31,7 @@ from app.models.schemas import (
     VenueAnalysisRequest,
     VenueAnalysisResponse,
 )
-from app.services import ai_service
+from app.services import ai_service, supabase_client
 
 logger = logging.getLogger("stadiumiq")
 
@@ -45,26 +45,32 @@ router = APIRouter(prefix="/api", tags=["StadiumIQ"])
 
 @router.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
-    """Health-check endpoint — pings PocketBase connectivity.
+    """Health-check endpoint — pings Supabase REST API connectivity.
 
     Returns:
-        HealthResponse with overall status, PocketBase status, and version.
+        HealthResponse with overall status, Supabase status, and version.
     """
     settings = get_settings()
-    pb_status = "unknown"
+    supabase_status = "unknown"
 
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            resp = await client.get(f"{settings.pocketbase_url}/api/health")
-        pb_status = "healthy" if resp.status_code == 200 else "unhealthy"
-    except httpx.HTTPError:
-        pb_status = "unreachable"
+    if settings.supabase_url:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(
+                    f"{settings.supabase_url}/rest/v1/",
+                    headers={"apikey": settings.supabase_service_role_key},
+                )
+            supabase_status = "healthy" if resp.status_code in (200, 400) else "unhealthy"
+        except httpx.HTTPError:
+            supabase_status = "unreachable"
+    else:
+        supabase_status = "not_configured"
 
-    overall = "healthy" if pb_status == "healthy" else "degraded"
+    overall = "healthy" if supabase_status in ("healthy", "not_configured") else "degraded"
 
     return HealthResponse(
         status=overall,
-        pocketbase=pb_status,
+        supabase=supabase_status,
         version=settings.app_version,
     )
 
@@ -78,17 +84,18 @@ async def health() -> HealthResponse:
 @limiter.limit(RATE_LIMIT_AI)
 async def analyze(
     request: Request,
+    background_tasks: BackgroundTasks,
     body: VenueAnalysisRequest,
     user: dict[str, Any] | None = Depends(get_optional_user),
 ) -> VenueAnalysisResponse:
     """Run a full stadium operations analysis.
 
-    Pipeline: engine → AI insights → PocketBase save → response.
+    Pipeline: engine → AI insights → Supabase save → response.
 
     Args:
         request: The Starlette request (needed by slowapi).
         body: Validated request body.
-        user: Authenticated user record from PocketBase.
+        user: Decoded Supabase JWT payload (or None if unauthenticated).
 
     Returns:
         VenueAnalysisResponse with engine results, AI insights, and grade.
@@ -106,6 +113,19 @@ async def analyze(
 
         # 2. AI insights (never crashes)
         ai_text, fallback_used = await ai_service.generate_crowd_insights(engine_result)
+
+        # 3. Persist to Supabase (fire-and-forget via FastAPI BackgroundTasks)
+        if user:
+            user_id: str = user.get("sub", "")
+            if user_id:
+                background_tasks.add_task(
+                    supabase_client.save_result,
+                    user_id=user_id,
+                    venue_id=body.venue_id,
+                    engine_result=engine_result,
+                    ai_result={"text": ai_text},
+                    fallback_used=fallback_used,
+                )
 
         readiness = engine_result.get("readiness", {})
         evacuation = engine_result.get("evacuation", {})

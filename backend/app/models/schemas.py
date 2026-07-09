@@ -169,10 +169,10 @@ class HealthResponse(BaseModel):
 
     Attributes:
         status: Overall application health status.
-        pocketbase: PocketBase connectivity status.
+        supabase: Supabase connectivity status.
         version: Application version string.
     """
 
     status: str
-    pocketbase: str
+    supabase: str
     version: str

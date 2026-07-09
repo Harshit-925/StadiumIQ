@@ -17,7 +17,9 @@ class Settings(BaseSettings):
         environment: Runtime environment (development, staging, production).
         use_ai: Whether to enable AI-powered insights.
         rate_limit_storage_uri: URI for rate limit storage backend.
-        pocketbase_url: URL of the PocketBase instance.
+        supabase_url: URL of the Supabase project.
+        supabase_service_role_key: Supabase service role key for server-side inserts.
+        supabase_jwt_secret: Supabase JWT secret for local token verification.
         app_version: Semantic version of the application.
         frontend_urls: Comma-separated list of allowed frontend URLs.
     """
@@ -33,7 +35,9 @@ class Settings(BaseSettings):
     environment: str = "development"
     use_ai: bool = True
     rate_limit_storage_uri: str = "memory://"
-    pocketbase_url: str = "http://localhost:8090"
+    supabase_url: str = ""
+    supabase_service_role_key: str = ""
+    supabase_jwt_secret: str = ""
     app_version: str = "1.0.0"
     frontend_urls: str = "http://localhost:5173,http://localhost:3000"
 

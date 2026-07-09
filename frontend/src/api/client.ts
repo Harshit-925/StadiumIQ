@@ -1,4 +1,4 @@
-import { pb } from './pocketbase';
+import { supabase } from './supabase';
 import type {
   VenueAnalysisRequest,
   VenueAnalysisResponse,
@@ -19,7 +19,9 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions): Promise<T> 
     'Content-Type': 'application/json',
   };
 
-  const token = pb.authStore.token;
+  // Attach the Supabase JWT as a Bearer token for protected backend routes
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token;
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -27,8 +29,6 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions): Promise<T> 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: options.method,
     headers,
-    // 'include' forwards the HttpOnly stadiumiq_token cookie the server sets
-    // on login, so cookie-based auth works across the entire API surface.
     credentials: 'include',
     body: options.body ? JSON.stringify(options.body) : undefined,
   });

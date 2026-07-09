@@ -18,7 +18,9 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from app.core.config import get_settings
-from app.routes.auth import COOKIE_NAME
+
+# Cookie name used for auth-aware rate-limiting (checked but not set here)
+COOKIE_NAME = "stadiumiq_token"
 
 logger = logging.getLogger("stadiumiq")
 

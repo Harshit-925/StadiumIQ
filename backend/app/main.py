@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Application lifespan handler — runs startup and shutdown logic.
 
     Startup:
-    - Checks PocketBase connectivity.
+    - Checks Supabase connectivity.
     - Warns if rate-limit storage is memory:// in production.
 
     Args:
@@ -48,23 +48,29 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     settings = get_settings()
 
-    # ── Check PocketBase ─────────────────────────────────────────────────
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            resp = await client.get(f"{settings.pocketbase_url}/api/health")
-        if resp.status_code == 200:
-            logger.info("PocketBase is reachable at %s", settings.pocketbase_url)
-        else:
+    # ── Check Supabase connectivity ──────────────────────────────────────
+    if settings.supabase_url:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(
+                    f"{settings.supabase_url}/rest/v1/",
+                    headers={"apikey": settings.supabase_service_role_key},
+                )
+            if resp.status_code in (200, 400):  # 400 = reachable but no table specified
+                logger.info("Supabase is reachable at %s", settings.supabase_url)
+            else:
+                logger.warning(
+                    "Supabase returned status %d at startup",
+                    resp.status_code,
+                )
+        except httpx.HTTPError as exc:
             logger.warning(
-                "PocketBase returned status %d at startup",
-                resp.status_code,
+                "Supabase unreachable at startup: %s — "
+                "the app will run but persistence will be degraded.",
+                exc,
             )
-    except httpx.HTTPError as exc:
-        logger.warning(
-            "PocketBase unreachable at startup: %s — "
-            "the app will run but auth and persistence will fail.",
-            exc,
-        )
+    else:
+        logger.warning("SUPABASE_URL not set — history persistence is disabled.")
 
     # ── Rate-limit storage check ─────────────────────────────────────────
     check_production_storage()

@@ -14,13 +14,12 @@ from app.core.config import get_settings
 HSTS_VALUE = "max-age=31536000"
 def get_csp_value() -> str:
     settings = get_settings()
-    pb_url = settings.pocketbase_url
-    pb_ws = pb_url.replace("http://", "ws://").replace("https://", "wss://")
+    sb_url = settings.supabase_url or ""
     return (
         "default-src 'self'; "
         "script-src 'self'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        f"connect-src 'self' https://generativelanguage.googleapis.com {pb_url} {pb_ws} http://localhost:8090 http://127.0.0.1:8090 ws://localhost:8090 ws://127.0.0.1:8090; "
+        f"connect-src 'self' https://generativelanguage.googleapis.com {sb_url} https://*.supabase.co wss://*.supabase.co; "
         "img-src 'self' data:; "
         "font-src 'self' https://fonts.gstatic.com"
     )

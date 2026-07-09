@@ -71,7 +71,7 @@ export interface FanAssistResponse {
 /** Health check response */
 export interface HealthResponse {
   status: string;
-  pocketbase: string;
+  supabase: string;
   version: string;
 }
 

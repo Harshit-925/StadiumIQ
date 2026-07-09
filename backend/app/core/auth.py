@@ -1,21 +1,22 @@
-"""Authentication dependency — validates tokens via PocketBase.
+"""Authentication dependency — validates Supabase JWTs locally.
 
-The dependency accepts auth from two sources (cookie first, header fallback):
+Validates the Supabase JWT using the project's JWT secret (HS256).
+No network round-trip required — verification is purely local, making it
+fast and resilient to Supabase downtime.
 
-1. **HttpOnly cookie** (``stadiumiq_token``): Set by ``POST /api/auth/login``.
-   Preferred because it is not accessible to JavaScript (XSS-proof).
-
-2. **Bearer Authorization header**: Retained for direct API access and legacy
-   PocketBase auth-store tokens from the React frontend.
-
-In both cases the raw token is forwarded to PocketBase's ``auth-refresh``
-endpoint for server-side validation.
+Token sources accepted (cookie first, header fallback):
+1. **HttpOnly cookie** (``stadiumiq_token``): Set externally if using a
+   cookie-forwarding pattern.
+2. **Bearer Authorization header**: The standard Supabase flow — the frontend
+   attaches the access_token from supabase.auth.getSession() as a Bearer header.
 """
+
+from __future__ import annotations
 
 import logging
 from typing import Any
 
-import httpx
+import jwt
 from fastapi import Cookie, Header, HTTPException
 
 from app.core.config import get_settings
@@ -24,94 +25,80 @@ logger = logging.getLogger("stadiumiq")
 
 
 async def get_current_user(
-    authorization: str | None = Header(
-        None, description="Bearer token from PocketBase auth"
-    ),
-    stadiumiq_token: str | None = Cookie(
-        None, description="HttpOnly auth cookie from /api/auth/login"
-    ),
+    authorization: str | None = Header(default=None),
+    stadiumiq_token: str | None = Cookie(default=None),
 ) -> dict[str, Any]:
-    """Validate a PocketBase token, accepting cookie or Bearer header.
+    """Validate a Supabase JWT, accepting cookie or Bearer header.
 
-    Cookie is checked first (more secure — inaccessible to JS).
-    Falls back to the ``Authorization: Bearer <token>`` header.
+    Cookie is checked first. Falls back to ``Authorization: Bearer <token>``.
 
     Args:
         authorization: Optional Authorization header.
-        stadiumiq_token: Optional HttpOnly cookie set on login.
+        stadiumiq_token: Optional HttpOnly cookie value.
 
     Returns:
-        The user record dict returned by PocketBase on successful refresh.
+        The decoded JWT payload as a dict (includes ``sub``, ``email``, etc.).
 
     Raises:
-        HTTPException: 401 if no valid token is found or PocketBase rejects it.
+        HTTPException: 401 if no valid token is found or the JWT is invalid/expired.
     """
     settings = get_settings()
 
-    # ── 1. Extract token — cookie takes precedence ────────────────────────
-    token: str | None = None
+    # ── 1. Extract raw token ─────────────────────────────────────────
+    raw_token: str | None = None
 
-    if stadiumiq_token:
-        token = stadiumiq_token
+    if stadiumiq_token and isinstance(stadiumiq_token, str) and stadiumiq_token.strip():
+        raw_token = stadiumiq_token
         logger.debug("Authenticating via HttpOnly cookie")
-    elif authorization and authorization.startswith("Bearer "):
-        token = authorization[len("Bearer ") :]
-        logger.debug("Authenticating via Authorization header")
+    elif authorization and isinstance(authorization, str) and authorization.startswith("Bearer "):
+        candidate = authorization[len("Bearer "):]
+        if candidate.strip():
+            raw_token = candidate
+            logger.debug("Authenticating via Authorization header")
 
-    if not token:
+    if not raw_token:
         raise HTTPException(
             status_code=401,
             detail=(
                 "Authentication required. "
-                "Provide a Bearer token or log in via /api/auth/login to receive a session cookie."
+                "Provide a Bearer token from Supabase or log in via the frontend."
             ),
         )
 
-    # ── 2. Validate with PocketBase ───────────────────────────────────────
-    url = f"{settings.pocketbase_url}/api/collections/users/auth-refresh"
-    headers = {"Authorization": f"Bearer {token}"}
+    # ── 2. Verify locally with PyJWT ────────────────────────────────
+    jwt_secret = settings.supabase_jwt_secret
 
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(url, headers=headers)
+        payload: dict[str, Any] = jwt.decode(
+            raw_token,
+            jwt_secret,
+            algorithms=["HS256"],
+            options={"require": ["sub", "exp"]},
+        )
+        logger.info(
+            "User authenticated via Supabase JWT",
+            extra={"extra_data": {"user_id": payload.get("sub")}},
+        )
+        return payload
 
-        if response.status_code == 200:
-            data = response.json()
-            user_record: dict[str, Any] = data.get("record", data)
-            logger.info(
-                "User authenticated via PocketBase",
-                extra={"extra_data": {"user_id": user_record.get("id")}},
-            )
-            return user_record
+    except jwt.ExpiredSignatureError as exc:
+        logger.warning("Supabase JWT has expired")
+        raise HTTPException(status_code=401, detail="Token has expired.") from exc
 
-        # Any non-200 means the token is invalid or expired.
+    except jwt.InvalidTokenError as exc:
         logger.warning(
-            "PocketBase auth-refresh rejected token",
-            extra={"extra_data": {"status": response.status_code}},
-        )
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or expired token.",
-        )
-
-    except httpx.HTTPError as exc:
-        logger.error(
-            "PocketBase auth-refresh request failed",
+            "Invalid Supabase JWT",
             extra={"extra_data": {"error": str(exc)}},
         )
         raise HTTPException(
             status_code=401,
-            detail="Authentication service unavailable.",
+            detail="Invalid or expired token. Please log in again.",
         ) from exc
 
 
 async def get_optional_user(
-    authorization: str | None = Header(
-        None, description="Bearer token from PocketBase auth"
-    ),
-    stadiumiq_token: str | None = Cookie(
-        None, description="HttpOnly auth cookie from /api/auth/login"
-    ),
+    authorization: str | None = Header(default=None),
+    stadiumiq_token: str | None = Cookie(default=None),
 ) -> dict[str, Any] | None:
     """Optional authentication dependency. Returns None if unauthenticated."""
     try:

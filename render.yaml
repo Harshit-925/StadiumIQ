@@ -1,0 +1,48 @@
+# render.yaml — Render.com deployment config for Python/FastAPI backend
+# Commit this file to your repo; Render will auto-detect it.
+
+services:
+  - type: web
+    name: stadiumiq-backend
+    runtime: docker
+    region: oregon   # Oregon (US West) — good latency for US World Cup venues
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    rootDir: .   # Docker context is the repo root so Render can find backend/
+
+    # Health check endpoint
+    healthCheckPath: /api/health
+
+    # Environment variables — set sensitive values in Render dashboard
+    # (or via render.yaml with `sync: false` for secrets)
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+      # ── Set these in the Render Dashboard (not here for security) ──
+      - key: GEMINI_API_KEY
+        sync: false   # Render will prompt you to set this secret
+
+      - key: SUPABASE_URL
+        sync: false   # e.g. https://xyzxyz.supabase.co
+
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false   # From Supabase Dashboard → Settings → API → service_role key
+
+      - key: SUPABASE_JWT_SECRET
+        sync: false   # From Supabase Dashboard → Settings → API → JWT Settings
+
+      - key: FRONTEND_URLS
+        sync: false   # Set to your Vercel URL, e.g. https://stadiumiq.vercel.app
+
+      - key: USE_AI
+        value: "true"
+
+      - key: RATE_LIMIT_STORAGE_URI
+        value: "memory://"   # Upgrade to Redis URL for production rate limiting

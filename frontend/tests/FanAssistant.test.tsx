@@ -37,16 +37,17 @@ vi.mock('framer-motion', async () => {
   };
 });
 
-// Mock pocketbase
-vi.mock('../src/api/pocketbase', () => ({
-  pb: {
-    authStore: {
-      isValid: false,
-      model: null,
-      token: '',
-      clear: vi.fn(),
-      onChange: vi.fn(),
+vi.mock('../src/api/supabase', () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
     },
+    from: vi.fn(() => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({ data: [], error: null }),
+    })),
   },
 }));
 

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { pb } from '../api/pocketbase';
-import type { RecordModel } from 'pocketbase';
+import { supabase } from '../api/supabase';
 import { useAppStore } from './useAppStore';
 import type { HistoryEntry } from '../types';
 
@@ -17,65 +16,71 @@ interface AuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   clearError: () => void;
 }
 
-function mapRecordToUser(record: RecordModel): AuthUser {
-  return {
-    id: record.id,
-    email: String(record['email'] ?? ''),
-    name: String(record['name'] ?? ''),
-  };
-}
-
-async function syncHistoryFromPB() {
+/** Fetch the user's analysis history from the Supabase history table */
+async function syncHistoryFromSupabase(userId: string) {
   try {
-    const records = await pb.collection('history').getFullList({ sort: 'created' });
-    const historyEntries: HistoryEntry[] = records.map((r) => {
+    const { data, error } = await supabase
+      .from('history')
+      .select('id, venue_id, engine_result, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Failed to sync history from Supabase:', error.message);
+      return;
+    }
+
+    const historyEntries: HistoryEntry[] = (data ?? []).map((r) => {
       const engine = r.engine_result as {
         venue?: string;
-        venue_id?: string;
-        timestamp: string;
-        average_density: number;
-        crowd_score: number;
-        overall_grade: string;
+        timestamp?: string;
+        average_density?: number;
+        crowd_score?: number;
+        overall_grade?: string;
       };
       return {
         id: r.id,
-        venue: engine.venue || r.venue_id,
-        timestamp: engine.timestamp,
-        average_density: engine.average_density,
-        crowd_score: engine.crowd_score,
-        overall_grade: engine.overall_grade,
+        venue: engine.venue ?? r.venue_id,
+        timestamp: engine.timestamp ?? r.created_at,
+        average_density: engine.average_density ?? 0,
+        crowd_score: engine.crowd_score ?? 0,
+        overall_grade: engine.overall_grade ?? 'N/A',
       };
     });
+
     useAppStore.getState().setHistory(historyEntries);
   } catch (err) {
-    console.error('Failed to sync history from PocketBase:', err);
+    console.error('Failed to sync history from Supabase:', err);
   }
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: pb.authStore.isValid && pb.authStore.model
-    ? mapRecordToUser(pb.authStore.model as RecordModel)
-    : null,
-  isAuthenticated: pb.authStore.isValid,
-  isLoading: false,
+  user: null,
+  isAuthenticated: false,
+  isLoading: true, // Start loading — we'll resolve via onAuthStateChange
   error: null,
 
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      const authData = await pb
-        .collection('users')
-        .authWithPassword(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      const sbUser = data.user;
       set({
-        user: mapRecordToUser(authData.record),
+        user: {
+          id: sbUser.id,
+          email: sbUser.email ?? email,
+          name: (sbUser.user_metadata?.['name'] as string | undefined) ?? '',
+        },
         isAuthenticated: true,
         isLoading: false,
       });
-      syncHistoryFromPB();
+      syncHistoryFromSupabase(sbUser.id);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Login failed. Please try again.';
@@ -87,34 +92,42 @@ export const useAuthStore = create<AuthState>((set) => ({
   signup: async (email: string, password: string, name: string) => {
     set({ isLoading: true, error: null });
     try {
-      await pb.collection('users').create({
+      // Sign up — pass name in user_metadata so it's available without a separate profile table
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        passwordConfirm: password,
-        name,
+        options: { data: { name } },
       });
+      if (signUpError) throw signUpError;
+
       // Auto-login after signup
-      const authData = await pb
-        .collection('users')
-        .authWithPassword(email, password);
+      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (loginError) throw loginError;
+
+      const sbUser = data.user;
       set({
-        user: mapRecordToUser(authData.record),
+        user: {
+          id: sbUser.id,
+          email: sbUser.email ?? email,
+          name,
+        },
         isAuthenticated: true,
         isLoading: false,
       });
-      syncHistoryFromPB();
+      syncHistoryFromSupabase(sbUser.id);
     } catch (err) {
       const message =
-        err instanceof Error
-          ? err.message
-          : 'Signup failed. Please try again.';
+        err instanceof Error ? err.message : 'Signup failed. Please try again.';
       set({ error: message, isLoading: false });
       throw err;
     }
   },
 
-  logout: () => {
-    pb.authStore.clear();
+  logout: async () => {
+    await supabase.auth.signOut();
     set({ user: null, isAuthenticated: false, error: null });
     useAppStore.getState().setHistory([]);
   },
@@ -124,18 +137,24 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
-// Listen for auth store changes from PocketBase
-pb.authStore.onChange(() => {
-  if (pb.authStore.isValid && pb.authStore.model) {
+// ── Listen for auth state changes from Supabase (page refresh, token expiry) ──
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (session?.user) {
     useAuthStore.setState({
-      user: mapRecordToUser(pb.authStore.model as RecordModel),
+      user: {
+        id: session.user.id,
+        email: session.user.email ?? '',
+        name: (session.user.user_metadata?.['name'] as string | undefined) ?? '',
+      },
       isAuthenticated: true,
+      isLoading: false,
     });
-    syncHistoryFromPB();
+    syncHistoryFromSupabase(session.user.id);
   } else {
     useAuthStore.setState({
       user: null,
       isAuthenticated: false,
+      isLoading: false,
     });
     useAppStore.getState().setHistory([]);
   }
