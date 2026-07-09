@@ -13,15 +13,10 @@ vi.mock('../src/components/StadiumBowl3D', () => ({
   default: () => <div data-testid="stadium-bowl-3d">Stadium Bowl</div>,
 }));
 
-// ── Video element mock ─────────────────────────────────────────────────────
-// jsdom doesn't implement HTMLMediaElement. Without this the <video> on
-// LandingPage triggers unresolvable promises that hang the axe scan.
-window.HTMLMediaElement.prototype.play  = vi.fn().mockResolvedValue(undefined);
-window.HTMLMediaElement.prototype.pause = vi.fn();
-window.HTMLMediaElement.prototype.load  = vi.fn();
-Object.defineProperty(window.HTMLMediaElement.prototype, 'muted', {
-  set: vi.fn(),
-});
+// Mock the background video so jsdom/axe doesn't hang trying to load media
+vi.mock('../src/components/VideoBackground', () => ({
+  default: () => <div data-testid="video-background" aria-hidden="true" />,
+}));
 
 vi.mock('../src/api/supabase', () => ({
   supabase: {
@@ -76,5 +71,5 @@ describe('LandingPage', () => {
     const { container } = renderLanding();
     const results = await axe(container);
     expect(results).toHaveNoViolations();
-  }, 15_000); // Raised timeout: axe needs more time with the mocked video element
+  });
 });

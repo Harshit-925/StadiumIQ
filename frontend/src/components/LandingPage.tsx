@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Activity,
 } from 'lucide-react';
+import VideoBackground from './VideoBackground';
 
 // Removed lazy-loaded Three.js scene (was StadiumBowl3D)
 
@@ -116,19 +117,7 @@ export function LandingPage() {
   return (
     <div className="min-h-screen relative bg-base-bg">
       {/* ── Background Video ─────────────────────────────────────────── */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-base-bg">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="h-full w-full object-cover opacity-30 mix-blend-multiply"
-        >
-          <source src="/assets/stadium_bg.mp4" type="video/mp4" />
-        </video>
-        {/* Vignette / Edge Shadow to blend with base-bg */}
-        <div className="absolute inset-0 shadow-[inset_0_0_150px_80px_rgba(247,249,252,1)]" />
-      </div>
+      <VideoBackground />
 
       {/* ── Navigation ───────────────────────────────────────────────── */}
       <header className="relative z-30 sticky top-0 border-b border-gray-200/80 bg-surface/90 backdrop-blur-sm">

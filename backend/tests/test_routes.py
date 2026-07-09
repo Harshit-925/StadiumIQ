@@ -63,7 +63,7 @@ class TestAnalyzeEndpoint:
         client: AsyncClient,
         mock_auth: MagicMock,
         mock_genai: MagicMock,
-        mock_pocketbase: MagicMock,
+        mock_supabase: MagicMock,
         valid_payload: dict[str, Any],
     ) -> None:
         """Full pipeline success: engine → AI → save → response."""

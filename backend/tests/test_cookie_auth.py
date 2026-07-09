@@ -61,7 +61,7 @@ class TestJWTAuthFlow:
         client: AsyncClient,
         mock_auth: MagicMock,
         mock_genai: MagicMock,
-        mock_pocketbase: MagicMock,
+        mock_supabase: MagicMock,
         valid_analyze_payload: dict[str, Any],
     ) -> None:
         """A request with a valid JWT token should succeed."""

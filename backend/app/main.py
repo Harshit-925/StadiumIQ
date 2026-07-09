@@ -1,7 +1,7 @@
 """StadiumIQ FastAPI application factory.
 
 Assembles the application with middleware, CORS, rate-limiting, and routing.
-Startup checks verify PocketBase connectivity and warn about rate-limit
+Startup checks verify Supabase connectivity and warn about rate-limit
 storage in production.
 """
 

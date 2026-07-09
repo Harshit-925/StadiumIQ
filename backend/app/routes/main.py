@@ -213,7 +213,7 @@ async def fan_assist(
     Args:
         request: The Starlette request (needed by slowapi).
         body: Validated request body.
-        user: Optional authenticated user record from PocketBase.
+        user: Optional authenticated user record from Supabase.
 
     Returns:
         FanAssistResponse with the assistant's reply.

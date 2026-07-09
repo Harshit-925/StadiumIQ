@@ -111,13 +111,6 @@ def mock_supabase():
         yield mock_instance
 
 
-# Keep backward-compatible alias so test_routes.py can use mock_pocketbase fixture name
-@pytest.fixture()
-def mock_pocketbase(mock_supabase):
-    """Backward-compat alias for mock_supabase."""
-    yield mock_supabase
-
-
 @pytest.fixture(autouse=True)
 def clear_ai_cache():
     """Clear the AI insight cache before every test."""
