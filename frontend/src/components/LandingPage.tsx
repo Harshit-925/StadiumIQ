@@ -124,9 +124,24 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-bg">
+    <div className="min-h-screen relative bg-base-bg">
+      {/* ── Background Video ─────────────────────────────────────────── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-base-bg">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="h-full w-full object-cover opacity-30 mix-blend-multiply"
+        >
+          <source src="/assets/stadium_bg.mp4" type="video/mp4" />
+        </video>
+        {/* Vignette / Edge Shadow to blend with base-bg */}
+        <div className="absolute inset-0 shadow-[inset_0_0_150px_80px_rgba(247,249,252,1)]" />
+      </div>
+
       {/* ── Navigation ───────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-gray-200/80 bg-surface/90 backdrop-blur-sm">
+      <header className="relative z-30 sticky top-0 border-b border-gray-200/80 bg-surface/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <Activity className="h-6 w-6 text-pitch-blue" aria-hidden="true" />
@@ -156,23 +171,9 @@ export function LandingPage() {
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section
-        className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pt-24"
+        className="relative z-10 overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pt-24"
         aria-label="StadiumIQ hero"
       >
-        {/* Ambient pulse visualization — fades in first */}
-        <motion.div
-          variants={pulseVariant}
-          initial="hidden"
-          animate="visible"
-          className="pointer-events-none absolute inset-0"
-          aria-hidden="true"
-        >
-          <StadiumPulse
-            variant="animated"
-            className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 opacity-60"
-          />
-        </motion.div>
-
         <div className="relative mx-auto max-w-5xl">
           <motion.div
             variants={heroContainer}
@@ -231,7 +232,7 @@ export function LandingPage() {
       </section>
 
       {/* ── Features ─────────────────────────────────────────────────── */}
-      <section className="px-4 py-20 sm:px-6" aria-labelledby="features-heading">
+      <section className="relative z-10 px-4 py-20 sm:px-6" aria-labelledby="features-heading">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 text-center">
             <h2
@@ -255,7 +256,7 @@ export function LandingPage() {
       </section>
 
       {/* ── Stats bar ────────────────────────────────────────────────── */}
-      <section className="border-y border-gray-200 bg-surface px-4 py-12 sm:px-6" aria-label="Platform statistics">
+      <section className="relative z-10 border-y border-gray-200 bg-surface px-4 py-12 sm:px-6" aria-label="Platform statistics">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-8 sm:gap-16">
           {STATS.map((stat) => (
             <div key={stat.label} className="text-center">
@@ -267,7 +268,7 @@ export function LandingPage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────────────── */}
-      <footer className="bg-pitch-blue px-4 py-10 sm:px-6" role="contentinfo">
+      <footer className="relative z-10 bg-pitch-blue px-4 py-10 sm:px-6" role="contentinfo">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <div className="flex items-center gap-2">
