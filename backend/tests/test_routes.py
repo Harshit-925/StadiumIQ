@@ -243,9 +243,7 @@ class TestStaticRoutes:
         # or the file contents if it existed.
         # With the fix, any path that resolves outside the static_dir falls through 
         # to the React Router catch-all (which returns index.html, giving a 200).
-        # We assert that it didn't crash and returned 200 (serving index.html).
-        assert resp.status_code == 200
-        # Wait, if index.html doesn't exist during test, Starlette might return 404 or 500?
-        # FileResponse handles it. We just care it doesn't crash or leak.
-        # It's better to just assert it doesn't return the content of a sensitive file.
-        # Or assert status_code in (200, 404) depending on if dist/index.html is mocked.
+        # However, if frontend/dist doesn't exist (like in backend-only CI jobs),
+        # the route isn't registered and returns 404. Both are safe.
+        assert resp.status_code in (200, 404)
+        assert "root:x:" not in resp.text
