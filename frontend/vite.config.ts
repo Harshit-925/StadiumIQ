@@ -19,7 +19,6 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-charts': ['recharts'],
           'vendor-motion': ['framer-motion'],
-          'vendor-ui': ['lucide-react', 'clsx', 'tailwind-merge'],
         },
       },
     },
