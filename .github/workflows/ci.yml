@@ -35,6 +35,9 @@ jobs:
       - name: Type check (mypy)
         run: mypy .
 
+      - name: Security scan (bandit)
+        run: bandit -r app/ -c pyproject.toml || bandit -r app/
+
       - name: Run tests with coverage
         run: pytest --cov=app --cov-fail-under=85 --cov-report=term-missing -q
         env:

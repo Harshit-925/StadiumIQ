@@ -18,6 +18,8 @@ export function VideoBackground() {
         loop
         muted
         playsInline
+        preload="none"
+        aria-hidden="true"
         className="h-full w-full object-cover opacity-30 mix-blend-multiply"
       >
         <source src="/assets/stadium_bg.mp4" type="video/mp4" />
