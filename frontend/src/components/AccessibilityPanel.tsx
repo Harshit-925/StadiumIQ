@@ -103,7 +103,7 @@ export function AccessibilityPanel() {
                 <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
                   Ratio
                 </th>
-                <th scope="col" className="hidden w-40 px-4 py-3 text-left font-medium uppercase tracking-wide text-text-secondary text-label-md sm:table-cell">
+                <th scope="col" className="hidden px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide sm:table-cell">
                   vs. ADA 1%
                 </th>
                 <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
@@ -140,7 +140,7 @@ export function AccessibilityPanel() {
                       {row.ratioPct.toFixed(2)}%
                     </span>
                   </td>
-                  <td className="hidden px-4 py-3 sm:table-cell">
+                  <td className="hidden px-4 py-3 sm:table-cell whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <div className="progress-track w-24 flex-shrink-0">
                         <div
@@ -155,7 +155,7 @@ export function AccessibilityPanel() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     {row.isCompliant ? (
                       <span className="tier-badge tier-badge-safe">
                         <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
