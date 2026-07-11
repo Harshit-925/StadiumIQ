@@ -23,12 +23,12 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-base-bg px-4 py-12">
       {/* Logo */}
-      <div className="mb-8 flex items-center gap-2">
+      <Link to="/" className="mb-8 flex items-center gap-2 transition-opacity hover:opacity-80" aria-label="StadiumIQ Home">
         <Activity className="h-8 w-8 text-pitch-blue" aria-hidden="true" />
         <span className="font-display text-display-md text-pitch-blue">
           Stadium<span className="text-trophy-gold">IQ</span>
         </span>
-      </div>
+      </Link>
 
       {/* Card */}
       <div className="card-surface w-full max-w-sm p-8">

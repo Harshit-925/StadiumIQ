@@ -11,6 +11,7 @@
  * 7. Error message rendered when API call fails.
  * 8. Passes axe in both open and closed states.
  */
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -31,7 +32,11 @@ vi.mock('framer-motion', async () => {
     ...actual,
     useReducedMotion: () => true,
     motion: {
-      div: ({ children, ...props }: React.ComponentProps<'div'>) => <div {...props}>{children}</div>,
+      div: React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(({ children, ...props }, ref) => (
+        <div ref={ref} {...props}>
+          {children}
+        </div>
+      )),
     },
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   };

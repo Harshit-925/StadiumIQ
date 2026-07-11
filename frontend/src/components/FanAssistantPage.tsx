@@ -40,6 +40,33 @@ const WELCOME_MESSAGES: Record<SupportedLanguage, string> = {
   ja: 'こんにちは！FIFA ワールドカップ 2026 のアシスタントです。会場、試合スケジュール、交通機関についてお気軽にどうぞ。',
 };
 
+const INPUT_PLACEHOLDERS: Record<SupportedLanguage, string> = {
+  en: "Ask about venues, schedules, transport…",
+  es: "Pregunte sobre estadios, horarios, transporte…",
+  fr: "Demandez sur les stades, horaires, transports…",
+  de: "Fragen Sie nach Stadien, Spielplänen, Transport…",
+  pt: "Pergunte sobre estádios, horários, transporte…",
+  ja: "会場、スケジュール、交通機関について聞く…"
+};
+
+const HINT_TEXTS: Record<SupportedLanguage, string> = {
+  en: "Press Enter to send · No login required · 5 requests per minute",
+  es: "Presione Enter para enviar · No requiere inicio de sesión · 5 solicitudes por minuto",
+  fr: "Appuyez sur Entrée pour envoyer · Aucune connexion requise · 5 requêtes par minute",
+  de: "Drücken Sie die Eingabetaste zum Senden · Kein Login erforderlich · 5 Anfragen pro Minute",
+  pt: "Pressione Enter para enviar · Não é necessário login · 5 solicitações por minuto",
+  ja: "Enterを押して送信 · ログイン不要 · 1分間に5回のリクエスト"
+};
+
+const ERROR_MESSAGES: Record<SupportedLanguage, string> = {
+  en: "I'm having trouble connecting right now. For immediate assistance, please visit the stadium's guest services desk.",
+  es: "Tengo problemas para conectarme en este momento. Para asistencia inmediata, visite el mostrador de servicios para huéspedes del estadio.",
+  fr: "J'ai du mal à me connecter en ce moment. Pour une assistance immédiate, veuillez visiter le bureau des services aux invités du stade.",
+  de: "Ich habe gerade Verbindungsprobleme. Für sofortige Hilfe besuchen Sie bitte den Gästeservice im Stadion.",
+  pt: "Estou tendo problemas de conexão no momento. Para assistência imediata, visite o balcão de serviços de hóspedes do estádio.",
+  ja: "現在接続に問題があります。すぐのサポートが必要な場合は、スタジアムのゲストサービスデスクにお越しください。"
+};
+
 function MessageBubble({ msg }: { msg: ChatMessage }) {
   const isUser = msg.role === 'user';
   const shouldReduceMotion = useReducedMotion() ?? false;
@@ -157,8 +184,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
         {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content:
-            'I\'m having trouble connecting right now. For immediate assistance, please visit the stadium\'s guest services desk.',
+          content: ERROR_MESSAGES[language],
           language,
           timestamp: new Date(),
         },
@@ -302,7 +328,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about venues, schedules, transport…"
+                placeholder={INPUT_PLACEHOLDERS[language]}
                 maxLength={500}
                 disabled={isLoading}
                 aria-describedby="fan-page-hint"
@@ -319,7 +345,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
             </button>
           </div>
           <p id="fan-page-hint" className="mt-1.5 text-label-sm text-text-secondary">
-            Press Enter to send · No login required · 5 requests per minute
+            {HINT_TEXTS[language]}
           </p>
         </div>
       </div>

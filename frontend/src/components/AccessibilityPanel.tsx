@@ -94,20 +94,17 @@ export function AccessibilityPanel() {
       {/* Venue table */}
       <section aria-label="Per-venue accessibility compliance">
         <div className="card-surface overflow-x-auto">
-          <table className="w-full min-w-[600px]" aria-label="Wheelchair seating compliance by venue">
+          <table className="w-full table-fixed" aria-label="Wheelchair seating compliance by venue">
             <thead>
               <tr className="border-b border-gray-100">
-                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
+                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide w-2/3 sm:w-1/2">
                   Venue
                 </th>
-                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide">
+                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide w-1/3 sm:w-1/4">
                   Ratio
                 </th>
-                <th scope="col" className="hidden px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide sm:table-cell w-48">
+                <th scope="col" className="hidden px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide sm:table-cell sm:w-1/4">
                   vs. ADA 1%
-                </th>
-                <th scope="col" className="px-4 py-3 text-left text-label-md text-text-secondary font-medium uppercase tracking-wide w-48">
-                  Status
                 </th>
               </tr>
             </thead>
@@ -121,6 +118,17 @@ export function AccessibilityPanel() {
                 >
                   <td className="px-4 py-3">
                     <p className="text-body-sm font-medium text-text-primary">
+                      {row.isCompliant ? (
+                        <>
+                          <CheckCircle2 className="inline-block h-4 w-4 text-crowd-safe mr-1.5 -mt-0.5" aria-hidden="true" />
+                          <span className="sr-only">ADA Compliant</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle className="inline-block h-4 w-4 text-crowd-warning mr-1.5 -mt-0.5" aria-hidden="true" />
+                          <span className="sr-only">Below Threshold</span>
+                        </>
+                      )}
                       {row.name}
                       {row.isSelected && (
                         <span className="ml-2 rounded-pill bg-pitch-blue/10 px-1.5 py-0.5 text-label-sm text-pitch-blue">
@@ -140,33 +148,20 @@ export function AccessibilityPanel() {
                       {row.ratioPct.toFixed(2)}%
                     </span>
                   </td>
-                  <td className="hidden px-4 py-3 sm:table-cell whitespace-nowrap">
+                  <td className="hidden px-4 py-3 sm:table-cell">
                     <div className="flex items-center gap-2">
-                      <div className="progress-track w-24 flex-shrink-0">
+                      <div className="progress-track flex-1 max-w-[96px]">
                         <div
                           className={row.isCompliant ? 'progress-fill-safe' : 'progress-fill-warning'}
                           style={{ width: `${Math.min((row.ratioPct / 2) * 100, 100)}%` }}
                         />
                       </div>
-                      <span className="text-label-sm text-text-secondary">
+                      <span className="text-label-sm text-text-secondary whitespace-nowrap flex-shrink-0">
                         {row.ratioPct >= ADA_MINIMUM_PCT
                           ? `+${(row.ratioPct - ADA_MINIMUM_PCT).toFixed(2)}%`
                           : `-${(ADA_MINIMUM_PCT - row.ratioPct).toFixed(2)}%`}
                       </span>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {row.isCompliant ? (
-                      <span className="tier-badge tier-badge-safe">
-                        <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
-                        ADA Compliant
-                      </span>
-                    ) : (
-                      <span className="tier-badge tier-badge-warning">
-                        <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-                        Below Threshold
-                      </span>
-                    )}
                   </td>
                 </tr>
               ))}

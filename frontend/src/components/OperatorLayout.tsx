@@ -6,7 +6,7 @@
  * - <1024px (portrait tablet/mobile): top bar + bottom tab bar (4 tabs)
  *   Bottom tabs give touch-reliable navigation without hover dependency.
  */
-import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   Activity,
   LayoutDashboard,
@@ -88,10 +88,12 @@ export function OperatorLayout() {
         role="banner"
       >
         <div className="flex items-center gap-3">
-          <Activity className="h-6 w-6 text-pitch-blue" aria-hidden="true" />
-          <span className="text-heading-sm font-display text-pitch-blue">
-            Stadium<span className="text-trophy-gold">IQ</span>
-          </span>
+          <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-80" aria-label="StadiumIQ Home">
+            <Activity className="h-6 w-6 text-pitch-blue" aria-hidden="true" />
+            <span className="text-heading-sm font-display text-pitch-blue">
+              Stadium<span className="text-trophy-gold">IQ</span>
+            </span>
+          </Link>
           <span className="hidden text-label-sm text-text-secondary sm:inline">
             · {selectedVenue.name}
           </span>
