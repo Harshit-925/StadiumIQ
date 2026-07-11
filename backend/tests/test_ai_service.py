@@ -67,6 +67,18 @@ class TestBuildFallbackText:
         text = _build_fallback_text(SAMPLE_ENGINE_RESULT)
         assert "Improve exits" in text
 
+    def test_reports_actual_accessibility_compliance(self) -> None:
+        """Checks accessibility logic against real Engine key."""
+        result = {**SAMPLE_ENGINE_RESULT, "accessibility": {"meets_ada": True}}
+        text = _build_fallback_text(result)
+        assert "ADA Compliant" in text
+
+    def test_reports_real_sustainability_score(self) -> None:
+        """Checks sustainability logic against real Engine key."""
+        result = {**SAMPLE_ENGINE_RESULT, "waste_diversion": {"diversion_rate_pct": 90.0}}
+        text = _build_fallback_text(result)
+        assert "100.0/100" in text
+
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  generate_crowd_insights                                               ║
