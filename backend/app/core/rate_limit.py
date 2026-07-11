@@ -1,11 +1,9 @@
 """Rate limiting configuration using slowapi.
 
-Provides four rate-limit tiers:
+Provides three rate-limit tiers, applied via route decorators:
 - Fan-assist (public/unauthenticated): 5 requests/minute per IP
 - Fan-assist (authenticated operator): 10 requests/minute per user ID
 - AI routes (authenticated):           10 requests/minute
-- Write routes:                         30 requests/minute
-- Read routes:                          60 requests/minute
 
 Uses in-memory storage by default; logs a warning at startup when
 production runs on memory:// (should use Redis).
@@ -62,8 +60,6 @@ RATE_LIMIT_FAN_ASSIST_PUBLIC = "5/minute"
 RATE_LIMIT_FAN_ASSIST_AUTH = "10/minute"
 # Authenticated AI endpoints
 RATE_LIMIT_AI = "10/minute"
-RATE_LIMIT_WRITE = "30/minute"
-RATE_LIMIT_READ = "60/minute"
 
 
 def check_production_storage() -> None:

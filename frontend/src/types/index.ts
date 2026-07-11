@@ -100,15 +100,6 @@ export interface HistoryEntry {
   overall_grade: string;
 }
 
-/** Goal tracking */
-export interface SafetyGoal {
-  id: string;
-  label: string;
-  target_value: number;
-  current_value: number;
-  unit: string;
-  created: string;
-}
 
 /** Supported languages */
 export type SupportedLanguage = 'en' | 'es' | 'fr' | 'de' | 'pt' | 'ja';

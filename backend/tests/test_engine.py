@@ -18,7 +18,6 @@ from app.engine.calculator import (
     analyze_venue,
     assess_accessibility_compliance,
     calculate_evacuation_time,
-    calculate_steward_requirement,
     calculate_waste_diversion_rate,
     calculate_zone_occupancy,
     classify_crowd_density,
@@ -227,36 +226,6 @@ class TestWasteDiversionRate:
         assert "EPA" in result["source"]
 
 
-# ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  calculate_steward_requirement                                         ║
-# ╚══════════════════════════════════════════════════════════════════════════╝
-
-
-class TestStewardRequirement:
-    """Tests for steward deployment calculations."""
-
-    def test_low_risk_65000(self) -> None:
-        """65000 at low risk → ceil(65000/250) = 260 stewards."""
-        result = calculate_steward_requirement(65000, "low")
-        assert result["stewards_needed"] == 260
-        assert result["ratio"] == "1:250"
-
-    def test_high_risk(self) -> None:
-        """10000 at high risk → ceil(10000/100) = 100 stewards."""
-        result = calculate_steward_requirement(10000, "high")
-        assert result["stewards_needed"] == 100
-        assert result["ratio"] == "1:100"
-
-    def test_rounding_up(self) -> None:
-        """251 at low risk → ceil(251/250) = 2 stewards (rounds up)."""
-        result = calculate_steward_requirement(251, "low")
-        assert result["stewards_needed"] == 2
-
-    def test_has_source(self) -> None:
-        """Result must cite FIFA source."""
-        result = calculate_steward_requirement(1000)
-        assert "FIFA" in result["source"]
-
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  recommend_route                                                       ║
@@ -391,24 +360,22 @@ class TestAnalyzeVenue:
             zone_densities=[1.0, 2.0, 3.0],
             waste_recycled_kg=500.0,
             waste_total_kg=1000.0,
-            spectator_count=60000,
-            risk_level="low",
         )
         assert "venue" in result
         assert "zone_analyses" in result
         assert "evacuation" in result
         assert "accessibility" in result
         assert "waste_diversion" in result
-        assert "steward_requirement" in result
         assert "readiness" in result
+        assert "route_recommendation" in result
 
     def test_zone_count_matches(self) -> None:
         """Number of zone analyses should match input densities."""
         densities = [1.0, 2.5, 3.5, 4.5]
-        result = analyze_venue("hardrock", densities, 200.0, 500.0, 50000)
+        result = analyze_venue("hardrock", densities, 200.0, 500.0)
         assert len(result["zone_analyses"]) == len(densities)
 
     def test_invalid_venue_raises(self) -> None:
         """Invalid venue → ValueError."""
         with pytest.raises(ValueError):
-            analyze_venue("fake_venue", [1.0], 100.0, 200.0, 10000)
+            analyze_venue("fake_venue", [1.0], 100.0, 200.0)

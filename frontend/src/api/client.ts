@@ -4,7 +4,6 @@ import type {
   VenueAnalysisResponse,
   FanAssistRequest,
   FanAssistResponse,
-  HealthResponse,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -63,12 +62,5 @@ export async function fanAssist(
   return apiFetch<FanAssistResponse>('/fan-assist', {
     method: 'POST',
     body: data,
-  });
-}
-
-/** Check API health status */
-export async function healthCheck(): Promise<HealthResponse> {
-  return apiFetch<HealthResponse>('/health', {
-    method: 'GET',
   });
 }
