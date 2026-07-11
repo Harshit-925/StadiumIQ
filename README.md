@@ -24,6 +24,19 @@
 
 ---
 
+## Previews
+
+<div align="center">
+  <img src="docs/dashboard.png" width="48%" alt="Operator Dashboard">
+  <img src="docs/dashboard_results.png" width="48%" alt="AI Insights & Volunteer Dispatch">
+</div>
+<div align="center">
+  <img src="docs/login.png" width="48%" alt="Operator Login">
+  <img src="docs/fan_assistant.png" width="48%" alt="Multilingual Fan Assistant">
+</div>
+
+---
+
 ## Chosen Vertical
 
 **Operational Intelligence & Real-time Decision Support for Venue Staff.**

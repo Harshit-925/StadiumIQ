@@ -69,6 +69,9 @@ def _build_fallback_text(engine_result: dict[str, Any]) -> str:
     venue = engine_result.get("venue", {})
     readiness = engine_result.get("readiness", {})
     evac = engine_result.get("evacuation", {})
+    accessibility = engine_result.get("accessibility", {})
+    sustainability = engine_result.get("sustainability", {})
+    route = engine_result.get("route_recommendation", {})
 
     lines = [
         f"Stadium Analysis for {venue.get('name', 'Unknown')}",
@@ -77,7 +80,12 @@ def _build_fallback_text(engine_result: dict[str, Any]) -> str:
         f"Evacuation Time: {evac.get('evacuation_time_minutes', 'N/A')} minutes "
         f"({'Meets' if evac.get('meets_standard') else 'Exceeds'} "
         f"{evac.get('standard_minutes', 8)}-minute standard)",
+        f"Accessibility: {'ADA Compliant' if accessibility.get('meets_ada_minimum') else 'Below Threshold'}",
+        f"Sustainability Score: {sustainability.get('sustainability_score', 'N/A')}/100",
     ]
+
+    if route and route.get("reason"):
+        lines.append(f"Route Recommendation: {route.get('reason')}")
 
     recommendations = readiness.get("recommendations", [])
     if recommendations:
@@ -129,8 +137,9 @@ async def generate_crowd_insights(
     prompt = (
         "You are StadiumIQ, a FIFA World Cup 2026 stadium operations analyst. "
         "Analyze the following stadium data and provide actionable insights "
-        "in 3-5 concise paragraphs. Focus on safety, crowd management, and "
-        "operational recommendations.\n\n"
+        "in 3-5 concise paragraphs. Focus on safety, crowd management, accessibility compliance, "
+        "sustainability performance, and recommended routing for entry, exit, and transport "
+        "connections, alongside operational recommendations.\n\n"
         f"Data: {engine_result}"
     )
 

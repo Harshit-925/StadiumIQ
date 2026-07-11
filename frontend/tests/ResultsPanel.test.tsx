@@ -124,8 +124,8 @@ describe('ResultsPanel', () => {
 
     it('renders zone analyses', () => {
       render(<ResultsPanel />);
-      expect(screen.getByText(/Zone 1/)).toBeInTheDocument();
-      expect(screen.getByText(/Zone 2/)).toBeInTheDocument();
+      expect(screen.getAllByText(/Zone 1/)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Zone 2/)[0]).toBeInTheDocument();
     });
 
     it('shows evacuation time', () => {
