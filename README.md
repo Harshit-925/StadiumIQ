@@ -27,12 +27,12 @@
 ## Previews
 
 <div align="center">
-  <img src="docs/dashboard.png" width="48%" alt="Operator Dashboard">
-  <img src="docs/dashboard_results.png" width="48%" alt="AI Insights & Volunteer Dispatch">
+  <img src="docs/dashboard.png" width="80%" alt="Operator Dashboard">
 </div>
+<br/>
 <div align="center">
-  <img src="docs/login.png" width="48%" alt="Operator Login">
   <img src="docs/fan_assistant.png" width="48%" alt="Multilingual Fan Assistant">
+  <img src="docs/login.png" width="48%" alt="Operator Login">
 </div>
 
 ---
