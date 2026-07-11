@@ -554,6 +554,15 @@ def analyze_venue(
     zone_densities: list[float],
     waste_recycled_kg: float,
     waste_total_kg: float,
+) -> dict[str, Any]:
+    """Master analysis function — aggregates all calculations for one venue.
+
+    This is the primary entry-point called by the API route.
+
+    Args:
+        venue_id: Venue slug.
+        zone_densities: Per-zone density readings (pax/m²).
+        waste_recycled_kg: Recycled waste in kg.
         waste_total_kg: Total waste in kg.
 
     Returns:
