@@ -422,40 +422,6 @@ def calculate_waste_diversion_rate(
     }
 
 
-def calculate_steward_requirement(
-    spectator_count: int,
-    risk_level: str = "low",
-) -> dict[str, Any]:
-    """Determine the minimum number of stewards for a given crowd size.
-
-    FIFA specifies deployment ratios based on risk assessment:
-    - Low risk:  1 steward per 250 spectators
-    - High risk: 1 steward per 100 spectators
-
-    Args:
-        spectator_count: Number of spectators expected.
-        risk_level: ``"low"`` or ``"high"``.
-
-    Returns:
-        Dict with stewards_needed, ratio, risk_level, source.
-    """
-    risk = risk_level.lower()
-    if risk == "high":
-        ratio_denominator = 100
-        ratio_str = "1:100"
-    else:
-        ratio_denominator = 250
-        ratio_str = "1:250"
-
-    stewards = math.ceil(spectator_count / ratio_denominator)
-
-    return {
-        "stewards_needed": stewards,
-        "ratio": ratio_str,
-        "risk_level": risk,
-        "source": STEWARD_SOURCE,
-    }
-
 
 def get_venue_info(venue_id: str) -> dict[str, Any]:
     """Look up a venue by its slug identifier.
@@ -588,24 +554,11 @@ def analyze_venue(
     zone_densities: list[float],
     waste_recycled_kg: float,
     waste_total_kg: float,
-    spectator_count: int,
-    risk_level: str = "low",
-) -> dict[str, Any]:
-    """Master analysis function — aggregates all calculations for one venue.
-
-    This is the primary entry-point called by the API route.
-
-    Args:
-        venue_id: Venue slug.
-        zone_densities: Per-zone density readings (pax/m²).
-        waste_recycled_kg: Recycled waste in kg.
         waste_total_kg: Total waste in kg.
-        spectator_count: Current or expected spectator count.
-        risk_level: ``"low"`` or ``"high"`` risk classification.
 
     Returns:
         Comprehensive dict containing venue info, zone analyses, evacuation,
-        accessibility, waste, steward requirements, and readiness grade.
+        accessibility, waste, and readiness grade.
     """
     venue = get_venue_info(venue_id)
 
@@ -625,7 +578,6 @@ def analyze_venue(
         venue["wheelchair_seats"], venue["capacity"]
     )
     waste = calculate_waste_diversion_rate(waste_recycled_kg, waste_total_kg)
-    stewards = calculate_steward_requirement(spectator_count, risk_level)
     readiness = grade_venue_readiness(
         venue_id, zone_densities, waste_recycled_kg, waste_total_kg
     )
@@ -637,7 +589,6 @@ def analyze_venue(
         "evacuation": evacuation,
         "accessibility": accessibility,
         "waste_diversion": waste,
-        "steward_requirement": stewards,
         "readiness": readiness,
         "route_recommendation": route,
     }

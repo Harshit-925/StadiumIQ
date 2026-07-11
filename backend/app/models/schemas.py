@@ -22,8 +22,6 @@ class VenueAnalysisRequest(BaseModel):
         zone_densities: List of density readings (pax/m²), one per zone.
         waste_recycled_kg: Recycled waste in kilograms.
         waste_total_kg: Total waste generated in kilograms (must be > 0).
-        spectator_count: Current or expected spectator count (must be > 0).
-        risk_level: Risk assessment — ``"low"`` (default) or ``"high"``.
     """
 
     venue_id: str = Field(..., description="Venue slug, e.g. 'metlife', 'azteca'")
@@ -32,10 +30,6 @@ class VenueAnalysisRequest(BaseModel):
     )
     waste_recycled_kg: float = Field(..., ge=0, description="Recycled waste (kg)")
     waste_total_kg: float = Field(..., gt=0, description="Total waste (kg)")
-    spectator_count: int = Field(
-        ..., gt=0, description="Expected or current spectators"
-    )
-    risk_level: str = Field(default="low", description="Risk level: 'low' or 'high'")
 
     @field_validator("venue_id")
     @classmethod
@@ -54,14 +48,6 @@ class VenueAnalysisRequest(BaseModel):
             if d < 0 or d > 10:
                 raise ValueError(f"zone_densities[{i}] = {d} is out of range [0, 10]")
         return v
-
-    @field_validator("risk_level")
-    @classmethod
-    def risk_level_valid(cls, v: str) -> str:
-        """Ensure risk level is 'low' or 'high'."""
-        if v.lower() not in ("low", "high"):
-            raise ValueError("risk_level must be 'low' or 'high'")
-        return v.lower()
 
 
 class FanAssistRequest(BaseModel):

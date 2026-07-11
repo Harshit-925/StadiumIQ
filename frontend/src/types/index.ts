@@ -22,10 +22,8 @@ export interface CrowdClassification {
 export interface VenueAnalysisRequest {
   venue_id: string;
   zone_densities: number[];
-  spectator_count: number;
   waste_recycled_kg: number;
   waste_total_kg: number;
-  risk_level: 'low' | 'high';
 }
 
 /** Zone-level analysis result */

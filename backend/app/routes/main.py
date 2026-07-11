@@ -107,8 +107,6 @@ async def analyze(
             zone_densities=body.zone_densities,
             waste_recycled_kg=body.waste_recycled_kg,
             waste_total_kg=body.waste_total_kg,
-            spectator_count=body.spectator_count,
-            risk_level=body.risk_level,
         )
 
         # 2. AI insights (never crashes)

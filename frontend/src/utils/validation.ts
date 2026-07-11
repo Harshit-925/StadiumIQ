@@ -6,20 +6,12 @@ export const venueAnalysisSchema = z.object({
   zone_densities: z
     .array(z.number().min(0, 'Density cannot be negative').max(10, 'Density cannot exceed 10'))
     .min(1, 'At least one zone density is required'),
-  spectator_count: z
-    .number()
-    .int('Must be a whole number')
-    .min(1, 'Must have at least 1 spectator')
-    .max(120000, 'Exceeds maximum stadium capacity'),
   waste_recycled_kg: z
     .number()
     .min(0, 'Cannot be negative'),
   waste_total_kg: z
     .number()
     .min(1, 'Total waste must be greater than 0'),
-  risk_level: z.enum(['low', 'high'], {
-    required_error: 'Risk level is required',
-  }),
 });
 
 /** Schema for fan assistant queries */

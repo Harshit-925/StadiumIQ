@@ -20,12 +20,8 @@ export function InputForm() {
   const [zoneDensities, setZoneDensities] = useState<number[]>(
     Array(zoneCount).fill(2.0) as number[],
   );
-  const [totalSpectators, setTotalSpectators] = useState(
-    Math.floor(selectedVenue.capacity * 0.8),
-  );
   const [wasteRecycled, setWasteRecycled] = useState(150);
   const [totalWaste, setTotalWaste] = useState(300);
-  const [riskLevel, setRiskLevel] = useState<'low' | 'high'>('low');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleZoneDensityChange = useCallback(
@@ -46,10 +42,8 @@ export function InputForm() {
     const formData = {
       venue_id: selectedVenue.id,
       zone_densities: zoneDensities,
-      spectator_count: totalSpectators,
       waste_recycled_kg: wasteRecycled,
       waste_total_kg: totalWaste,
-      risk_level: riskLevel,
     };
 
     try {
@@ -156,38 +150,6 @@ export function InputForm() {
           )}
         </fieldset>
 
-        {/* Spectator Count */}
-        <div className="mb-4">
-          <label
-            htmlFor="total-spectators"
-            className="mb-1.5 block text-sm font-medium text-text-primary"
-          >
-            Total Spectators
-          </label>
-          <input
-            id="total-spectators"
-            type="number"
-            min={0}
-            max={selectedVenue.capacity}
-            value={totalSpectators}
-            onChange={(e) => setTotalSpectators(parseInt(e.target.value, 10) || 0)}
-            aria-required="true"
-            aria-describedby={
-              fieldErrors.total_spectators
-                ? 'spectators-error'
-                : 'spectators-hint'
-            }
-            className="w-full rounded-input border border-gray-200 bg-base-bg px-4 py-2.5 text-text-primary transition-colors focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
-          />
-          <p id="spectators-hint" className="mt-1 text-xs text-text-secondary/70">
-            Max capacity: {selectedVenue.capacity.toLocaleString()}
-          </p>
-          {fieldErrors.total_spectators && (
-            <p id="spectators-error" className="mt-1 text-sm text-crowd-critical" role="alert">
-              {fieldErrors.total_spectators}
-            </p>
-          )}
-        </div>
 
         {/* Waste Metrics */}
         <div className="mb-4 grid grid-cols-2 gap-4">
@@ -227,42 +189,6 @@ export function InputForm() {
           </div>
         </div>
 
-        {/* Risk Level */}
-        <fieldset className="mb-6">
-          <legend className="mb-2 text-sm font-medium text-text-primary">
-            Risk Level
-          </legend>
-          <div className="flex gap-6">
-            <div className="flex items-center gap-2">
-              <input
-                id="risk-low"
-                type="radio"
-                name="risk-level"
-                value="low"
-                checked={riskLevel === 'low'}
-                onChange={() => setRiskLevel('low')}
-                className="h-4 w-4 accent-pitch-blue"
-              />
-              <label htmlFor="risk-low" className="text-sm text-text-secondary">
-                Low Risk
-              </label>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="risk-high"
-                type="radio"
-                name="risk-level"
-                value="high"
-                checked={riskLevel === 'high'}
-                onChange={() => setRiskLevel('high')}
-                className="h-4 w-4 accent-crowd-critical"
-              />
-              <label htmlFor="risk-high" className="text-sm text-text-secondary">
-                High Risk
-              </label>
-            </div>
-          </div>
-        </fieldset>
 
         {/* Submit Button */}
         <button
