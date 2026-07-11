@@ -44,6 +44,9 @@ FLOW_RATE_PER_METER_PER_MIN: int = 82  # persons per metre width per minute
 MAX_EVACUATION_MINUTES: int = 8  # FIFA/SGSA maximum
 WHEELCHAIR_RATIO: float = 0.01  # 1 % minimum ADA
 WASTE_DIVERSION_TARGET: float = 90.0  # percent — EPA target
+DENSITY_SAFE_MAX: float = 2.0        # < this = "safe"
+DENSITY_MODERATE_MAX: float = 3.5    # < this = "moderate"
+DENSITY_WARNING_MAX: float = 4.5     # <= this = "warning"; above = "critical"
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  FIFA WORLD CUP 2026 VENUES                                           ║
@@ -201,6 +204,19 @@ VENUES: dict[str, dict[str, Any]] = {
 # ║  PURE FUNCTIONS                                                        ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
+def _density_tier(density_pax_per_sqm: float) -> str:
+    """Return the tier key for a density value. Single source of truth —
+    both classify_crowd_density() and grade_venue_readiness() must call
+    this rather than repeating the threshold comparisons."""
+    if density_pax_per_sqm < DENSITY_SAFE_MAX:
+        return "safe"
+    if density_pax_per_sqm < DENSITY_MODERATE_MAX:
+        return "moderate"
+    if density_pax_per_sqm <= DENSITY_WARNING_MAX:
+        return "warning"
+    return "critical"
+
+
 
 def classify_crowd_density(density_pax_per_sqm: float) -> dict[str, str]:
     """Classify a crowd density value into a safety level.
@@ -213,21 +229,22 @@ def classify_crowd_density(density_pax_per_sqm: float) -> dict[str, str]:
     Returns:
         Dict with keys: level, description, action_required, color, source.
     """
-    if density_pax_per_sqm < 2.0:
+    tier = _density_tier(density_pax_per_sqm)
+    if tier == "safe":
         level, desc, action, color = (
             "safe",
             "Free movement possible. Comfortable spacing between individuals.",
             "No action required. Continue normal monitoring.",
             "green",
         )
-    elif density_pax_per_sqm < 3.5:
+    elif tier == "moderate":
         level, desc, action, color = (
             "moderate",
             "Movement restricted. Contact between individuals likely.",
             "Increase monitoring. Consider opening additional routes.",
             "yellow",
         )
-    elif density_pax_per_sqm <= 4.5:
+    elif tier == "warning":
         level, desc, action, color = (
             "warning",
             "Crowd crush risk. Movement severely restricted.",
@@ -247,6 +264,48 @@ def classify_crowd_density(density_pax_per_sqm: float) -> dict[str, str]:
         "description": desc,
         "action_required": action,
         "color": color,
+        "source": CROWD_DENSITY_SOURCE,
+    }
+
+
+def recommend_route(zone_densities: list[float]) -> dict[str, Any]:
+    """Recommend the least-congested zone/gate for fan egress or arrival
+    routing, based on already-computed per-zone density readings.
+
+    This is the navigation/transportation-facing output: it tells a fan or
+    operator which gate to route toward right now. Deterministic — same
+    inputs always produce the same recommendation.
+
+    Args:
+        zone_densities: Per-zone density readings (pax/m²), same list passed
+            to analyze_venue(). Index order matches zone_analyses output.
+
+    Returns:
+        Dict with:
+            recommended_zone_index: int index of the lowest-density zone.
+            recommended_zone_density: float density of that zone.
+            reason: str human-readable justification.
+            source: str citation, matches the style of other SOURCE consts.
+    """
+    if not zone_densities:
+        return {
+            "recommended_zone_index": None,
+            "recommended_zone_density": None,
+            "reason": "No zone data available.",
+            "source": CROWD_DENSITY_SOURCE,
+        }
+
+    best_index = min(range(len(zone_densities)), key=lambda i: zone_densities[i])
+    best_density = zone_densities[best_index]
+
+    return {
+        "recommended_zone_index": best_index,
+        "recommended_zone_density": best_density,
+        "reason": (
+            f"Zone {best_index + 1} has the lowest current density "
+            f"({best_density:.2f} pax/m²) — recommended route for entry, "
+            f"exit, or transport connections."
+        ),
         "source": CROWD_DENSITY_SOURCE,
     }
 
@@ -446,16 +505,8 @@ def grade_venue_readiness(
 
     # ── Crowd safety score (40%) ─────────────────────────────────────────
     if zone_densities:
-        density_scores = []
-        for d in zone_densities:
-            if d < 2.0:
-                density_scores.append(100.0)
-            elif d < 3.5:
-                density_scores.append(70.0)
-            elif d <= 4.5:
-                density_scores.append(40.0)
-            else:
-                density_scores.append(10.0)
+        _tier_score = {"safe": 100.0, "moderate": 70.0, "warning": 40.0, "critical": 10.0}
+        density_scores = [_tier_score[_density_tier(d)] for d in zone_densities]
         crowd_score = sum(density_scores) / len(density_scores)
     else:
         crowd_score = 100.0  # no data → assume safe
@@ -578,6 +629,7 @@ def analyze_venue(
     readiness = grade_venue_readiness(
         venue_id, zone_densities, waste_recycled_kg, waste_total_kg
     )
+    route = recommend_route(zone_densities)
 
     return {
         "venue": venue,
@@ -587,6 +639,7 @@ def analyze_venue(
         "waste_diversion": waste,
         "steward_requirement": stewards,
         "readiness": readiness,
+        "route_recommendation": route,
     }
 
 

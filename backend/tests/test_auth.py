@@ -93,7 +93,7 @@ class TestInvalidToken:
 
     async def test_wrong_secret_raises_401(self) -> None:
         """A JWT signed with a different secret should be rejected."""
-        token = make_test_token(secret="wrong-secret")
+        token = make_test_token(secret="wrong-secret-that-is-very-long-and-secure")
 
         with _patch_secret(secret=TEST_JWT_SECRET):
             with pytest.raises(HTTPException) as exc_info:

@@ -128,6 +128,7 @@ async def analyze(
                 )
 
         readiness = engine_result.get("readiness", {})
+        route_rec = engine_result.get("route_recommendation", {})
         evacuation = engine_result.get("evacuation", {})
         accessibility = engine_result.get("accessibility", {})
         waste = engine_result.get("waste_diversion", {})
@@ -174,6 +175,11 @@ async def analyze(
             "recycling_rate": waste.get("diversion_rate_pct", 0.0) / 100.0,
             "ai_insights": ai_text,
             "ai_fallback": fallback_used,
+            "route_recommendation": {
+                "recommended_zone_index": route_rec.get("recommended_zone_index"),
+                "recommended_zone_density": route_rec.get("recommended_zone_density"),
+                "reason": route_rec.get("reason", ""),
+            },
         })
 
     except ValueError as exc:

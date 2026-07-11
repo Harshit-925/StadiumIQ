@@ -50,6 +50,11 @@ const SAMPLE_RESULT: VenueAnalysisResponse = {
   recycling_rate: 0.65,
   ai_insights: 'Operations are within acceptable parameters.',
   ai_fallback: false,
+  route_recommendation: {
+    recommended_zone_index: 0,
+    recommended_zone_density: 1.5,
+    reason: 'The entry gate with the lowest current density (1.50 pax/m²) — recommended route for entry, exit, or transport connections.',
+  },
 };
 
 function resetStore() {
@@ -143,6 +148,12 @@ describe('ResultsPanel', () => {
       render(<ResultsPanel />);
       expect(screen.getByText(/AI Insights/i)).toBeInTheDocument();
       expect(screen.getByText(/acceptable parameters/i)).toBeInTheDocument();
+    });
+
+    it('renders route recommendation', () => {
+      render(<ResultsPanel />);
+      expect(screen.getByText(/Route Recommendation/i)).toBeInTheDocument();
+      expect(screen.getByText(/The entry gate with the lowest current density/i)).toBeInTheDocument();
     });
 
     it('has aria-live="polite" for screen-reader announcements', () => {

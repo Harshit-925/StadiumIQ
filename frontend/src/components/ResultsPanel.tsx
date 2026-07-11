@@ -7,6 +7,7 @@ import {
   Leaf,
   Sparkles,
   AlertTriangle,
+  Navigation,
 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { useEffect } from 'react';
@@ -175,6 +176,21 @@ export function ResultsPanel() {
           ))}
         </div>
       </div>
+
+      {/* Route Recommendation */}
+      {result.route_recommendation && result.route_recommendation.recommended_zone_index !== null && (
+        <div className="flex items-start gap-3">
+          <Navigation className="mt-0.5 h-4 w-4 text-pitch-blue" aria-hidden="true" />
+          <div>
+            <h3 className="text-sm font-medium text-text-primary">
+              Route Recommendation
+            </h3>
+            <p className="text-sm text-text-secondary">
+              {result.route_recommendation.reason}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Evacuation Assessment */}
       <div className="flex items-start gap-3">

@@ -24,6 +24,7 @@ from app.engine.calculator import (
     classify_crowd_density,
     get_venue_info,
     grade_venue_readiness,
+    recommend_route,
 )
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
@@ -255,6 +256,38 @@ class TestStewardRequirement:
         """Result must cite FIFA source."""
         result = calculate_steward_requirement(1000)
         assert "FIFA" in result["source"]
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  recommend_route                                                       ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+class TestRecommendRoute:
+    """Tests for deterministic routing recommendations."""
+
+    def test_finds_lowest_density(self) -> None:
+        """Should return the index with the lowest density."""
+        result = recommend_route([4.0, 5.0, 1.2, 3.5])
+        assert result["recommended_zone_index"] == 2
+        assert result["recommended_zone_density"] == 1.2
+        assert "Zone 3" in result["reason"]
+
+    def test_empty_densities(self) -> None:
+        """Should handle empty list gracefully."""
+        result = recommend_route([])
+        assert result["recommended_zone_index"] is None
+        assert result["recommended_zone_density"] is None
+
+    def test_all_equal_densities(self) -> None:
+        """Should pick the first one if all are equal."""
+        result = recommend_route([2.5, 2.5, 2.5])
+        assert result["recommended_zone_index"] == 0
+
+    def test_has_source(self) -> None:
+        """Must include source citation."""
+        result = recommend_route([1.0])
+        assert "source" in result
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗

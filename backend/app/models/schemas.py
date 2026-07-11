@@ -109,6 +109,14 @@ class ZoneAnalysis(BaseModel):
     classification: CrowdClassification
 
 
+class RouteRecommendation(BaseModel):
+    """Recommended gate/zone for navigation and transportation guidance."""
+
+    recommended_zone_index: int | None
+    recommended_zone_density: float | None
+    reason: str
+
+
 class VenueAnalysisResponse(BaseModel):
     """Response body for ``POST /api/analyze``.
 
@@ -130,6 +138,7 @@ class VenueAnalysisResponse(BaseModel):
         recycling_rate: Fraction of waste recycled (0.0-1.0).
         ai_insights: AI-generated narrative, or rule-based fallback text.
         ai_fallback: True if AI was unavailable and fallback text was used.
+        route_recommendation: Recommended route for navigation/transportation.
     """
 
     venue: str
@@ -146,6 +155,7 @@ class VenueAnalysisResponse(BaseModel):
     recycling_rate: float
     ai_insights: str
     ai_fallback: bool
+    route_recommendation: RouteRecommendation
 
 
 class FanAssistResponse(BaseModel):

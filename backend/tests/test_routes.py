@@ -87,6 +87,7 @@ class TestAnalyzeEndpoint:
         assert "recycling_rate" in data
         assert "ai_insights" in data
         assert "ai_fallback" in data
+        assert "route_recommendation" in data
         assert isinstance(data["crowd_score"], float)
         assert isinstance(data["zone_analyses"], list)
 

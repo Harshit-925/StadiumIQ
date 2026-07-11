@@ -35,6 +35,13 @@ export interface ZoneAnalysis {
   classification: CrowdClassification;
 }
 
+/** Recommended route for navigation/transportation */
+export interface RouteRecommendation {
+  recommended_zone_index: number | null;
+  recommended_zone_density: number | null;
+  reason: string;
+}
+
 /** Overall venue analysis response */
 export interface VenueAnalysisResponse {
   venue: string;
@@ -51,6 +58,7 @@ export interface VenueAnalysisResponse {
   recycling_rate: number;
   ai_insights: string;
   ai_fallback: boolean;
+  route_recommendation: RouteRecommendation;
 }
 
 /** Fan assistant request */
