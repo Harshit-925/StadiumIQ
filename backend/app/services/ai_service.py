@@ -70,7 +70,7 @@ def _build_fallback_text(engine_result: dict[str, Any]) -> str:
     readiness = engine_result.get("readiness", {})
     evac = engine_result.get("evacuation", {})
     accessibility = engine_result.get("accessibility", {})
-    sustainability = engine_result.get("sustainability", {})
+    waste = engine_result.get("waste_diversion", {})
     route = engine_result.get("route_recommendation", {})
 
     lines = [
@@ -80,8 +80,8 @@ def _build_fallback_text(engine_result: dict[str, Any]) -> str:
         f"Evacuation Time: {evac.get('evacuation_time_minutes', 'N/A')} minutes "
         f"({'Meets' if evac.get('meets_standard') else 'Exceeds'} "
         f"{evac.get('standard_minutes', 8)}-minute standard)",
-        f"Accessibility: {'ADA Compliant' if accessibility.get('meets_ada_minimum') else 'Below Threshold'}",
-        f"Sustainability Score: {sustainability.get('sustainability_score', 'N/A')}/100",
+        f"Accessibility: {'ADA Compliant' if accessibility.get('meets_ada') else 'Below Threshold'}",
+        f"Sustainability Score: {min(100.0, (waste.get('diversion_rate_pct', 0.0) / 90.0) * 100):.1f}/100",
     ]
 
     if route and route.get("reason"):
