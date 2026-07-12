@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import re
 import time
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from google import genai
 
@@ -379,7 +379,7 @@ Rules:
             ),
         )
         if response and response.text:
-            return cast("str", response.text).strip()
+            return response.text.strip()
         return fallback_brief
     except Exception as e:
         logger.error(f"Error generating emergency brief: {e}")
