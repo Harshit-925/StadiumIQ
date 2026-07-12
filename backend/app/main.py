@@ -27,7 +27,7 @@ from app.routes.auth import auth_router
 from app.routes.main import router
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncGenerator
 
 logger = logging.getLogger("stadiumiq")
 
@@ -51,7 +51,7 @@ async def _unhandled_exception_handler(request: Request, exc: Exception) -> JSON
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler — runs startup and shutdown logic.
 
     Startup:
@@ -143,7 +143,7 @@ def create_app() -> FastAPI:
 
     # ── Rate limiting ────────────────────────────────────────────────────
     app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # pyright: ignore[reportArgumentType]
     app.add_exception_handler(Exception, _unhandled_exception_handler)
 
     # ── Routes ───────────────────────────────────────────────────────────

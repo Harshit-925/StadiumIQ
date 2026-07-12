@@ -7,7 +7,7 @@ tests never hit live services.
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import jwt
@@ -39,7 +39,7 @@ def make_test_token(user: dict[str, Any] = FAKE_USER, secret: str = TEST_JWT_SEC
         "iat": int(time.time()),
         "iss": "supabase",
     }
-    return str(jwt.encode(payload, secret, algorithm="HS256"))
+    return cast(str, jwt.encode(payload, secret, algorithm="HS256"))
 
 
 @pytest.fixture()
