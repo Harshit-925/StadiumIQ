@@ -19,6 +19,7 @@
 
 <p align="center">
   <strong>🚀 Live Demo: <a href="https://stadium-iq-eight.vercel.app/">https://stadium-iq-eight.vercel.app/</a></strong><br/>
+  <strong>🔑 Demo Operator Login:</strong> <code>demo@stadiumiq.app</code> / <code>Demo2026!</code><br/>
   <em>(Note: The free-tier backend sleeps after inactivity. The first request may take 30-60 seconds to cold-start.)</em>
 </p>
 
