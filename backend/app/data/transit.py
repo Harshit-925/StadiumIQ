@@ -1,7 +1,7 @@
 """Static reference data for transportation modules.
 
-Models parking lots, transit lines, and shuttle services with static capacity, 
-occupancy, and accessibility data. Serves as a deterministic reference for the 
+Models parking lots, transit lines, and shuttle services with static capacity,
+occupancy, and accessibility data. Serves as a deterministic reference for the
 Transport engine, similar to how VENUE_GRAPH functions for Navigation.
 """
 

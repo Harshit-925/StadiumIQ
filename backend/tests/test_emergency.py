@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from app.engine.emergency import triage_incident
 
+
 class TestEmergencyTriage:
     def test_critical_medical_incident(self) -> None:
         result = triage_incident("medical", 5, "gate_a")

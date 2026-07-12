@@ -6,6 +6,7 @@ from typing import Any
 
 from app.data.transit import PARKING_DATA, TRANSIT_DATA
 
+
 def get_transport_options(accessible_only: bool = False) -> dict[str, Any]:
     """Retrieve and rank current transportation options.
 
@@ -23,23 +24,23 @@ def get_transport_options(accessible_only: bool = False) -> dict[str, Any]:
     for lot_id, data in PARKING_DATA.items():
         if accessible_only and data["accessible_spaces"] == 0:
             continue
-            
+
         score = 0
         if data["status"] == "Full" or data["occupancy_pct"] >= 95:
             score += 100  # Penalty sinks it
         score += data["walk_time_mins"]
-        
+
         parking.append({
             "id": lot_id,
             "rank_score": score,
             **data
         })
-        
+
     transit = []
     for transit_id, data in TRANSIT_DATA.items():
         if accessible_only and not data["accessible"]:
             continue
-            
+
         score = 0
         if data["status"] != "Running":
             score += 100
@@ -47,7 +48,7 @@ def get_transport_options(accessible_only: bool = False) -> dict[str, Any]:
             score += 20
         elif data["crowd_level"] == "Medium":
             score += 10
-            
+
         transit.append({
             "id": transit_id,
             "rank_score": score,

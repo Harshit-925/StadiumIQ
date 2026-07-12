@@ -18,13 +18,25 @@ const ZONES = [
   { id: 'medical_station', name: 'Medical Station' },
 ];
 
+interface NavigationStep {
+  instruction: string;
+  minutes: number;
+}
+
+interface NavigationResult {
+  steps: NavigationStep[];
+  ai_narrative: string;
+  total_minutes: number;
+  accessible: boolean;
+}
+
 export function NavigationPanel() {
   const [origin, setOrigin] = useState('gate_a');
   const [destination, setDestination] = useState('section_lower_bowl');
   const [accessibleOnly, setAccessibleOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<NavigationResult | null>(null);
 
   async function handleNavigate(e: React.FormEvent) {
     e.preventDefault();
@@ -41,8 +53,8 @@ export function NavigationPanel() {
       // the real backend route is POST /api/navigate
       const data = await navigateVenue(origin, destination, accessibleOnly, 'en');
       setResult(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to calculate route.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to calculate route.');
     } finally {
       setLoading(false);
     }
@@ -64,8 +76,9 @@ export function NavigationPanel() {
             
             <form onSubmit={handleNavigate} className="space-y-4">
               <div>
-                <label className="block text-label-sm text-text-secondary mb-1">Starting Point</label>
+                <label htmlFor="origin_select" className="block text-label-sm text-text-secondary mb-1">Starting Point</label>
                 <select 
+                  id="origin_select"
                   className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-pitch-blue focus:ring-1 focus:ring-pitch-blue outline-none"
                   value={origin}
                   onChange={e => setOrigin(e.target.value)}
@@ -75,8 +88,9 @@ export function NavigationPanel() {
               </div>
 
               <div>
-                <label className="block text-label-sm text-text-secondary mb-1">Destination</label>
+                <label htmlFor="destination_select" className="block text-label-sm text-text-secondary mb-1">Destination</label>
                 <select 
+                  id="destination_select"
                   className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-pitch-blue focus:ring-1 focus:ring-pitch-blue outline-none"
                   value={destination}
                   onChange={e => setDestination(e.target.value)}
@@ -152,7 +166,7 @@ export function NavigationPanel() {
               <div className="rounded-card bg-surface p-6 shadow-sm border border-gray-100">
                 <h3 className="text-heading-sm font-display mb-4">Step-by-Step Directions</h3>
                 <div className="space-y-0">
-                  {result.steps.map((step: any, idx: number) => (
+                  {result.steps.map((step, idx: number) => (
                     <div key={idx} className="relative pl-6 pb-6 last:pb-0">
                       {idx !== result.steps.length - 1 && (
                         <div className="absolute left-[11px] top-6 bottom-0 w-px bg-gray-200"></div>

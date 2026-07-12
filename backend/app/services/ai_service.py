@@ -275,11 +275,11 @@ async def generate_navigation_narrative(
     language: str = "en"
 ) -> tuple[str, str]:
     """Generate a friendly narrative overlay for a navigation route.
-    
+
     Args:
         route_result: The dictionary returned by find_route.
         language: Language code.
-        
+
     Returns:
         Tuple of (narrative_text, source).
     """
@@ -300,13 +300,13 @@ async def generate_navigation_narrative(
     client = _get_client()
     if not client:
         return (fallback_narrative, "fallback")
-    
+
     if not _is_safe_prompt(steps_str):
         logger.warning("Prompt injection attempt detected in navigation input.")
         return (fallback_narrative, "fallback")
 
     prompt = f"""
-You are a friendly StadiumIQ assistant. 
+You are a friendly StadiumIQ assistant.
 Convert the following route steps into a warm, 2-4 sentence narrative guide.
 The total walk time is {route_result['total_minutes']} minutes.
 Is this an accessible (step-free) route? {'Yes' if route_result['accessible'] else 'No'}.
@@ -345,16 +345,16 @@ async def generate_emergency_brief(
 ) -> str:
     """Generate a quick executive brief for an emergency incident."""
     fallback_brief = f"Incident: {incident_type} in {zone}. Priority: {triage_result['priority_level']}."
-    
+
     client = _get_client()
     if not client:
         return fallback_brief
-        
+
     input_str = f"{incident_type} {zone} {triage_result}"
     if not _is_safe_prompt(input_str):
         logger.warning("Prompt injection attempt detected in emergency input.")
         return fallback_brief
-        
+
     prompt = f"""
 You are a StadiumIQ security operations assistant.
 Write a 2-sentence executive brief for the following incident:
@@ -379,7 +379,7 @@ Rules:
             ),
         )
         if response and response.text:
-            return response.text.strip()
+            return str(response.text).strip()
         return fallback_brief
     except Exception as e:
         logger.error(f"Error generating emergency brief: {e}")

@@ -71,16 +71,16 @@ export async function navigateVenue(
   destination: string,
   accessible_only: boolean,
   language: string = 'en'
-): Promise<any> {
-  return apiFetch<any>('/navigate', {
+): Promise<unknown> {
+  return apiFetch<unknown>('/navigate', {
     method: 'POST',
     body: { origin, destination, accessible_only, language },
   });
 }
 
 /** Get transport options */
-export async function getTransportOptions(accessible_only: boolean): Promise<any> {
-  return apiFetch<any>('/transport', {
+export async function getTransportOptions(accessible_only: boolean): Promise<unknown> {
+  return apiFetch<unknown>('/transport', {
     method: 'POST',
     body: { accessible_only },
   });
@@ -91,8 +91,8 @@ export async function triageIncident(
   incident_type: string,
   severity: number,
   zone: string
-): Promise<any> {
-  return apiFetch<any>('/emergency', {
+): Promise<unknown> {
+  return apiFetch<unknown>('/emergency', {
     method: 'POST',
     body: { incident_type, severity, zone },
   });

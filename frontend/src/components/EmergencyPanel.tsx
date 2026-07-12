@@ -20,6 +20,14 @@ const INCIDENT_TYPES = [
   { id: 'spill', name: 'Spill / Hazard' },
 ];
 
+interface EmergencyResult {
+  priority: string;
+  recommended_action: string;
+  required_personnel: string[];
+  ai_brief: string;
+  escalation_required: boolean;
+}
+
 export function EmergencyPanel() {
   const [incidentType, setIncidentType] = useState('medical');
   const [severity, setSeverity] = useState(3);
@@ -27,7 +35,7 @@ export function EmergencyPanel() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<EmergencyResult | null>(null);
 
   async function handleTriage(e: React.FormEvent) {
     e.preventDefault();
@@ -38,8 +46,8 @@ export function EmergencyPanel() {
     try {
       const data = await triageIncident(incidentType, severity, zone);
       setResult(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to process triage.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to process triage.');
     } finally {
       setLoading(false);
     }
@@ -62,8 +70,9 @@ export function EmergencyPanel() {
             
             <form onSubmit={handleTriage} className="space-y-4">
               <div>
-                <label className="block text-label-sm text-text-secondary mb-1">Incident Type</label>
+                <label htmlFor="incident_select" className="block text-label-sm text-text-secondary mb-1">Incident Type</label>
                 <select 
+                  id="incident_select"
                   className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-status-critical focus:ring-1 focus:ring-status-critical outline-none"
                   value={incidentType}
                   onChange={e => setIncidentType(e.target.value)}
@@ -73,8 +82,9 @@ export function EmergencyPanel() {
               </div>
 
               <div>
-                <label className="block text-label-sm text-text-secondary mb-1">Zone Location</label>
+                <label htmlFor="zone_select" className="block text-label-sm text-text-secondary mb-1">Zone Location</label>
                 <select 
+                  id="zone_select"
                   className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-status-critical focus:ring-1 focus:ring-status-critical outline-none"
                   value={zone}
                   onChange={e => setZone(e.target.value)}

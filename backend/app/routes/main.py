@@ -25,11 +25,11 @@ from app.core.rate_limit import (
 )
 from app.engine.calculator import analyze_venue, get_venue_info
 from app.models.schemas import (
+    EmergencyRequest,
+    EmergencyResponse,
     FanAssistRequest,
     FanAssistResponse,
     HealthResponse,
-    EmergencyRequest,
-    EmergencyResponse,
     NavigationRequest,
     NavigationResponse,
     NavigationStep,
@@ -233,7 +233,7 @@ async def navigate(request: Request, body: NavigationRequest) -> NavigationRespo
 @router.post("/transport", response_model=TransportResponse)
 async def get_transport(request: Request, body: TransportRequest) -> TransportResponse:
     from app.engine.transport import get_transport_options
-    
+
     result = get_transport_options(body.accessible_only)
     return TransportResponse(**result)
 
@@ -245,8 +245,7 @@ async def get_transport(request: Request, body: TransportRequest) -> TransportRe
 @router.post("/emergency", response_model=EmergencyResponse)
 async def triage_incident_endpoint(request: Request, body: EmergencyRequest) -> EmergencyResponse:
     from app.engine.emergency import triage_incident
-    from app.services import ai_service
-    
+
     result = triage_incident(body.incident_type, body.severity, body.zone)
     brief = await ai_service.generate_emergency_brief(
         body.incident_type, body.severity, body.zone, result
