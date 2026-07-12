@@ -217,9 +217,10 @@ class TransportResponse(BaseModel):
     transit: list[TransitOption]
 
 class EmergencyRequest(BaseModel):
-    incident_type: str = Field(..., description="medical, violence, suspicious_package, etc.")
-    severity: int = Field(..., ge=1, le=5)
-    zone: str = Field(...)
+    incident_type: str = Field(..., description="Type of emergency (medical, violence, etc)")
+    severity: int = Field(..., ge=1, le=5, description="Severity 1-5")
+    zone: str = Field(..., description="Location of incident")
+    zone_density: float | None = Field(default=None, ge=0, description="Live density reading for the zone")
 
 class EmergencyResponse(BaseModel):
     priority_level: str

@@ -251,7 +251,7 @@ async def get_transport(request: Request, body: TransportRequest) -> TransportRe
 async def triage_incident_endpoint(request: Request, body: EmergencyRequest) -> EmergencyResponse:
     from app.engine.emergency import triage_incident
 
-    result = triage_incident(body.incident_type, body.severity, body.zone)
+    result = triage_incident(body.incident_type, body.severity, body.zone, body.zone_density)
     brief = await ai_service.generate_emergency_brief(
         body.incident_type, body.severity, body.zone, result
     )

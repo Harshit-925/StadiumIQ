@@ -25,7 +25,7 @@ INCIDENT_WEIGHTS = {
     "spill": 0.5,
 }
 
-def triage_incident(incident_type: str, severity: int, zone: str) -> dict[str, Any]:
+def triage_incident(incident_type: str, severity: int, zone: str, zone_density: float | None = None) -> dict[str, Any]:
     """Deterministic routing for incidents with density escalation.
 
     Assigns priority level based on a weighted matrix of incident type
@@ -42,7 +42,8 @@ def triage_incident(incident_type: str, severity: int, zone: str) -> dict[str, A
     base_weight = INCIDENT_WEIGHTS.get(incident_type, 1.0)
     score = severity * base_weight
 
-    density = MOCK_ZONE_DENSITIES.get(zone, 1.0)
+    # Use live density if provided, otherwise fallback to mock sensor data
+    density = zone_density if zone_density is not None else MOCK_ZONE_DENSITIES.get(zone, 1.0)
     crowd_status = classify_crowd_density(density)
 
     action_plan = []

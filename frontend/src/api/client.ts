@@ -93,10 +93,11 @@ export async function getTransportOptions(accessible_only: boolean): Promise<Tra
 export async function triageIncident(
   incident_type: string,
   severity: number,
-  zone: string
+  zone: string,
+  zone_density?: number
 ): Promise<EmergencyResponse> {
   return apiFetch<EmergencyResponse>('/emergency', {
     method: 'POST',
-    body: { incident_type, severity, zone },
+    body: { incident_type, severity, zone, zone_density },
   });
 }

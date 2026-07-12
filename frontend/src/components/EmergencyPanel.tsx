@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ShieldAlert, AlertTriangle, Info, Loader2 } from 'lucide-react';
 import { triageIncident } from '../api/client';
 import type { EmergencyResponse } from '../types';
+import { useAppStore } from '../store/useAppStore';
 
 const ZONES = [
   { id: 'gate_a', name: 'Gate A' },
@@ -27,6 +28,7 @@ export function EmergencyPanel() {
   const [incidentType, setIncidentType] = useState('medical');
   const [severity, setSeverity] = useState(3);
   const [zone, setZone] = useState('gate_a');
+  const { analysisResult } = useAppStore();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +41,15 @@ export function EmergencyPanel() {
     setResult(null);
 
     try {
-      const data = await triageIncident(incidentType, severity, zone);
+      let liveDensity: number | undefined;
+      if (analysisResult?.zone_analyses) {
+        const zoneIndex = ZONES.findIndex(z => z.id === zone);
+        if (zoneIndex >= 0 && zoneIndex < analysisResult.zone_analyses.length) {
+          liveDensity = analysisResult.zone_analyses[zoneIndex].density;
+        }
+      }
+
+      const data = await triageIncident(incidentType, severity, zone, liveDensity);
       setResult(data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to process triage.');
@@ -116,7 +126,7 @@ export function EmergencyPanel() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-input bg-status-critical px-4 py-2.5 text-body-md font-semibold text-white transition-colors hover:bg-red-700 disabled:opacity-50 mt-4"
+                className="w-full flex items-center justify-center gap-2 rounded-input bg-status-critical px-4 py-2.5 text-body-md font-semibold text-white disabled:opacity-50 mt-4"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <AlertTriangle className="h-4 w-4" />}
                 <span>Generate Action Plan</span>
