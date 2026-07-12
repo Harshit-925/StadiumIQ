@@ -10,7 +10,6 @@ production runs on memory:// (should use Redis).
 """
 
 import logging
-from typing import cast
 
 from fastapi import Request
 from slowapi import Limiter
