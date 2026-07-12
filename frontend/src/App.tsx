@@ -11,6 +11,7 @@ const CrowdDashboard = lazy(() => import('./components/CrowdDashboard').then(mod
 const AccessibilityPanel = lazy(() => import('./components/AccessibilityPanel').then(module => ({ default: module.AccessibilityPanel })));
 const SustainabilityTracker = lazy(() => import('./components/SustainabilityTracker').then(module => ({ default: module.SustainabilityTracker })));
 const ReportExport = lazy(() => import('./components/ReportExport').then(module => ({ default: module.ReportExport })));
+const ProtectedRoute = lazy(() => import('./components/ProtectedRoute').then(module => ({ default: module.ProtectedRoute })));
 
 // Simple fallback for Suspense
 const PageLoader = () => (
@@ -30,12 +31,14 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
-        {/* ── Public operator routes ──────────────────────────────── */}
-        <Route element={<OperatorLayout />}>
-          <Route path="/dashboard" element={<CrowdDashboard />} />
-          <Route path="/dashboard/accessibility" element={<AccessibilityPanel />} />
-          <Route path="/dashboard/sustainability" element={<SustainabilityTracker />} />
-          <Route path="/dashboard/report" element={<ReportExport />} />
+        {/* ── Protected operator routes ──────────────────────────────── */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<OperatorLayout />}>
+            <Route path="/dashboard" element={<CrowdDashboard />} />
+            <Route path="/dashboard/accessibility" element={<AccessibilityPanel />} />
+            <Route path="/dashboard/sustainability" element={<SustainabilityTracker />} />
+            <Route path="/dashboard/report" element={<ReportExport />} />
+          </Route>
         </Route>
       </Routes>
       </Suspense>
