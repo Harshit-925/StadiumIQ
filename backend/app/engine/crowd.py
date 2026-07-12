@@ -73,7 +73,7 @@ def classify_crowd_density(density_pax_per_sqm: float) -> dict[str, str]:
     }
 
 
-def recommend_route(zone_densities: list[float]) -> dict[str, Any]:
+def recommend_route(zone_densities: dict[str, float]) -> dict[str, Any]:
     """Recommend the least-congested zone/gate for fan egress or arrival
     routing, based on already-computed per-zone density readings.
 
@@ -82,32 +82,31 @@ def recommend_route(zone_densities: list[float]) -> dict[str, Any]:
     inputs always produce the same recommendation.
 
     Args:
-        zone_densities: Per-zone density readings (pax/m²), same list passed
-            to analyze_venue(). Index order matches zone_analyses output.
+        zone_densities: Map of zone_id to density readings (pax/m²).
 
     Returns:
         Dict with:
-            recommended_zone_index: int index of the lowest-density zone.
+            recommended_zone_id: str ID of the lowest-density zone.
             recommended_zone_density: float density of that zone.
             reason: str human-readable justification.
             source: str citation, matches the style of other SOURCE consts.
     """
     if not zone_densities:
         return {
-            "recommended_zone_index": None,
+            "recommended_zone_id": None,
             "recommended_zone_density": None,
             "reason": "No zone data available.",
             "source": CROWD_DENSITY_SOURCE,
         }
 
-    best_index = min(range(len(zone_densities)), key=lambda i: zone_densities[i])
-    best_density = zone_densities[best_index]
+    best_id = min(zone_densities, key=zone_densities.get)
+    best_density = zone_densities[best_id]
 
     return {
-        "recommended_zone_index": best_index,
+        "recommended_zone_id": best_id,
         "recommended_zone_density": best_density,
         "reason": (
-            f"Zone {best_index + 1} has the lowest current density "
+            f"Zone '{best_id}' has the lowest current density "
             f"({best_density:.2f} pax/m²) — recommended route for entry, "
             f"exit, or transport connections."
         ),

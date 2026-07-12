@@ -85,24 +85,24 @@ class TestRecommendRoute:
     """Tests for deterministic routing recommendations."""
 
     def test_finds_lowest_density(self) -> None:
-        """Should return the index with the lowest density."""
-        result = recommend_route([4.0, 5.0, 1.2, 3.5])
-        assert result["recommended_zone_index"] == 2
+        """Should return the ID with the lowest density."""
+        result = recommend_route({"gate_a": 4.0, "gate_b": 5.0, "gate_c": 1.2, "concourse_north": 3.5})
+        assert result["recommended_zone_id"] == "gate_c"
         assert result["recommended_zone_density"] == 1.2
-        assert "Zone 3" in result["reason"]
+        assert "Zone 'gate_c'" in result["reason"]
 
     def test_empty_densities(self) -> None:
-        """Should handle empty list gracefully."""
-        result = recommend_route([])
-        assert result["recommended_zone_index"] is None
+        """Should handle empty dict gracefully."""
+        result = recommend_route({})
+        assert result["recommended_zone_id"] is None
         assert result["recommended_zone_density"] is None
 
     def test_all_equal_densities(self) -> None:
-        """Should pick the first one if all are equal."""
-        result = recommend_route([2.5, 2.5, 2.5])
-        assert result["recommended_zone_index"] == 0
+        """Should pick the first one (insertion order) if all are equal."""
+        result = recommend_route({"gate_a": 2.5, "gate_b": 2.5, "gate_c": 2.5})
+        assert result["recommended_zone_id"] == "gate_a"
 
     def test_has_source(self) -> None:
         """Must include source citation."""
-        result = recommend_route([1.0])
+        result = recommend_route({"gate_a": 1.0})
         assert "source" in result

@@ -2,6 +2,7 @@ import { memo, useState, useCallback } from 'react';
 import { Download, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAppStore } from '../store/useAppStore';
+import { SHARED_ZONES } from '../types';
 
 /** Build a plain-text report from the analysis result. */
 function buildReport(result: NonNullable<ReturnType<typeof useAppStore.getState>['analysisResult']>): string {
@@ -20,9 +21,10 @@ function buildReport(result: NonNullable<ReturnType<typeof useAppStore.getState>
     `Average density: ${result.average_density.toFixed(2)} pax/m²`,
     '',
     '--- Zone Breakdown ---',
-    ...result.zone_analyses.map(
-      (z) => `  Zone ${z.zone_id}: ${z.density.toFixed(2)} pax/m²  [${z.classification.level.toUpperCase()}]`,
-    ),
+    ...result.zone_analyses.map((z) => {
+      const zoneName = SHARED_ZONES.find((sz) => sz.id === z.zone_id)?.name ?? z.zone_id;
+      return `  ${zoneName}: ${z.density.toFixed(2)} pax/m²  [${z.classification.level.toUpperCase()}]`;
+    }),
     '',
     '--- Evacuation Assessment ---',
     `Estimated time: ${result.evacuation_time_minutes.toFixed(1)} minutes`,

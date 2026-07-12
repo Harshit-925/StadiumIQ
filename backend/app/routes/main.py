@@ -145,12 +145,12 @@ async def analyze(
 
         # Build zone_analyses in the shape the frontend expects
         zone_analyses_out: list[dict[str, Any]] = []
-        for i, z in enumerate(zone_analyses_raw):
+        for z in zone_analyses_raw:
             classif = z.get("classification", {})
             level = classif.get("level", "safe")
             zone_analyses_out.append(
                 {
-                    "zone_id": z.get("zone_index", i) + 1,
+                    "zone_id": z.get("zone_id", ""),
                     "density": z.get("density_pax_per_sqm", 0.0),
                     "classification": {
                         "level": level,
@@ -184,7 +184,7 @@ async def analyze(
             "ai_insights": ai_text,
             "ai_fallback": fallback_used,
             "route_recommendation": {
-                "recommended_zone_index": route_rec.get("recommended_zone_index"),
+                "recommended_zone_id": route_rec.get("recommended_zone_id"),
                 "recommended_zone_density": route_rec.get("recommended_zone_density"),
                 "reason": route_rec.get("reason", ""),
             },

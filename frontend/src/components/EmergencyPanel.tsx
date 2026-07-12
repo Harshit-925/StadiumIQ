@@ -2,17 +2,8 @@ import React, { useState } from 'react';
 import { ShieldAlert, AlertTriangle, Info, Loader2 } from 'lucide-react';
 import { triageIncident } from '../api/client';
 import type { EmergencyResponse } from '../types';
+import { SHARED_ZONES } from '../types';
 import { useAppStore } from '../store/useAppStore';
-
-const ZONES = [
-  { id: 'gate_a', name: 'Gate A' },
-  { id: 'gate_b', name: 'Gate B' },
-  { id: 'gate_c', name: 'Gate C' },
-  { id: 'concourse_north', name: 'North Concourse' },
-  { id: 'concourse_south', name: 'South Concourse' },
-  { id: 'section_lower_bowl', name: 'Lower Bowl' },
-  { id: 'section_upper_bowl', name: 'Upper Bowl' },
-];
 
 const INCIDENT_TYPES = [
   { id: 'medical', name: 'Medical Emergency' },
@@ -43,9 +34,9 @@ export function EmergencyPanel() {
     try {
       let liveDensity: number | undefined;
       if (analysisResult?.zone_analyses) {
-        const zoneIndex = ZONES.findIndex(z => z.id === zone);
-        if (zoneIndex >= 0 && zoneIndex < analysisResult.zone_analyses.length) {
-          liveDensity = analysisResult.zone_analyses[zoneIndex].density;
+        const zoneData = analysisResult.zone_analyses.find(z => z.zone_id === zone);
+        if (zoneData) {
+          liveDensity = zoneData.density;
         }
       }
 
@@ -101,7 +92,7 @@ export function EmergencyPanel() {
                   value={zone}
                   onChange={e => setZone(e.target.value)}
                 >
-                  {ZONES.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
+                  {SHARED_ZONES.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
                 </select>
               </div>
 
@@ -126,7 +117,7 @@ export function EmergencyPanel() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-input bg-status-critical px-4 py-2.5 text-body-md font-semibold text-white disabled:opacity-50 mt-4"
+                className="w-full flex items-center justify-center gap-2 rounded-input bg-status-critical px-4 py-2.5 text-body-md font-semibold text-white disabled:opacity-50 mt-4 hover:bg-status-critical hover:text-white transition-none"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <AlertTriangle className="h-4 w-4" />}
                 <span>Generate Action Plan</span>

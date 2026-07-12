@@ -24,9 +24,10 @@ class VenueAnalysisRequest(BaseModel):
         waste_total_kg: Total waste generated in kilograms (must be > 0).
     """
 
-    venue_id: str = Field(..., description="Venue slug, e.g. 'metlife', 'azteca'")
-    zone_densities: list[float] = Field(
-        ..., min_length=1, description="Density readings per zone (pax/m²)"
+    venue_id: str = Field(..., description="Venue identifier string")
+    zone_densities: dict[str, float] = Field(
+        ...,
+        description="Map of zone_id to density in pax/m²",
     )
     waste_recycled_kg: float = Field(..., ge=0, description="Recycled waste (kg)")
     waste_total_kg: float = Field(..., gt=0, description="Total waste (kg)")
@@ -42,11 +43,11 @@ class VenueAnalysisRequest(BaseModel):
 
     @field_validator("zone_densities")
     @classmethod
-    def densities_in_range(cls, v: list[float]) -> list[float]:
+    def densities_in_range(cls, v: dict[str, float]) -> dict[str, float]:
         """Ensure each density value is between 0 and 10 pax/m²."""
-        for i, d in enumerate(v):
+        for d in v.values():
             if d < 0 or d > 10:
-                raise ValueError(f"zone_densities[{i}] = {d} is out of range [0, 10]")
+                raise ValueError("Densities must be between 0 and 10 pax/m²")
         return v
 
 
@@ -90,7 +91,7 @@ class CrowdClassification(BaseModel):
 class ZoneAnalysis(BaseModel):
     """Per-zone crowd density analysis."""
 
-    zone_id: int
+    zone_id: str
     density: float
     classification: CrowdClassification
 
@@ -98,7 +99,7 @@ class ZoneAnalysis(BaseModel):
 class RouteRecommendation(BaseModel):
     """Recommended gate/zone for navigation and transportation guidance."""
 
-    recommended_zone_index: int | None
+    recommended_zone_id: str | None
     recommended_zone_density: float | None
     reason: str
 

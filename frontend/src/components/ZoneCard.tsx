@@ -13,7 +13,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 type Tier = 'safe' | 'moderate' | 'warning' | 'critical';
 
 interface ZoneCardProps {
-  zoneId: number;
+  zoneId: string;
   density: number;
   tier: Tier;
   label?: string;

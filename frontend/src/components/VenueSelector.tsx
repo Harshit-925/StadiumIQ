@@ -44,10 +44,6 @@ export function VenueSelector() {
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-text-primary">Zones:</span>
-            <span className="text-trophy-gold">{selectedVenue.zones}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
             <span className="font-medium text-text-primary">Exit Width:</span>
             <span className="text-trophy-gold">{selectedVenue.exit_width_m}m</span>
           </div>

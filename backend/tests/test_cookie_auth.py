@@ -40,7 +40,7 @@ def _patch_secret():
 def valid_analyze_payload() -> dict[str, Any]:
     return {
         "venue_id": "metlife",
-        "zone_densities": [1.5, 2.0, 3.0, 1.0, 2.5, 1.8, 2.2, 1.3],
+        "zone_densities": {"gate_a": 1.5, "concourse_north": 2.0, "bowl_lower": 3.0, "gate_b": 1.0, "gate_c": 2.5, "concourse_south": 1.8, "bowl_upper": 2.2},
         "waste_recycled_kg": 800.0,
         "waste_total_kg": 1000.0,
         "spectator_count": 70000,

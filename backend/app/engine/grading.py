@@ -37,7 +37,7 @@ def _score_to_grade(score: float) -> str:
 
 def grade_venue_readiness(
     venue_id: str,
-    zone_densities: list[float],
+    zone_densities: dict[str, float],
     waste_recycled_kg: float,
     waste_total_kg: float,
 ) -> dict[str, Any]:
@@ -53,7 +53,7 @@ def grade_venue_readiness(
 
     Args:
         venue_id: Venue slug.
-        zone_densities: List of current density readings (pax/m²) per zone.
+        zone_densities: Dict of current density readings (pax/m²) per zone.
         waste_recycled_kg: Recycled waste weight in kg.
         waste_total_kg: Total waste weight in kg.
 
@@ -67,7 +67,7 @@ def grade_venue_readiness(
     # ── Crowd safety score (40%) ─────────────────────────────────────────
     if zone_densities:
         _tier_score = {"safe": 100.0, "moderate": 70.0, "warning": 40.0, "critical": 10.0}
-        density_scores = [_tier_score[_density_tier(d)] for d in zone_densities]
+        density_scores = [_tier_score[_density_tier(d)] for d in zone_densities.values()]
         crowd_score = sum(density_scores) / len(density_scores)
     else:
         crowd_score = 100.0  # no data → assume safe

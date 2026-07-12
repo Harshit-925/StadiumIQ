@@ -16,7 +16,7 @@ class TestGradeVenueReadiness:
         """All zones safe + high recycling → high grade with recommendations."""
         result = grade_venue_readiness(
             "bmo",
-            [1.0, 1.5, 0.5, 1.0],
+            {"gate_a": 1.0, "gate_b": 1.5, "gate_c": 0.5, "gate_d": 1.0},
             waste_recycled_kg=950.0,
             waste_total_kg=1000.0,
         )
@@ -29,7 +29,7 @@ class TestGradeVenueReadiness:
         """All zones critical + low recycling → poor grade."""
         result = grade_venue_readiness(
             "metlife",
-            [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
+            {"gate_a": 5.0, "gate_b": 5.0, "gate_c": 5.0, "gate_d": 5.0, "gate_e": 5.0, "gate_f": 5.0, "gate_g": 5.0, "gate_h": 5.0},
             waste_recycled_kg=100.0,
             waste_total_kg=1000.0,
         )
@@ -39,7 +39,7 @@ class TestGradeVenueReadiness:
 
     def test_breakdown_weights(self) -> None:
         """Breakdown weights must sum to 1.0."""
-        result = grade_venue_readiness("azteca", [2.0], 500.0, 1000.0)
+        result = grade_venue_readiness("azteca", {"gate_a": 2.0}, 500.0, 1000.0)
         breakdown = result["breakdown"]
         total_weight = sum(v["weight"] for v in breakdown.values())
         assert abs(total_weight - 1.0) < 0.001
@@ -47,4 +47,4 @@ class TestGradeVenueReadiness:
     def test_invalid_venue_raises(self) -> None:
         """Invalid venue ID → ValueError."""
         with pytest.raises(ValueError):
-            grade_venue_readiness("invalid", [1.0], 100.0, 200.0)
+            grade_venue_readiness("invalid", {"gate_a": 1.0}, 100.0, 200.0)

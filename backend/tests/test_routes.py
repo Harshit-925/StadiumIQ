@@ -51,7 +51,7 @@ class TestAnalyzeEndpoint:
         """Standard valid request body."""
         return {
             "venue_id": "metlife",
-            "zone_densities": [1.5, 2.0, 3.0, 1.0, 2.5, 1.8, 2.2, 1.3],
+            "zone_densities": {"gate_a": 1.5, "concourse_north": 2.0, "bowl_lower": 3.0, "gate_b": 1.0, "gate_c": 2.5, "concourse_south": 1.8, "bowl_upper": 2.2},
             "waste_recycled_kg": 800.0,
             "waste_total_kg": 1000.0,
             "spectator_count": 70000,
@@ -72,7 +72,7 @@ class TestAnalyzeEndpoint:
             json=valid_payload,
             headers={"Authorization": "Bearer test_token"},
         )
-        assert resp.status_code == 200
+        assert resp.status_code == 200, resp.json()
         data = resp.json()
         # Flat response shape — matches frontend VenueAnalysisResponse type
         assert "venue" in data
@@ -102,7 +102,7 @@ class TestAnalyzeEndpoint:
         """Invalid venue_id → 422 validation error."""
         payload = {
             "venue_id": "invalid_venue",
-            "zone_densities": [1.0],
+            "zone_densities": {"gate_a": 1.0},
             "waste_recycled_kg": 100.0,
             "waste_total_kg": 200.0,
             "spectator_count": 10000,
@@ -121,7 +121,7 @@ class TestAnalyzeEndpoint:
         """Density > 10 → 422 validation error."""
         payload = {
             "venue_id": "metlife",
-            "zone_densities": [15.0],
+            "zone_densities": {"gate_a": 15.0},
             "waste_recycled_kg": 100.0,
             "waste_total_kg": 200.0,
             "spectator_count": 10000,
@@ -156,7 +156,7 @@ class TestAnalyzeEndpoint:
             "/api/analyze",
             json={
                 "venue_id": "metlife",
-                "zone_densities": [1.0],
+                "zone_densities": {"gate_a": 1.0},
                 "waste_recycled_kg": 100.0,
                 "waste_total_kg": 200.0,
                 "spectator_count": 10000,

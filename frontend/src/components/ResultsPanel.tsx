@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { toast } from 'sonner';
+import { SHARED_ZONES } from '../types';
 import {
   Shield,
   Clock,
@@ -65,7 +66,7 @@ function ZoneDensityBar({
   density,
   classification,
 }: {
-  zoneId: number;
+  zoneId: string;
   density: number;
   classification: string;
 }) {
@@ -76,11 +77,14 @@ function ZoneDensityBar({
     return 'bg-crowd-critical';
   };
 
+  const zoneName = SHARED_ZONES.find((z) => z.id === zoneId)?.name ?? zoneId;
   const widthPercent = Math.min((density / 10) * 100, 100);
 
   return (
     <div className="flex items-center gap-3">
-      <span className="w-16 text-xs text-text-secondary">Zone {zoneId}</span>
+      <span className="w-24 shrink-0 text-sm font-medium text-text-secondary truncate" title={zoneName}>
+        {zoneName}
+      </span>
       <div className="flex-1">
         <div className="h-2.5 w-full overflow-hidden rounded-pill bg-gray-100">
           <div
@@ -179,7 +183,7 @@ export function ResultsPanel() {
       </div>
 
       {/* Route Recommendation & Volunteer Dispatch */}
-      {result.route_recommendation && result.route_recommendation.recommended_zone_index !== null && (
+      {result.route_recommendation && result.route_recommendation.recommended_zone_id !== null && (
         <div className="space-y-4">
           <div className="flex items-start gap-3">
             <Navigation className="mt-0.5 h-4 w-4 text-pitch-blue" aria-hidden="true" />
@@ -199,7 +203,7 @@ export function ResultsPanel() {
               Volunteer Dispatch
             </h3>
             <p className="text-sm text-stadium-blue/90">
-              Zone {result.route_recommendation.recommended_zone_index + 1} needs attention — lowest congestion, safe to redirect volunteers here.
+              {SHARED_ZONES.find(z => z.id === result.route_recommendation.recommended_zone_id)?.name ?? result.route_recommendation.recommended_zone_id} needs attention — lowest congestion, safe to redirect volunteers here.
             </p>
           </div>
         </div>

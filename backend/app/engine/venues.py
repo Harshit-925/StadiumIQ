@@ -9,7 +9,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 82500,
         "exit_width_m": 45.0,
-        "zones": 8,
+
         "wheelchair_seats": 900,
     },
     "att": {
@@ -18,7 +18,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 94000,
         "exit_width_m": 50.0,
-        "zones": 10,
+
         "wheelchair_seats": 1000,
     },
     "sofi": {
@@ -27,7 +27,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 70000,
         "exit_width_m": 40.0,
-        "zones": 8,
+
         "wheelchair_seats": 750,
     },
     "hardrock": {
@@ -36,7 +36,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 65000,
         "exit_width_m": 38.0,
-        "zones": 6,
+
         "wheelchair_seats": 700,
     },
     "mercedes": {
@@ -45,7 +45,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 75000,
         "exit_width_m": 42.0,
-        "zones": 8,
+
         "wheelchair_seats": 800,
     },
     "nrg": {
@@ -54,7 +54,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 72000,
         "exit_width_m": 40.0,
-        "zones": 8,
+
         "wheelchair_seats": 770,
     },
     "arrowhead": {
@@ -63,7 +63,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 73000,
         "exit_width_m": 41.0,
-        "zones": 8,
+
         "wheelchair_seats": 780,
     },
     "levis": {
@@ -72,7 +72,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 71000,
         "exit_width_m": 40.0,
-        "zones": 8,
+
         "wheelchair_seats": 760,
     },
     "lincoln": {
@@ -81,7 +81,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 69000,
         "exit_width_m": 39.0,
-        "zones": 8,
+
         "wheelchair_seats": 740,
     },
     "lumen": {
@@ -90,7 +90,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 69000,
         "exit_width_m": 39.0,
-        "zones": 8,
+
         "wheelchair_seats": 740,
     },
     "gillette": {
@@ -99,7 +99,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "USA",
         "capacity": 65000,
         "exit_width_m": 38.0,
-        "zones": 6,
+
         "wheelchair_seats": 700,
     },
     "azteca": {
@@ -108,7 +108,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "Mexico",
         "capacity": 83000,
         "exit_width_m": 44.0,
-        "zones": 8,
+
         "wheelchair_seats": 850,
     },
     "bbva": {
@@ -117,7 +117,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "Mexico",
         "capacity": 53500,
         "exit_width_m": 32.0,
-        "zones": 6,
+
         "wheelchair_seats": 550,
     },
     "akron": {
@@ -126,7 +126,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "Mexico",
         "capacity": 48000,
         "exit_width_m": 28.0,
-        "zones": 6,
+
         "wheelchair_seats": 500,
     },
     "bcplace": {
@@ -135,7 +135,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "Canada",
         "capacity": 54000,
         "exit_width_m": 33.0,
-        "zones": 6,
+
         "wheelchair_seats": 560,
     },
     "bmo": {
@@ -144,7 +144,7 @@ VENUES: dict[str, dict[str, Any]] = {
         "country": "Canada",
         "capacity": 45000,
         "exit_width_m": 26.0,
-        "zones": 4,
+
         "wheelchair_seats": 480,
     },
 }

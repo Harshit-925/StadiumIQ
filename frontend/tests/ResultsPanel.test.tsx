@@ -39,8 +39,8 @@ const SAMPLE_RESULT: VenueAnalysisResponse = {
   crowd_score: 82.5,
   average_density: 1.8,
   zone_analyses: [
-    { zone_id: 1, density: 1.5, classification: { level: 'safe', description: 'Free movement', action_required: false, color: 'green' } },
-    { zone_id: 2, density: 2.3, classification: { level: 'moderate', description: 'Restricted', action_required: false, color: 'yellow' } },
+    { zone_id: 'gate_a', density: 1.5, classification: { level: 'safe', description: 'Free movement', action_required: false, color: 'green' } },
+    { zone_id: 'gate_b', density: 2.3, classification: { level: 'moderate', description: 'Restricted', action_required: false, color: 'yellow' } },
   ],
   evacuation_time_minutes: 22.4,
   evacuation_feasible: false,
@@ -51,7 +51,7 @@ const SAMPLE_RESULT: VenueAnalysisResponse = {
   ai_insights: 'Operations are within acceptable parameters.',
   ai_fallback: false,
   route_recommendation: {
-    recommended_zone_index: 0,
+    recommended_zone_id: 'gate_a',
     recommended_zone_density: 1.5,
     reason: 'The entry gate with the lowest current density (1.50 pax/m²) — recommended route for entry, exit, or transport connections.',
   },
@@ -124,8 +124,8 @@ describe('ResultsPanel', () => {
 
     it('renders zone analyses', () => {
       render(<ResultsPanel />);
-      expect(screen.getAllByText(/Zone 1/)[0]).toBeInTheDocument();
-      expect(screen.getAllByText(/Zone 2/)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Gate A/)[0]).toBeInTheDocument();
+      expect(screen.getAllByText(/Gate B/)[0]).toBeInTheDocument();
     });
 
     it('shows evacuation time', () => {

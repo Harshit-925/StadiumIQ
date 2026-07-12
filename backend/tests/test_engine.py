@@ -37,7 +37,7 @@ class TestGetVenueInfo:
 
     def test_all_venues_exist(self) -> None:
         """All 16 venues must exist with required fields."""
-        required_fields = {"name", "city", "country", "capacity", "exit_width_m", "zones", "wheelchair_seats"}
+        required_fields = {"name", "city", "country", "capacity", "exit_width_m", "wheelchair_seats"}
         assert len(VENUES) == 16
         for vid, vdata in VENUES.items():
             for field in required_fields:
@@ -57,10 +57,11 @@ class TestAnalyzeVenue:
         """analyze_venue returns all expected top-level keys."""
         result = analyze_venue(
             venue_id="sofi",
-            zone_densities=[1.0, 2.0, 3.0],
+            zone_densities={"gate_a": 1.0, "concourse_north": 2.0, "gate_b": 3.0},
             waste_recycled_kg=500.0,
             waste_total_kg=1000.0,
         )
+
         assert "venue" in result
         assert "zone_analyses" in result
         assert "evacuation" in result
@@ -70,12 +71,12 @@ class TestAnalyzeVenue:
         assert "route_recommendation" in result
 
     def test_zone_count_matches(self) -> None:
-        """Number of zone analyses should match input densities."""
-        densities = [1.0, 2.5, 3.5, 4.5]
-        result = analyze_venue("hardrock", densities, 200.0, 500.0)
+        """The number of zone_analyses should match the input dict length."""
+        densities = {"gate_a": 1.5, "gate_b": 1.5, "gate_c": 1.5, "gate_d": 1.5, "gate_e": 1.5}
+        result = analyze_venue("azteca", densities, 100.0, 200.0)
         assert len(result["zone_analyses"]) == len(densities)
 
     def test_invalid_venue_raises(self) -> None:
         """Invalid venue → ValueError."""
         with pytest.raises(ValueError):
-            analyze_venue("fake_venue", [1.0], 100.0, 200.0)
+            analyze_venue("fake_venue", {"a": 1.0}, 100.0, 200.0)

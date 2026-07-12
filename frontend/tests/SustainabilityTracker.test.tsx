@@ -38,7 +38,7 @@ const MOCK_RESULT = {
   ai_insights: 'Moderate conditions.',
   ai_fallback: false,
   route_recommendation: {
-    recommended_zone_index: 0,
+    recommended_zone_id: 'gate_a',
     recommended_zone_density: 1.5,
     reason: 'The entry gate with the lowest current density',
   },

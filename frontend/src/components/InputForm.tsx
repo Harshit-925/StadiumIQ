@@ -6,6 +6,7 @@ import { useAppStore } from '../store/useAppStore';
 import { analyzeVenue } from '../api/client';
 import { venueAnalysisSchema } from '../utils/validation';
 import type { ZodError } from 'zod';
+import { SHARED_ZONES } from '../types';
 
 export function InputForm() {
   const selectedVenue = useAppStore((s) => s.selectedVenue);
@@ -16,21 +17,19 @@ export function InputForm() {
   const addHistoryEntry = useAppStore((s) => s.addHistoryEntry);
   const shouldReduceMotion = useReducedMotion() ?? false;
 
-  const zoneCount = selectedVenue.zones;
-  const [zoneDensities, setZoneDensities] = useState<number[]>(
-    Array(zoneCount).fill(2.0) as number[],
+  const [zoneDensities, setZoneDensities] = useState<Record<string, number>>(
+    Object.fromEntries(SHARED_ZONES.map((z) => [z.id, 2.0]))
   );
   const [wasteRecycled, setWasteRecycled] = useState(150);
   const [totalWaste, setTotalWaste] = useState(300);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleZoneDensityChange = useCallback(
-    (index: number, value: number) => {
-      setZoneDensities((prev) => {
-        const next = [...prev];
-        next[index] = value;
-        return next;
-      });
+    (zoneId: string, value: number) => {
+      setZoneDensities((prev) => ({
+        ...prev,
+        [zoneId]: value,
+      }));
     },
     [],
   );
@@ -112,36 +111,39 @@ export function InputForm() {
             Zone Densities (pax/m²)
           </legend>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {zoneDensities.map((density, index) => (
-              <div key={index}>
-                <label
-                  htmlFor={`zone-density-${index}`}
-                  className="mb-1 block text-xs text-text-secondary"
-                >
-                  Zone {index + 1}
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    id={`zone-density-${index}`}
-                    type="range"
-                    min={0}
-                    max={10}
-                    step={0.1}
-                    value={density}
-                    onChange={(e) =>
-                      handleZoneDensityChange(index, parseFloat(e.target.value))
-                    }
-                    aria-label={`Zone ${index + 1} density: ${density} pax per square meter`}
-                    className="min-w-0 h-2 flex-1 cursor-pointer appearance-none rounded-pill bg-gray-100 accent-pitch-blue"
-                  />
-                  <span
-                    className={`w-12 shrink-0 text-right text-sm font-mono font-medium ${getDensityColor(density)}`}
+            {SHARED_ZONES.map((zone) => {
+              const density = zoneDensities[zone.id] ?? 2.0;
+              return (
+                <div key={zone.id}>
+                  <label
+                    htmlFor={`zone-density-${zone.id}`}
+                    className="mb-1 block text-xs text-text-secondary"
                   >
-                    {density.toFixed(1)}
-                  </span>
+                    {zone.name}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id={`zone-density-${zone.id}`}
+                      type="range"
+                      min={0}
+                      max={10}
+                      step={0.1}
+                      value={density}
+                      onChange={(e) =>
+                        handleZoneDensityChange(zone.id, parseFloat(e.target.value))
+                      }
+                      aria-label={`${zone.name} density: ${density} pax per square meter`}
+                      className="min-w-0 h-2 flex-1 cursor-pointer appearance-none rounded-pill bg-gray-100 accent-pitch-blue"
+                    />
+                    <span
+                      className={`w-12 shrink-0 text-right text-sm font-mono font-medium ${getDensityColor(density)}`}
+                    >
+                      {density.toFixed(1)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           {fieldErrors.zone_densities && (
             <p className="mt-1 text-sm text-crowd-critical" role="alert">

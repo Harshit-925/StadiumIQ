@@ -50,7 +50,7 @@ def get_venue_info(venue_id: str) -> dict[str, Any]:
 
 def analyze_venue(
     venue_id: str,
-    zone_densities: list[float],
+    zone_densities: dict[str, float],
     waste_recycled_kg: float,
     waste_total_kg: float,
 ) -> dict[str, Any]:
@@ -60,7 +60,7 @@ def analyze_venue(
 
     Args:
         venue_id: Venue slug.
-        zone_densities: Per-zone density readings (pax/m²).
+        zone_densities: Map of zone_id to density readings (pax/m²).
         waste_recycled_kg: Recycled waste in kg.
         waste_total_kg: Total waste in kg.
 
@@ -72,10 +72,10 @@ def analyze_venue(
 
     # Zone-level density classifications
     zone_analyses: list[dict[str, Any]] = []
-    for i, density in enumerate(zone_densities):
+    for zone_id, density in zone_densities.items():
         zone_analyses.append(
             {
-                "zone_index": i,
+                "zone_id": zone_id,
                 "density_pax_per_sqm": density,
                 "classification": classify_crowd_density(density),
             }

@@ -6,7 +6,6 @@ export interface VenueInfo {
   country: 'USA' | 'Mexico' | 'Canada';
   capacity: number;
   exit_width_m: number;
-  zones: number;
   wheelchair_seats: number;
 }
 
@@ -21,21 +20,21 @@ export interface CrowdClassification {
 /** Request payload for venue crowd analysis */
 export interface VenueAnalysisRequest {
   venue_id: string;
-  zone_densities: number[];
+  zone_densities: Record<string, number>;
   waste_recycled_kg: number;
   waste_total_kg: number;
 }
 
 /** Zone-level analysis result */
 export interface ZoneAnalysis {
-  zone_id: number;
+  zone_id: string;
   density: number;
   classification: CrowdClassification;
 }
 
 /** Recommended route for navigation/transportation */
 export interface RouteRecommendation {
-  recommended_zone_index: number | null;
+  recommended_zone_id: string | null;
   recommended_zone_density: number | null;
   reason: string;
 }
@@ -170,7 +169,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 82500,
     exit_width_m: 45.0,
-    zones: 8,
+
     wheelchair_seats: 650,
   },
   rosebowl: {
@@ -180,7 +179,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 88432,
     exit_width_m: 42.0,
-    zones: 8,
+
     wheelchair_seats: 600,
   },
   att: {
@@ -190,7 +189,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 80000,
     exit_width_m: 48.0,
-    zones: 8,
+
     wheelchair_seats: 580,
   },
   sofi: {
@@ -200,7 +199,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 70240,
     exit_width_m: 50.0,
-    zones: 6,
+
     wheelchair_seats: 550,
   },
   levis: {
@@ -210,7 +209,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 68500,
     exit_width_m: 40.0,
-    zones: 6,
+
     wheelchair_seats: 500,
   },
   nrg: {
@@ -220,7 +219,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 72220,
     exit_width_m: 44.0,
-    zones: 6,
+
     wheelchair_seats: 520,
   },
   mercedes: {
@@ -230,7 +229,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 71000,
     exit_width_m: 52.0,
-    zones: 6,
+
     wheelchair_seats: 540,
   },
   arrowhead: {
@@ -240,7 +239,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 76416,
     exit_width_m: 38.0,
-    zones: 6,
+
     wheelchair_seats: 480,
   },
   lincoln: {
@@ -250,7 +249,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 69328,
     exit_width_m: 36.0,
-    zones: 6,
+
     wheelchair_seats: 490,
   },
   lumen: {
@@ -260,7 +259,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 68740,
     exit_width_m: 38.0,
-    zones: 6,
+
     wheelchair_seats: 470,
   },
   gillette: {
@@ -270,7 +269,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'USA',
     capacity: 65878,
     exit_width_m: 35.0,
-    zones: 6,
+
     wheelchair_seats: 450,
   },
   azteca: {
@@ -280,7 +279,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'Mexico',
     capacity: 87523,
     exit_width_m: 40.0,
-    zones: 8,
+
     wheelchair_seats: 400,
   },
   akron: {
@@ -290,7 +289,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'Mexico',
     capacity: 49850,
     exit_width_m: 32.0,
-    zones: 4,
+
     wheelchair_seats: 300,
   },
   bbva: {
@@ -300,7 +299,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'Mexico',
     capacity: 53500,
     exit_width_m: 34.0,
-    zones: 4,
+
     wheelchair_seats: 320,
   },
   bmo: {
@@ -310,7 +309,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'Canada',
     capacity: 45736,
     exit_width_m: 28.0,
-    zones: 4,
+
     wheelchair_seats: 280,
   },
   bc_place: {
@@ -320,7 +319,7 @@ export const VENUES: Record<string, VenueInfo> = {
     country: 'Canada',
     capacity: 54500,
     exit_width_m: 36.0,
-    zones: 4,
+
     wheelchair_seats: 350,
   },
 } as const;
@@ -331,3 +330,14 @@ export const VENUE_GROUPS: Record<string, VenueInfo[]> = {
   Mexico: Object.values(VENUES).filter((v) => v.country === 'Mexico'),
   Canada: Object.values(VENUES).filter((v) => v.country === 'Canada'),
 };
+
+/** Shared standard zones across all venues */
+export const SHARED_ZONES = [
+  { id: 'gate_a', name: 'Gate A' },
+  { id: 'gate_b', name: 'Gate B' },
+  { id: 'gate_c', name: 'Gate C' },
+  { id: 'concourse_north', name: 'North Concourse' },
+  { id: 'concourse_south', name: 'South Concourse' },
+  { id: 'bowl_lower', name: 'Lower Bowl' },
+  { id: 'bowl_upper', name: 'Upper Bowl' },
+] as const;
