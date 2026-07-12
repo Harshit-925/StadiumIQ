@@ -247,7 +247,7 @@ npm run test
 *   Pure deterministic edge-case testing for the `calculator.py` operations engine.
 *   Stateless JWT validation and Supabase background task testing.
 *   AI Service fallback simulations when Google GenAI is unavailable.
-*   UI rendering states, accessibility properties, and protected layout routing.
+*   UI rendering states and accessibility properties.
 
 ## Project Structure
 
