@@ -8,8 +8,8 @@
   <a href="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml">
     <img src="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml/badge.svg" alt="CI/CD Status">
   </a>
-  <img src="https://img.shields.io/badge/coverage-88%25-brightgreen.svg" alt="Coverage: 88%">
-  <img src="https://img.shields.io/badge/tests-192_passing-brightgreen.svg" alt="Tests: 192">
+  <img src="https://img.shields.io/badge/coverage-90%25-brightgreen.svg" alt="Coverage: 90%">
+  <img src="https://img.shields.io/badge/tests-193_passing-brightgreen.svg" alt="Tests: 193">
   <a href="https://github.com/Harshit-925/StadiumIQ/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
   </a>
@@ -115,7 +115,7 @@ graph TD
     end
 
     UI --> API_Client
-    API_Client -->|HTTP / Cookie| Sec
+    API_Client -->|HTTP / Bearer Token| Sec
     Sec --> Routes
     Routes --> Engine
     Routes --> AI
@@ -188,7 +188,6 @@ Formulas from the core domain engine (`calculator.py`):
 ### Prerequisites
 *   Node.js 20+
 *   Python 3.11+
-*   Docker & Docker Compose
 
 ### Installation
 ```bash
@@ -272,7 +271,6 @@ C:.
 │   ├───package.json
 │   ├───tailwind.config.js
 │   └───eslint.config.js
-└───pb_migrations
 ```
 
 ## License
