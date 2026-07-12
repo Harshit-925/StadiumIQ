@@ -227,3 +227,5 @@ class EmergencyResponse(BaseModel):
     requires_police: bool
     requires_medical: bool
     ai_brief: str
+    escalated_due_to_crowd: bool = False
+    crowd_level: str = "safe"

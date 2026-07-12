@@ -55,6 +55,13 @@ export function EmergencyPanel() {
         <h1 className="text-heading-lg font-display text-text-primary">Emergency Triage</h1>
       </div>
 
+      <div className="mb-6 p-4 rounded bg-status-warning/10 border border-status-warning/30 flex items-start gap-3">
+        <AlertTriangle className="h-5 w-5 text-status-warning shrink-0 mt-0.5" />
+        <p className="text-sm text-status-warning font-medium">
+          <strong>Disclaimer:</strong> This AI-generated assessment is for situational awareness only. It is not a replacement for calling 911 or designated stadium emergency services.
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Input Form */}

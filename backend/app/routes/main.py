@@ -4,6 +4,9 @@ Routes:
 - GET  /api/health    — health check (no auth, no rate limit)
 - POST /api/analyze   — stadium analysis (no auth required, saves if logged in, 10/min rate limit)
 - POST /api/fan-assist — fan Q&A assistant (no auth required, 5/min per-IP limit)
+- POST /api/navigate  — AI-powered stadium navigation (no auth required, 10/min rate limit)
+- POST /api/transport — multimodal transportation options (no auth required, 10/min rate limit)
+- POST /api/emergency — AI incident triage and response (no auth required, 10/min rate limit)
 """
 
 
@@ -231,6 +234,7 @@ async def navigate(request: Request, body: NavigationRequest) -> NavigationRespo
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 @router.post("/transport", response_model=TransportResponse)
+@limiter.limit(RATE_LIMIT_AI)
 async def get_transport(request: Request, body: TransportRequest) -> TransportResponse:
     from app.engine.transport import get_transport_options
 
@@ -243,6 +247,7 @@ async def get_transport(request: Request, body: TransportRequest) -> TransportRe
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 @router.post("/emergency", response_model=EmergencyResponse)
+@limiter.limit(RATE_LIMIT_AI)
 async def triage_incident_endpoint(request: Request, body: EmergencyRequest) -> EmergencyResponse:
     from app.engine.emergency import triage_incident
 
