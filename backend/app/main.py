@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import httpx
 from fastapi import FastAPI, Request
@@ -143,7 +143,7 @@ def create_app() -> FastAPI:
 
     # ── Rate limiting ────────────────────────────────────────────────────
     app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # pyright: ignore[reportArgumentType]
+    app.add_exception_handler(RateLimitExceeded, cast(Any, _rate_limit_exceeded_handler))
     app.add_exception_handler(Exception, _unhandled_exception_handler)
 
     # ── Routes ───────────────────────────────────────────────────────────
