@@ -45,7 +45,7 @@ def _fan_assist_key(request: Request) -> str:
         # not enough to reconstruct the full token.
         return f"authenticated:{token[:16]}"
 
-    return cast("str", get_remote_address(request))
+    return str(get_remote_address(request))
 
 
 limiter = Limiter(

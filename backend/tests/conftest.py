@@ -39,7 +39,7 @@ def make_test_token(user: dict[str, Any] = FAKE_USER, secret: str = TEST_JWT_SEC
         "iat": int(time.time()),
         "iss": "supabase",
     }
-    return cast("str", jwt.encode(payload, secret, algorithm="HS256"))
+    return str(jwt.encode(payload, secret, algorithm="HS256"))
 
 
 @pytest.fixture()
