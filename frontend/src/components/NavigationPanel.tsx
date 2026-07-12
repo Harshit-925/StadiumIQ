@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Compass, Info, Loader2, AlertTriangle, Play } from 'lucide-react';
 import { navigateVenue } from '../api/client';
+import type { NavigationResponse } from '../types';
 
 const ZONES = [
   { id: 'gate_a', name: 'Gate A' },
@@ -18,17 +19,7 @@ const ZONES = [
   { id: 'medical_station', name: 'Medical Station' },
 ];
 
-interface NavigationStep {
-  instruction: string;
-  minutes: number;
-}
 
-interface NavigationResult {
-  steps: NavigationStep[];
-  ai_narrative: string;
-  total_minutes: number;
-  accessible: boolean;
-}
 
 export function NavigationPanel() {
   const [origin, setOrigin] = useState('gate_a');
@@ -36,7 +27,7 @@ export function NavigationPanel() {
   const [accessibleOnly, setAccessibleOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<NavigationResult | null>(null);
+  const [result, setResult] = useState<NavigationResponse | null>(null);
 
   async function handleNavigate(e: React.FormEvent) {
     e.preventDefault();

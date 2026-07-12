@@ -4,6 +4,9 @@ import type {
   VenueAnalysisResponse,
   FanAssistRequest,
   FanAssistResponse,
+  NavigationResponse,
+  TransportResponse,
+  EmergencyResponse,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -71,16 +74,16 @@ export async function navigateVenue(
   destination: string,
   accessible_only: boolean,
   language: string = 'en'
-): Promise<unknown> {
-  return apiFetch<unknown>('/navigate', {
+): Promise<NavigationResponse> {
+  return apiFetch<NavigationResponse>('/navigate', {
     method: 'POST',
     body: { origin, destination, accessible_only, language },
   });
 }
 
 /** Get transport options */
-export async function getTransportOptions(accessible_only: boolean): Promise<unknown> {
-  return apiFetch<unknown>('/transport', {
+export async function getTransportOptions(accessible_only: boolean): Promise<TransportResponse> {
+  return apiFetch<TransportResponse>('/transport', {
     method: 'POST',
     body: { accessible_only },
   });
@@ -91,8 +94,8 @@ export async function triageIncident(
   incident_type: string,
   severity: number,
   zone: string
-): Promise<unknown> {
-  return apiFetch<unknown>('/emergency', {
+): Promise<EmergencyResponse> {
+  return apiFetch<EmergencyResponse>('/emergency', {
     method: 'POST',
     body: { incident_type, severity, zone },
   });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldAlert, AlertTriangle, Info, Loader2 } from 'lucide-react';
 import { triageIncident } from '../api/client';
+import type { EmergencyResponse } from '../types';
 
 const ZONES = [
   { id: 'gate_a', name: 'Gate A' },
@@ -20,13 +21,7 @@ const INCIDENT_TYPES = [
   { id: 'spill', name: 'Spill / Hazard' },
 ];
 
-interface EmergencyResult {
-  priority: string;
-  recommended_action: string;
-  required_personnel: string[];
-  ai_brief: string;
-  escalation_required: boolean;
-}
+
 
 export function EmergencyPanel() {
   const [incidentType, setIncidentType] = useState('medical');
@@ -35,7 +30,7 @@ export function EmergencyPanel() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<EmergencyResult | null>(null);
+  const [result, setResult] = useState<EmergencyResponse | null>(null);
 
   async function handleTriage(e: React.FormEvent) {
     e.preventDefault();

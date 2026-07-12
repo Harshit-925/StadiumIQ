@@ -100,6 +100,52 @@ export interface HistoryEntry {
   overall_grade: string;
 }
 
+export interface NavigationStep {
+  instruction: string;
+  minutes: number;
+}
+
+export interface NavigationResponse {
+  steps: NavigationStep[];
+  total_minutes: number;
+  accessible: boolean;
+  narrative: string;
+  source: string;
+}
+
+export interface ParkingOption {
+  id: string;
+  name: string;
+  capacity: number;
+  accessible_spaces: number;
+  occupancy_pct: number;
+  walk_time_mins: number;
+  status: string;
+}
+
+export interface TransitOption {
+  id: string;
+  name: string;
+  type: string;
+  frequency_mins: number;
+  crowd_level: string;
+  accessible: boolean;
+  status: string;
+}
+
+export interface TransportResponse {
+  parking: ParkingOption[];
+  transit: TransitOption[];
+}
+
+export interface EmergencyResponse {
+  priority_level: string;
+  action_plan: string[];
+  requires_police: boolean;
+  requires_medical: boolean;
+  ai_brief: string;
+}
+
 
 /** Supported languages */
 export type SupportedLanguage = 'en' | 'es' | 'fr' | 'de' | 'pt' | 'ja';

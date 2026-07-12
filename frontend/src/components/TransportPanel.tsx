@@ -1,19 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Bus, Car, AlertTriangle, RefreshCcw } from 'lucide-react';
 import { getTransportOptions } from '../api/client';
+import type { TransportResponse } from '../types';
 
 export function TransportPanel() {
   const [accessibleOnly, setAccessibleOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<{ parking: unknown[], transit: unknown[] } | null>(null);
+  const [data, setData] = useState<TransportResponse | null>(null);
 
   const fetchTransport = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await getTransportOptions(accessibleOnly);
-      setData(data as { parking: unknown[], transit: unknown[] });
+      setData(data);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to fetch transport data.');
     } finally {
