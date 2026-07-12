@@ -12,15 +12,15 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
 import httpx
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.core.config import get_settings
-from app.core.logging import RequestIdMiddleware, setup_logging
+from app.core.logging import RequestIdMiddleware, request_id_ctx, setup_logging
 from app.core.rate_limit import check_production_storage, limiter
 from app.core.security import SecurityHeadersMiddleware
 from app.routes.auth import auth_router
@@ -30,6 +30,24 @@ if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
 logger = logging.getLogger("stadiumiq")
+
+
+async def _unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catch-all handler: guarantees a consistent JSON error shape and
+    never leaks internal exception details in production.
+
+    Matches the {error, code, request_id} contract used throughout this
+    API's other error responses.
+    """
+    logger.exception("Unhandled exception", extra={"path": request.url.path})
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "Internal server error",
+            "code": "internal_error",
+            "request_id": request_id_ctx.get("-"),
+        },
+    )
 
 
 @asynccontextmanager
@@ -126,6 +144,7 @@ def create_app() -> FastAPI:
     # ── Rate limiting ────────────────────────────────────────────────────
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
+    app.add_exception_handler(Exception, _unhandled_exception_handler)
 
     # ── Routes ───────────────────────────────────────────────────────────
     app.include_router(router)

@@ -154,6 +154,9 @@ graph TD
 | **Analysis** | `POST` | `/api/analyze` | Runs pure-function engine and generates AI insights. Saves results if logged in. | ❌ |
 | **Fan Assistance** | `POST` | `/api/fan-assist` | Multilingual AI stadium guide with venue context. | ❌ |
 
+Machine-readable API contract available at `/openapi.json` on any running
+instance (interactive docs at `/api/docs` in non-production environments).
+
 ## Calculation Methodology
 
 Formulas from the core domain engine (`calculator.py`):

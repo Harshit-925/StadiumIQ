@@ -28,6 +28,13 @@ from app.models.schemas import (
     FanAssistRequest,
     FanAssistResponse,
     HealthResponse,
+    EmergencyRequest,
+    EmergencyResponse,
+    NavigationRequest,
+    NavigationResponse,
+    NavigationStep,
+    TransportRequest,
+    TransportResponse,
     VenueAnalysisRequest,
     VenueAnalysisResponse,
 )
@@ -134,7 +141,7 @@ async def analyze(
         zone_analyses_raw = engine_result.get("zone_analyses", [])
 
         # Build zone_analyses in the shape the frontend expects
-        zone_analyses_out = []
+        zone_analyses_out: list[dict[str, Any]] = []
         for i, z in enumerate(zone_analyses_raw):
             classif = z.get("classification", {})
             level = classif.get("level", "safe")
@@ -158,7 +165,7 @@ async def analyze(
             "overall_grade": readiness.get("grade", "N/A"),
             "crowd_score": readiness.get("score", 0.0),
             "average_density": (
-                sum(z["density"] for z in zone_analyses_out) / len(zone_analyses_out)
+                sum(float(z["density"]) for z in zone_analyses_out) / len(zone_analyses_out)
                 if zone_analyses_out
                 else 0.0
             ),
@@ -184,12 +191,68 @@ async def analyze(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except HTTPException:
         raise
-    except Exception as exc:
-        logger.exception("Unexpected error in /api/analyze")
-        raise HTTPException(
-            status_code=500,
-            detail="Internal server error. Please try again later.",
-        ) from exc
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  NAVIGATE                                                                ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+@router.post("/navigate", response_model=NavigationResponse)
+@limiter.limit(RATE_LIMIT_AI)
+async def navigate(request: Request, body: NavigationRequest) -> NavigationResponse:
+    from app.data.venue_graph import zone_display_name
+    from app.engine.navigation import find_route
+
+    result = find_route(body.origin, body.destination, body.accessible_only)
+    if not result["path"]:
+        raise HTTPException(status_code=404, detail="No route found between those zones")
+
+    narrative, source = await ai_service.generate_navigation_narrative(result, body.language)
+
+    steps = [
+        NavigationStep(
+            instruction=f"From {zone_display_name(s['from'])}, proceed to {zone_display_name(s['to'])}.",
+            zone=s["to"],
+            minutes=s["minutes"],
+        ) for s in result["steps"]
+    ]
+
+    return NavigationResponse(
+        steps=steps,
+        total_minutes=result["total_minutes"],
+        accessible=result["accessible"],
+        narrative=narrative,
+        source=source,
+    )
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  TRANSPORT                                                               ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+@router.post("/transport", response_model=TransportResponse)
+async def get_transport(request: Request, body: TransportRequest) -> TransportResponse:
+    from app.engine.transport import get_transport_options
+    
+    result = get_transport_options(body.accessible_only)
+    return TransportResponse(**result)
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  EMERGENCY                                                               ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+@router.post("/emergency", response_model=EmergencyResponse)
+async def triage_incident_endpoint(request: Request, body: EmergencyRequest) -> EmergencyResponse:
+    from app.engine.emergency import triage_incident
+    from app.services import ai_service
+    
+    result = triage_incident(body.incident_type, body.severity, body.zone)
+    brief = await ai_service.generate_emergency_brief(
+        body.incident_type, body.severity, body.zone, result
+    )
+    result["ai_brief"] = brief
+    return EmergencyResponse(**result)
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
@@ -247,9 +310,3 @@ async def fan_assist(
 
     except HTTPException:
         raise
-    except Exception as exc:
-        logger.exception("Unexpected error in /api/fan-assist")
-        raise HTTPException(
-            status_code=500,
-            detail="Internal server error. Please try again later.",
-        ) from exc

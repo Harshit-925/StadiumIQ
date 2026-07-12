@@ -43,6 +43,20 @@ def _get_client() -> genai.Client:
     return _client
 
 
+def _is_safe_prompt(text: str) -> bool:
+    """Basic security check to prevent obvious prompt injection."""
+    suspicious_keywords = [
+        "ignore all previous",
+        "system prompt",
+        "you are now",
+        "forget everything",
+        "bypass",
+        "override"
+    ]
+    lower_text = text.lower()
+    return not any(kw in lower_text for kw in suspicious_keywords)
+
+
 def _strip_json_fences(text: str) -> str:
     """Remove markdown code fences (```json … ```) from AI output.
 
@@ -134,6 +148,10 @@ async def generate_crowd_insights(
         )
         return _build_fallback_text(engine_result), True
 
+    if not _is_safe_prompt(str(engine_result)):
+        logger.warning("Prompt injection attempt detected in engine input.")
+        return _build_fallback_text(engine_result), True
+
     prompt = (
         "You are StadiumIQ, a FIFA World Cup 2026 stadium operations analyst. "
         "Analyze the following stadium data and provide actionable insights "
@@ -204,6 +222,10 @@ async def generate_fan_response(
         )
         return generic_fallback, True
 
+    if not _is_safe_prompt(query):
+        logger.warning("Prompt injection attempt detected in fan query.")
+        return generic_fallback, True
+
     venue_info = ""
     if venue_context:
         venue_info = (
@@ -247,3 +269,118 @@ async def generate_fan_response(
             },
         )
         return generic_fallback, True
+
+async def generate_navigation_narrative(
+    route_result: dict[str, Any],
+    language: str = "en"
+) -> tuple[str, str]:
+    """Generate a friendly narrative overlay for a navigation route.
+    
+    Args:
+        route_result: The dictionary returned by find_route.
+        language: Language code.
+        
+    Returns:
+        Tuple of (narrative_text, source).
+    """
+    if not route_result["path"]:
+        return ("No route found.", "fallback")
+
+    steps_text = []
+    from app.data.venue_graph import zone_display_name
+    for s in route_result["steps"]:
+        steps_text.append(f"- From {zone_display_name(s['from'])} to {zone_display_name(s['to'])} ({s['minutes']} min)")
+    steps_str = "\n".join(steps_text)
+
+    fallback_narrative = (
+        f"Your route will take approximately {route_result['total_minutes']} minutes. "
+        "Please follow the steps provided."
+    )
+
+    client = _get_client()
+    if not client:
+        return (fallback_narrative, "fallback")
+    
+    if not _is_safe_prompt(steps_str):
+        logger.warning("Prompt injection attempt detected in navigation input.")
+        return (fallback_narrative, "fallback")
+
+    prompt = f"""
+You are a friendly StadiumIQ assistant. 
+Convert the following route steps into a warm, 2-4 sentence narrative guide.
+The total walk time is {route_result['total_minutes']} minutes.
+Is this an accessible (step-free) route? {'Yes' if route_result['accessible'] else 'No'}.
+
+Raw steps:
+{steps_str}
+
+Rules:
+1. Be concise, polite, and helpful.
+2. DO NOT invent landmarks not in the steps.
+3. If accessible is True, reassure them it is step-free.
+4. Provide the answer in language code: {language}.
+"""
+    try:
+        from google.genai.types import GenerateContentConfig
+        response = await client.aio.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=GenerateContentConfig(
+                temperature=0.3,
+                max_output_tokens=300,
+            ),
+        )
+        if response and response.text:
+            return (response.text.strip(), "genai")
+        return (fallback_narrative, "fallback")
+    except Exception as e:
+        logger.error(f"Error generating navigation narrative: {e}")
+        return (fallback_narrative, "fallback")
+
+async def generate_emergency_brief(
+    incident_type: str,
+    severity: int,
+    zone: str,
+    triage_result: dict[str, Any]
+) -> str:
+    """Generate a quick executive brief for an emergency incident."""
+    fallback_brief = f"Incident: {incident_type} in {zone}. Priority: {triage_result['priority_level']}."
+    
+    client = _get_client()
+    if not client:
+        return fallback_brief
+        
+    input_str = f"{incident_type} {zone} {triage_result}"
+    if not _is_safe_prompt(input_str):
+        logger.warning("Prompt injection attempt detected in emergency input.")
+        return fallback_brief
+        
+    prompt = f"""
+You are a StadiumIQ security operations assistant.
+Write a 2-sentence executive brief for the following incident:
+Type: {incident_type}
+Severity: {severity}/5
+Zone: {zone}
+Action Plan: {', '.join(triage_result['action_plan'])}
+
+Rules:
+1. Be extremely concise and professional.
+2. State the incident clearly.
+3. Summarize the response action.
+"""
+    try:
+        from google.genai.types import GenerateContentConfig
+        response = await client.aio.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=GenerateContentConfig(
+                temperature=0.2,
+                max_output_tokens=150,
+            ),
+        )
+        if response and response.text:
+            return response.text.strip()
+        return fallback_brief
+    except Exception as e:
+        logger.error(f"Error generating emergency brief: {e}")
+        return fallback_brief

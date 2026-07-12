@@ -11,6 +11,10 @@ const CrowdDashboard = lazy(() => import('./components/CrowdDashboard').then(mod
 const AccessibilityPanel = lazy(() => import('./components/AccessibilityPanel').then(module => ({ default: module.AccessibilityPanel })));
 const SustainabilityTracker = lazy(() => import('./components/SustainabilityTracker').then(module => ({ default: module.SustainabilityTracker })));
 const ReportExport = lazy(() => import('./components/ReportExport').then(module => ({ default: module.ReportExport })));
+const NavigationPanel = lazy(() => import('./components/NavigationPanel').then(module => ({ default: module.NavigationPanel })));
+const TransportPanel = lazy(() => import('./components/TransportPanel').then(module => ({ default: module.TransportPanel })));
+const EmergencyPanel = lazy(() => import('./components/EmergencyPanel').then(module => ({ default: module.EmergencyPanel })));
+const OverviewPanel = lazy(() => import('./components/OverviewPanel').then(module => ({ default: module.OverviewPanel })));
 
 // Simple fallback for Suspense
 const PageLoader = () => (
@@ -32,9 +36,13 @@ export default function App() {
 
         {/* ── Public operator routes ──────────────────────────────── */}
         <Route element={<OperatorLayout />}>
-          <Route path="/dashboard" element={<CrowdDashboard />} />
+          <Route path="/dashboard" element={<OverviewPanel />} />
+          <Route path="/dashboard/crowd" element={<CrowdDashboard />} />
           <Route path="/dashboard/accessibility" element={<AccessibilityPanel />} />
           <Route path="/dashboard/sustainability" element={<SustainabilityTracker />} />
+          <Route path="/dashboard/navigate" element={<NavigationPanel />} />
+          <Route path="/dashboard/transport" element={<TransportPanel />} />
+          <Route path="/dashboard/emergency" element={<EmergencyPanel />} />
           <Route path="/dashboard/report" element={<ReportExport />} />
         </Route>
       </Routes>

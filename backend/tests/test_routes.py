@@ -143,6 +143,32 @@ class TestAnalyzeEndpoint:
         )
         assert resp.status_code == 422
 
+    async def test_unhandled_exception_returns_consistent_shape(
+        self, client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A genuinely unexpected exception should return the standard error
+        shape, not leak a stack trace or raw exception text."""
+        def _boom(*args: Any, **kwargs: Any) -> None:
+            raise RuntimeError("simulated failure")
+
+        monkeypatch.setattr("app.routes.main.analyze_venue", _boom)
+        response = await client.post(
+            "/api/analyze",
+            json={
+                "venue_id": "metlife",
+                "zone_densities": [1.0],
+                "waste_recycled_kg": 100.0,
+                "waste_total_kg": 200.0,
+                "spectator_count": 10000,
+                "risk_level": "low",
+            }
+        )
+        assert response.status_code == 500
+        body = response.json()
+        assert body["code"] == "internal_error"
+        assert "request_id" in body
+        assert "RuntimeError" not in response.text  # no leaked exception detail
+
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  FAN ASSIST                                                            ║

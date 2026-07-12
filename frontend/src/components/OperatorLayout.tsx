@@ -15,13 +15,21 @@ import {
   FileText,
   LogOut,
   LogIn,
+  Compass,
+  Bus,
+  ShieldAlert,
+  Users,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useAppStore } from '../store/useAppStore';
 import { FanAssistant } from './FanAssistant';
 
 const NAV_ITEMS = [
-  { to: '/dashboard',              label: 'Dashboard',       icon: LayoutDashboard, end: true },
+  { to: '/dashboard',              label: 'Overview',        icon: LayoutDashboard, end: true },
+  { to: '/dashboard/crowd',        label: 'Crowd Intel',     icon: Users,           end: false },
+  { to: '/dashboard/navigate',     label: 'Navigate',        icon: Compass,         end: false },
+  { to: '/dashboard/transport',    label: 'Transport',       icon: Bus,             end: false },
+  { to: '/dashboard/emergency',    label: 'Emergency',       icon: ShieldAlert,     end: false },
   { to: '/dashboard/accessibility',label: 'Accessibility',   icon: Accessibility,   end: false },
   { to: '/dashboard/sustainability',label:'Sustainability',  icon: Leaf,            end: false },
   { to: '/dashboard/report',       label: 'Report',          icon: FileText,        end: false },

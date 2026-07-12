@@ -172,3 +172,58 @@ class HealthResponse(BaseModel):
     status: str
     supabase: str
     version: str
+
+class NavigationRequest(BaseModel):
+    origin: str = Field(..., min_length=1, description="Zone ID, e.g. 'gate_a'")
+    destination: str = Field(..., min_length=1)
+    accessible_only: bool = Field(default=False)
+    language: str = Field(default="en")
+
+class NavigationStep(BaseModel):
+    instruction: str
+    zone: str
+    minutes: float
+
+class NavigationResponse(BaseModel):
+    steps: list[NavigationStep]
+    total_minutes: float
+    accessible: bool
+    narrative: str
+    source: str  # "genai" | "fallback"
+
+class TransportRequest(BaseModel):
+    accessible_only: bool = Field(default=False)
+
+class ParkingOption(BaseModel):
+    id: str
+    name: str
+    capacity: int
+    occupancy_pct: float
+    walk_time_mins: int
+    accessible_spaces: int
+    status: str
+
+class TransitOption(BaseModel):
+    id: str
+    name: str
+    type: str
+    frequency_mins: int
+    crowd_level: str
+    accessible: bool
+    status: str
+
+class TransportResponse(BaseModel):
+    parking: list[ParkingOption]
+    transit: list[TransitOption]
+
+class EmergencyRequest(BaseModel):
+    incident_type: str = Field(..., description="medical, violence, suspicious_package, etc.")
+    severity: int = Field(..., ge=1, le=5)
+    zone: str = Field(...)
+
+class EmergencyResponse(BaseModel):
+    priority_level: str
+    action_plan: list[str]
+    requires_police: bool
+    requires_medical: bool
+    ai_brief: str

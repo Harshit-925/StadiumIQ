@@ -64,3 +64,36 @@ export async function fanAssist(
     body: data,
   });
 }
+
+/** Get navigation route */
+export async function navigateVenue(
+  origin: string,
+  destination: string,
+  accessible_only: boolean,
+  language: string = 'en'
+): Promise<any> {
+  return apiFetch<any>('/navigate', {
+    method: 'POST',
+    body: { origin, destination, accessible_only, language },
+  });
+}
+
+/** Get transport options */
+export async function getTransportOptions(accessible_only: boolean): Promise<any> {
+  return apiFetch<any>('/transport', {
+    method: 'POST',
+    body: { accessible_only },
+  });
+}
+
+/** Triage emergency incident */
+export async function triageIncident(
+  incident_type: string,
+  severity: number,
+  zone: string
+): Promise<any> {
+  return apiFetch<any>('/emergency', {
+    method: 'POST',
+    body: { incident_type, severity, zone },
+  });
+}
