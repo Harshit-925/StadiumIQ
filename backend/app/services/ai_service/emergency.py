@@ -55,7 +55,7 @@ Rules:
             ),
         )
         if response and response.text:
-            return str(response.text).strip()
+            return response.text.strip()  # type: ignore[no-any-return]
         return fallback_brief
     except Exception as e:
         logger.error(f"Error generating emergency brief: {e}")

@@ -13,7 +13,6 @@ from google import genai
 
 from app.core.config import get_settings
 
-
 logger = logging.getLogger("stadiumiq")
 
 # ── Lazy singleton client ────────────────────────────────────────────────
