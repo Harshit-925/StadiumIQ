@@ -132,7 +132,7 @@ describe('FanAssistant', () => {
     render(<FanAssistant />);
     await user.click(screen.getByRole('button', { name: /open fan assistant/i }));
 
-    const input = screen.getByPlaceholderText(/ask anything/i);
+    const input = screen.getByPlaceholderText(/ask about venues/i);
     await user.type(input, 'When do gates open?');
     await user.click(screen.getByRole('button', { name: /send message/i }));
 
@@ -157,7 +157,7 @@ describe('FanAssistant', () => {
     render(<FanAssistant />);
     await user.click(screen.getByRole('button', { name: /open fan assistant/i }));
 
-    const input = screen.getByPlaceholderText(/ask anything/i);
+    const input = screen.getByPlaceholderText(/ask about venues/i);
     await user.type(input, 'Hello?');
     await user.click(screen.getByRole('button', { name: /send message/i }));
 
