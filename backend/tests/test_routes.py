@@ -151,7 +151,7 @@ class TestAnalyzeEndpoint:
         def _boom(*args: Any, **kwargs: Any) -> None:
             raise RuntimeError("simulated failure")
 
-        monkeypatch.setattr("app.routes.main.analyze_venue", _boom)
+        monkeypatch.setattr("app.routes.analyze.analyze_venue", _boom)
         response = await client.post(
             "/api/analyze",
             json={

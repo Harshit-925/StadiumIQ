@@ -99,7 +99,7 @@ def recommend_route(zone_densities: dict[str, float]) -> dict[str, Any]:
             "source": CROWD_DENSITY_SOURCE,
         }
 
-    best_id = min(zone_densities, key=zone_densities.get)
+    best_id = min(zone_densities, key=lambda z: zone_densities[z])
     best_density = zone_densities[best_id]
 
     return {

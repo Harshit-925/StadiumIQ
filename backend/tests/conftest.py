@@ -87,7 +87,10 @@ def mock_genai():
     mock_client = MagicMock()
     mock_client.models.generate_content.return_value = mock_response
 
-    with patch("app.services.ai_service._get_client", return_value=mock_client) as _:
+    with patch("app.services.ai_service.crowd_insights._get_client", return_value=mock_client), \
+         patch("app.services.ai_service.fan_assist._get_client", return_value=mock_client), \
+         patch("app.services.ai_service.navigation._get_client", return_value=mock_client), \
+         patch("app.services.ai_service.emergency._get_client", return_value=mock_client):
         yield mock_client
 
 
@@ -114,7 +117,7 @@ def mock_supabase():
 @pytest.fixture(autouse=True)
 def clear_ai_cache():
     """Clear the AI insight cache before every test."""
-    import app.services.ai_service as _ai
+    import app.services.ai_service._shared as _ai
 
     _ai._insight_cache.clear()
     yield

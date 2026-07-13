@@ -24,7 +24,7 @@ from app.core.logging import RequestIdMiddleware, request_id_ctx, setup_logging
 from app.core.rate_limit import check_production_storage, limiter
 from app.core.security import SecurityHeadersMiddleware
 from app.routes.auth import auth_router
-from app.routes.main import router
+from app.routes import router
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator

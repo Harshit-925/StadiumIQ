@@ -97,8 +97,8 @@ class TestGenerateCrowdInsights:
         mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
-            "app.services.ai_service._get_client", return_value=mock_client
-        ), patch("app.services.ai_service.get_settings") as mock_settings:
+            "app.services.ai_service.crowd_insights._get_client", return_value=mock_client
+        ), patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
 
@@ -113,8 +113,8 @@ class TestGenerateCrowdInsights:
         mock_client.aio.models.generate_content = AsyncMock(side_effect=RuntimeError("API down"))
 
         with patch(
-            "app.services.ai_service._get_client", return_value=mock_client
-        ), patch("app.services.ai_service.get_settings") as mock_settings:
+            "app.services.ai_service.crowd_insights._get_client", return_value=mock_client
+        ), patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
 
@@ -132,8 +132,8 @@ class TestGenerateCrowdInsights:
         mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
-            "app.services.ai_service._get_client", return_value=mock_client
-        ), patch("app.services.ai_service.get_settings") as mock_settings:
+            "app.services.ai_service.crowd_insights._get_client", return_value=mock_client
+        ), patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
 
@@ -143,7 +143,7 @@ class TestGenerateCrowdInsights:
 
     async def test_fallback_when_ai_disabled(self) -> None:
         """When use_ai=False, returns fallback immediately."""
-        with patch("app.services.ai_service.get_settings") as mock_settings:
+        with patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = False
             mock_settings.return_value.gemini_api_key = ""
 
@@ -170,8 +170,8 @@ class TestGenerateFanResponse:
         mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
-            "app.services.ai_service._get_client", return_value=mock_client
-        ), patch("app.services.ai_service.get_settings") as mock_settings:
+            "app.services.ai_service.fan_assist._get_client", return_value=mock_client
+        ), patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
 
@@ -188,8 +188,8 @@ class TestGenerateFanResponse:
         mock_client.aio.models.generate_content = AsyncMock(side_effect=ConnectionError("offline"))
 
         with patch(
-            "app.services.ai_service._get_client", return_value=mock_client
-        ), patch("app.services.ai_service.get_settings") as mock_settings:
+            "app.services.ai_service.fan_assist._get_client", return_value=mock_client
+        ), patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
 
@@ -209,8 +209,8 @@ class TestGenerateFanResponse:
         venue_ctx = {"name": "Estadio Azteca", "city": "Mexico City", "capacity": 83000}
 
         with patch(
-            "app.services.ai_service._get_client", return_value=mock_client
-        ), patch("app.services.ai_service.get_settings") as mock_settings:
+            "app.services.ai_service.fan_assist._get_client", return_value=mock_client
+        ), patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
 
@@ -226,7 +226,7 @@ class TestGenerateFanResponse:
 
     async def test_fallback_when_no_api_key(self) -> None:
         """No API key → immediate fallback."""
-        with patch("app.services.ai_service.get_settings") as mock_settings:
+        with patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = ""
 
