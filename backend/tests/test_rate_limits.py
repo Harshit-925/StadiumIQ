@@ -29,9 +29,10 @@ def test_all_post_routes_have_rate_limits():
                 for dec in node.decorator_list:
                     if (
                         isinstance(dec, ast.Call)
-                        and getattr(dec.func, "value", None)
-                        and getattr(dec.func.value, "id", None) == "router"
-                        and getattr(dec.func, "attr", None) == "post"
+                        and isinstance(dec.func, ast.Attribute)
+                        and isinstance(dec.func.value, ast.Name)
+                        and dec.func.value.id == "router"
+                        and dec.func.attr == "post"
                     ):
                         is_post_route = True
 
@@ -40,9 +41,10 @@ def test_all_post_routes_have_rate_limits():
                     for dec in node.decorator_list:
                         if (
                             isinstance(dec, ast.Call)
-                            and getattr(dec.func, "value", None)
-                            and getattr(dec.func.value, "id", None) == "limiter"
-                            and getattr(dec.func, "attr", None) == "limit"
+                            and isinstance(dec.func, ast.Attribute)
+                            and isinstance(dec.func.value, ast.Name)
+                            and dec.func.value.id == "limiter"
+                            and dec.func.attr == "limit"
                         ):
                             has_limiter = True
 
