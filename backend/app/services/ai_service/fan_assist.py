@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from google.genai.types import GenerateContentResponse
 
 from app.core.config import get_settings
 from app.services.ai_service._shared import (
@@ -68,7 +71,7 @@ async def generate_fan_response(
 
     try:
         client = _get_client()
-        from google.genai.types import GenerateContentResponse  # noqa: PLC0415
+
         response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,

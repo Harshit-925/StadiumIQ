@@ -10,7 +10,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.core.auth import get_optional_user
 from app.core.rate_limit import RATE_LIMIT_AI, limiter
-from app.engine.calculator import analyze_venue, get_venue_info
+from app.engine.calculator import analyze_venue
 from app.models.schemas import VenueAnalysisRequest, VenueAnalysisResponse
 from app.services import ai_service, supabase_client
 

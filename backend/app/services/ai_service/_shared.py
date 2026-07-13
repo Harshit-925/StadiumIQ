@@ -13,8 +13,6 @@ from google import genai
 
 from app.core.config import get_settings
 
-if TYPE_CHECKING:
-    pass
 
 logger = logging.getLogger("stadiumiq")
 
