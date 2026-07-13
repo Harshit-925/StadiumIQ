@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, cast
+from typing import Any
 
 from app.services.ai_service._shared import (
     _get_client,
@@ -55,7 +55,7 @@ Rules:
             ),
         )
         if response and response.text:
-            return cast(str, response.text).strip()
+            return str(response.text).strip()
         return fallback_brief
     except Exception as e:
         logger.error(f"Error generating emergency brief: {e}")
