@@ -7,6 +7,7 @@ import time
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from google import genai
     from google.genai.types import GenerateContentResponse
 
 
@@ -59,7 +60,6 @@ async def generate_crowd_insights(
         f"Data: {engine_result}"
     )
 
-    from google import genai  # noqa: PLC0415
     async def _generate(client: genai.Client) -> tuple[str, bool]:
         response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
@@ -82,8 +82,8 @@ async def generate_crowd_insights(
 
     from app.services.ai_service._shared import safe_ai_call
     return await safe_ai_call(
-        str(engine_result), 
-        (_build_fallback_text(engine_result), True), 
-        _generate, 
+        str(engine_result),
+        (_build_fallback_text(engine_result), True),
+        _generate,
         "crowd_insights"
     )

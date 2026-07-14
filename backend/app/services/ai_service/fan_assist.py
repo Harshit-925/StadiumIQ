@@ -6,6 +6,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from google import genai
     from google.genai.types import GenerateContentResponse
 
 
@@ -54,7 +55,6 @@ async def generate_fan_response(
         f"Fan question: {query}"
     )
 
-    from google import genai  # noqa: PLC0415
     async def _generate(client: genai.Client) -> tuple[str, bool]:
         response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",

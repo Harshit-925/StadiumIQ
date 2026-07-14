@@ -7,11 +7,14 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Awaitable, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from google import genai
 
 from app.core.config import get_settings
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
 
 logger = logging.getLogger("stadiumiq")
 

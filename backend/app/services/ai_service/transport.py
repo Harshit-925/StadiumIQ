@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-
+if TYPE_CHECKING:
+    from google import genai
 
 logger = logging.getLogger("stadiumiq")
 
@@ -35,7 +36,6 @@ Rules:
 3. Mention the best transit option if available.
 """
 
-    from google import genai  # noqa: PLC0415
     from google.genai.types import GenerateContentConfig  # noqa: PLC0415
 
     async def _generate(client: genai.Client) -> str:

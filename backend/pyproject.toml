@@ -39,6 +39,11 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore:.*_UnionGenericAlias.*is deprecated:DeprecationWarning:google.genai.types",
+    "ignore:.*asyncio.iscoroutinefunction.*is deprecated:DeprecationWarning:slowapi.extension",
+]
 
 [dependency-groups]
 dev = [

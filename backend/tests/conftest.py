@@ -87,10 +87,7 @@ def mock_genai():
     mock_client = MagicMock()
     mock_client.models.generate_content.return_value = mock_response
 
-    with patch("app.services.ai_service.crowd_insights._get_client", return_value=mock_client), \
-         patch("app.services.ai_service.fan_assist._get_client", return_value=mock_client), \
-         patch("app.services.ai_service.navigation._get_client", return_value=mock_client), \
-         patch("app.services.ai_service.emergency._get_client", return_value=mock_client):
+    with patch("app.services.ai_service._shared._get_client", return_value=mock_client):
         yield mock_client
 
 
