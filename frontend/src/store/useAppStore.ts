@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { VenueAnalysisResponse, VenueInfo, HistoryEntry } from '../types';
+import type { VenueAnalysisResponse, VenueInfo, HistoryEntry, SupportedLanguage } from '../types';
 import { VENUES } from '../types';
 
 interface AppState {
@@ -16,8 +16,12 @@ interface AppState {
   /** Fan assistant panel open state */
   isFanAssistOpen: boolean;
 
+  /** Currently selected language */
+  language: SupportedLanguage;
+  
   /** Actions */
   setSelectedVenue: (venueId: string) => void;
+  setLanguage: (lang: SupportedLanguage) => void;
   setAnalysisResult: (result: VenueAnalysisResponse) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -35,12 +39,17 @@ export const useAppStore = create<AppState>((set) => ({
   error: null,
   history: [],
   isFanAssistOpen: false,
+  language: 'en',
 
   setSelectedVenue: (venueId: string) => {
     const venue = VENUES[venueId];
     if (venue) {
       set({ selectedVenue: venue, analysisResult: null, error: null });
     }
+  },
+
+  setLanguage: (lang: SupportedLanguage) => {
+    set({ language: lang });
   },
 
   setAnalysisResult: (result: VenueAnalysisResponse) => {

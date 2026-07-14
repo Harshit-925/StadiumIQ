@@ -26,6 +26,8 @@ export const FanAssistant = memo(function FanAssistant() {
   const toggle = useAppStore((s) => s.toggleFanAssist);
   const setFanAssistOpen = useAppStore((s) => s.setFanAssistOpen);
   const selectedVenue = useAppStore((s) => s.selectedVenue);
+  const globalLanguage = useAppStore((s) => s.language);
+  const setGlobalLanguage = useAppStore((s) => s.setLanguage);
   const shouldReduceMotion = useReducedMotion() ?? false;
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -33,13 +35,12 @@ export const FanAssistant = memo(function FanAssistant() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: WELCOME_MESSAGES['en'],
-      language: 'en',
+      content: WELCOME_MESSAGES[globalLanguage],
+      language: globalLanguage,
       timestamp: new Date(),
     },
   ]);
   const [query, setQuery] = useState('');
-  const [language, setLanguage] = useState<SupportedLanguage>('en');
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,11 +55,11 @@ export const FanAssistant = memo(function FanAssistant() {
     setMessages([{
       id: 'welcome',
       role: 'assistant',
-      content: WELCOME_MESSAGES[language],
-      language,
+      content: WELCOME_MESSAGES[globalLanguage],
+      language: globalLanguage,
       timestamp: new Date(),
     }]);
-  }, [language]);
+  }, [globalLanguage]);
 
   // Focus input when drawer opens
   useEffect(() => {
@@ -98,7 +99,7 @@ export const FanAssistant = memo(function FanAssistant() {
       id: `user-${Date.now()}`,
       role: 'user',
       content: trimmed,
-      language,
+      language: globalLanguage,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMsg]);
@@ -108,7 +109,7 @@ export const FanAssistant = memo(function FanAssistant() {
     try {
       const data = await fanAssist({
         query: trimmed,
-        language,
+        language: globalLanguage,
         venue_id: selectedVenue.id,
       });
 
@@ -124,8 +125,8 @@ export const FanAssistant = memo(function FanAssistant() {
       const errorMsg: ChatMessage = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: ERROR_MESSAGES[language],
-        language,
+        content: ERROR_MESSAGES[globalLanguage],
+        language: globalLanguage,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -193,8 +194,8 @@ export const FanAssistant = memo(function FanAssistant() {
                 </label>
                 <select
                   id="fan-assist-lang"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+                  value={globalLanguage}
+                  onChange={(e) => setGlobalLanguage(e.target.value as SupportedLanguage)}
                   className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-text-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-stadium-blue"
                 >
                   {LANGUAGES.map((lang) => (
@@ -242,7 +243,7 @@ export const FanAssistant = memo(function FanAssistant() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={INPUT_PLACEHOLDERS[language]}
+                  placeholder={INPUT_PLACEHOLDERS[globalLanguage]}
                   maxLength={500}
                   disabled={isLoading}
                   aria-describedby="fan-assist-hint"
@@ -258,7 +259,7 @@ export const FanAssistant = memo(function FanAssistant() {
                 </button>
               </div>
               <p id="fan-assist-hint" className="mt-1 text-xs text-text-secondary">
-                {HINT_TEXTS[language]} · {selectedVenue.name}
+                {HINT_TEXTS[globalLanguage]} · {selectedVenue.name}
               </p>
             </div>
           </motion.div>

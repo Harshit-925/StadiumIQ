@@ -23,6 +23,9 @@ import {
 import { useAuthStore } from '../store/useAuthStore';
 import { useAppStore } from '../store/useAppStore';
 import { FanAssistant } from './FanAssistant';
+import type { SupportedLanguage } from '../types';
+import { LANGUAGE_LABELS } from '../types';
+import { LANGUAGES } from './chat/constants';
 
 const NAV_ITEMS = [
   { to: '/dashboard',              label: 'Overview',        icon: LayoutDashboard, end: true },
@@ -77,6 +80,9 @@ export function OperatorLayout() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const selectedVenue = useAppStore((s) => s.selectedVenue);
+  const analysisResult = useAppStore((s) => s.analysisResult);
+  const globalLanguage = useAppStore((s) => s.language);
+  const setGlobalLanguage = useAppStore((s) => s.setLanguage);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -109,6 +115,22 @@ export function OperatorLayout() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Language selector */}
+          <div className="hidden sm:flex items-center gap-1.5 mr-2">
+            <select
+              value={globalLanguage}
+              onChange={(e) => setGlobalLanguage(e.target.value as SupportedLanguage)}
+              aria-label="Global language selector"
+              className="rounded-input bg-gray-100 px-2 py-1 text-xs text-text-secondary border-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-pitch-blue"
+            >
+              {LANGUAGES.map((lang) => (
+                <option key={lang} value={lang}>
+                  {LANGUAGE_LABELS[lang]}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {user ? (
             <>
               <span className="hidden text-body-sm text-text-secondary lg:inline">
@@ -151,9 +173,33 @@ export function OperatorLayout() {
       {/* ── Main Content ─────────────────────────────────────────────── */}
       <main
         id="main-content"
-        className="pt-[60px] pb-[64px] lg:ml-[260px] lg:pb-0"
+        className="pt-[60px] pb-[64px] lg:ml-[260px] lg:pb-0 flex flex-col min-h-screen"
         tabIndex={-1}
       >
+        {/* ── Live Ticker Banner ────────────────────────────────────────── */}
+        <div className="bg-pitch-blue text-white py-1.5 px-4 sm:px-6 flex items-center justify-between text-xs sm:text-sm font-semibold shadow-sm z-10 shrink-0">
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="flex items-center gap-1.5">
+              <span className="status-dot-live bg-white" aria-hidden="true" />
+              Live Status: {selectedVenue.name}
+            </span>
+            <span className="hidden sm:inline opacity-40">|</span>
+            {analysisResult ? (
+              <>
+                <span>Grade: {analysisResult.overall_grade}</span>
+                <span className="hidden sm:inline opacity-40">|</span>
+                <span>Occupancy: {Math.round(analysisResult.average_density * 100)}%</span>
+                <span className="hidden sm:inline opacity-40">|</span>
+                <span className={analysisResult.evacuation_feasible ? 'text-green-300' : 'text-red-300'}>
+                  Emergency: {analysisResult.evacuation_feasible ? 'Clear' : 'Critical'}
+                </span>
+              </>
+            ) : (
+              <span className="text-white/80">Awaiting Real-time Analysis...</span>
+            )}
+          </div>
+        </div>
+
         <Outlet />
       </main>
 

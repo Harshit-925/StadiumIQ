@@ -19,6 +19,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAppStore } from '../store/useAppStore';
 import type { ChatMessage, SupportedLanguage } from '../types';
 import { LANGUAGE_LABELS, VENUES } from '../types';
 import { fanAssist } from '../api/client';
@@ -34,7 +35,8 @@ import { MessageBubble } from './chat/MessageBubble';
 
 
 export const FanAssistantPage = memo(function FanAssistantPage() {
-  const [language, setLanguage] = useState<SupportedLanguage>('en');
+  const globalLanguage = useAppStore((s) => s.language);
+  const setGlobalLanguage = useAppStore((s) => s.setLanguage);
   const [selectedVenueId, setSelectedVenueId] = useState<string>('metlife');
   const shouldReduceMotion = useReducedMotion() ?? false;
 
@@ -42,8 +44,8 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: WELCOME_MESSAGES.en,
-      language: 'en',
+      content: WELCOME_MESSAGES[globalLanguage],
+      language: globalLanguage,
       timestamp: new Date(),
     },
   ]);
@@ -57,11 +59,11 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
     setMessages([{
       id: 'welcome',
       role: 'assistant',
-      content: WELCOME_MESSAGES[language],
-      language,
+      content: WELCOME_MESSAGES[globalLanguage],
+      language: globalLanguage,
       timestamp: new Date(),
     }]);
-  }, [language]);
+  }, [globalLanguage]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
@@ -82,7 +84,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
       id: `user-${Date.now()}`,
       role: 'user',
       content: trimmed,
-      language,
+      language: globalLanguage,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMsg]);
@@ -92,7 +94,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
     try {
       const data = await fanAssist({
         query: trimmed,
-        language,
+        language: globalLanguage,
         venue_id: selectedVenueId,
       });
 
@@ -112,8 +114,8 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
         {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: ERROR_MESSAGES[language],
-          language,
+          content: ERROR_MESSAGES[globalLanguage],
+          language: globalLanguage,
           timestamp: new Date(),
         },
       ]);
@@ -159,8 +161,8 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
             </label>
             <select
               id="fan-page-lang"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+              value={globalLanguage}
+              onChange={(e) => setGlobalLanguage(e.target.value as SupportedLanguage)}
               className="rounded-input border border-gray-200 bg-surface px-2 py-1 text-body-sm text-text-primary focus:border-pitch-blue focus:outline-none focus:ring-2 focus:ring-pitch-blue/20"
             >
               {LANGUAGES.map((lang) => (
@@ -256,7 +258,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={INPUT_PLACEHOLDERS[language]}
+                placeholder={INPUT_PLACEHOLDERS[globalLanguage]}
                 maxLength={500}
                 disabled={isLoading}
                 aria-describedby="fan-page-hint"
@@ -273,7 +275,7 @@ export const FanAssistantPage = memo(function FanAssistantPage() {
             </button>
           </div>
           <p id="fan-page-hint" className="mt-1.5 text-label-sm text-text-secondary">
-            {HINT_TEXTS[language]}
+            {HINT_TEXTS[globalLanguage]}
           </p>
         </div>
       </div>

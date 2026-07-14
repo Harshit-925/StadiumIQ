@@ -44,6 +44,17 @@
 
 We chose this vertical because providing venue directors with immediate, actionable data is the most critical component of stadium operations. Our solution centers entirely on the venue operations director. It utilizes a robust deterministic engine to assess crowd safety, accessibility, and sustainability, and layers Generative AI on top to produce instantaneous executive briefings. While multilingual fan assistance, accessibility compliance, and sustainability tracking are full-featured modules, they are positioned as supporting pillars that ultimately feed into this central Operational Intelligence dashboard.
 
+## Challenge Alignment
+
+| Core Requirement | StadiumIQ Implementation |
+|---|---|
+| **Operational Intelligence** | Dedicated dashboard providing cross-venue insights (density, ADA, waste metrics) directly to the Venue Operations Director. |
+| **Real-time Crowd Safety** | Deterministic engine computes pax/m² and egress feasibility continuously; triggers automated alerts and dynamically routes fans away from bottlenecks. |
+| **Multilingual Fan Assistance** | Rate-limited, public AI interface responding in 6 languages, built on the same deterministic ground truth as operator data to ensure consistency. |
+| **Sustainability Focus** | Real-time tracking of diversion rates against World Cup 90% targets, complete with AI strategies to improve recycling flow. |
+| **Accessibility Compliance** | Continuous validation of wheelchair-accessible seating inventory (1% ADA mandate) and ADA-compliant pathing throughout the venue. |
+| **Security & Privacy** | Supabase JWT Auth for operators; public-facing endpoints secured by strict IP rate limiting. Built with privacy-first simulated turnstile counts (no facial recognition or PII). |
+
 ## Approach & Logic
 
 StadiumIQ employs a **deterministic-engine-first** design. The core calculations—such as real-time crowd density (pax/m²), egress times (via NFPA 101 formulas), and ADA compliance ratios—are strictly deterministic and evaluated within `calculator.py`. 

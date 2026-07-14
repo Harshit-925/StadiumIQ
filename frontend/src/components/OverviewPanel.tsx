@@ -10,8 +10,7 @@ export function OverviewPanel() {
       title: 'Crowd Intelligence',
       description: 'Real-time density analytics, flow monitoring, and bottleneck detection across all stadium zones.',
       icon: Users,
-      path: '/dashboard', // The old dashboard is now here, but wait, maybe this should be /dashboard/crowd? I will just link to /dashboard/crowd and rename the route in App.tsx.
-      // Wait, let's just make it go to /dashboard/crowd
+      path: '/dashboard/crowd',
       color: 'text-pitch-blue',
       bg: 'bg-pitch-blue/10',
       border: 'border-pitch-blue/20',
@@ -29,7 +28,7 @@ export function OverviewPanel() {
     },
     {
       title: 'Transportation',
-      description: 'Live tracking of parking lot occupancy, shuttle frequencies, and public transit status.',
+      description: 'Parking and transit reference guidance.',
       icon: Bus,
       path: '/dashboard/transport',
       color: 'text-pitch-blue',
@@ -66,6 +65,26 @@ export function OverviewPanel() {
       bg: 'bg-status-safe/10',
       border: 'border-status-safe/20',
       status: 'Active'
+    },
+    {
+      title: 'Volunteer Operations',
+      description: 'Shift management, zone coverage tracking, and automated task deployment.',
+      icon: Users,
+      path: '/dashboard/volunteer',
+      color: 'text-trophy-gold',
+      bg: 'bg-trophy-gold/10',
+      border: 'border-trophy-gold/20',
+      status: 'Active'
+    },
+    {
+      title: 'Fan Assistant (AI)',
+      description: 'Multilingual conversational agent providing venue support and match information.',
+      icon: Activity,
+      path: '/assistant',
+      color: 'text-stadium-green',
+      bg: 'bg-stadium-green/10',
+      border: 'border-stadium-green/20',
+      status: 'Live'
     }
   ];
 
