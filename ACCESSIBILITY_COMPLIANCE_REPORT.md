@@ -63,6 +63,8 @@ StadiumIQ is designed and tested against WCAG 2.1 AA success criteria.
 | `InputForm.tsx` | `label htmlFor`, `aria-describedby`, `aria-required` |
 | `LoginForm.tsx` | `aria-busy` on submit, error `role="alert"` |
 | `FanAssistant.tsx` | Keyboard close (Escape), `aria-label` on all controls |
+| `VolunteerPanel.tsx` | `aria-hidden` on decorative icons, `role="alert"` for errors, `aria-live="polite"` on results, `label`/`htmlFor` on all form inputs |
+| `PredictionPanel.tsx` | `aria-hidden` on decorative icons, `role="alert"` for errors, `aria-live="polite"` on results, `label`/`htmlFor` on all form inputs |
 | `LandingHero.tsx` | `prefers-reduced-motion` respected; static gradient fallback |
 
 ## Motion Accessibility

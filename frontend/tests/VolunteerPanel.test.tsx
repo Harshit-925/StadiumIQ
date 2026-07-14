@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { VolunteerPanel } from '../src/components/VolunteerPanel';
 
@@ -53,5 +54,35 @@ describe('VolunteerPanel', () => {
     await waitFor(() => {
       expect(screen.getByText('Network Error')).toBeInTheDocument();
     });
+  });
+
+  it('passes axe accessibility check on initial render', async () => {
+    const { container } = render(<VolunteerPanel />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('passes axe accessibility check with results displayed', async () => {
+    const mockData = {
+      allocations: { gate_a: 10, gate_b: 5 },
+      relocations: [
+        { from_zone: 'gate_b', to_zone: 'gate_a', count: 2 }
+      ],
+      total_allocated: 15
+    };
+    (global.fetch as any).mockImplementationOnce(() => Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(mockData)
+    }));
+
+    const { container } = render(<VolunteerPanel />);
+    fireEvent.click(screen.getByText('Run Allocation'));
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/Allocations/i).length).toBeGreaterThan(0);
+    });
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

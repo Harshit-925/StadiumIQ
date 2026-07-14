@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PredictionPanel } from '../src/components/PredictionPanel';
 
@@ -59,5 +60,33 @@ describe('PredictionPanel', () => {
     await waitFor(() => {
       expect(screen.getByText('API Failure')).toBeInTheDocument();
     });
+  });
+
+  it('passes axe accessibility check on initial render', async () => {
+    const { container } = render(<PredictionPanel />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('passes axe accessibility check with results displayed', async () => {
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        projected_density: 3.2,
+        estimated_wait_minutes: 15,
+        minutes_ahead: 15,
+        methodology_note: 'Test methodology note'
+      })
+    });
+
+    const { container } = render(<PredictionPanel />);
+    fireEvent.click(screen.getByText('Project Trend'));
+
+    await waitFor(() => {
+      expect(screen.getByText('3.20')).toBeInTheDocument();
+    });
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
