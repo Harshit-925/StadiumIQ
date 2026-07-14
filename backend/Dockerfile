@@ -13,6 +13,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application source
 COPY . ./
 
+# ── Run as non-root user (container hardening) ──────────────────────────
+RUN useradd --create-home --shell /bin/bash appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
 # Ensure the app module is on the Python path
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
