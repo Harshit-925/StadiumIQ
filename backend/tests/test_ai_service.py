@@ -233,3 +233,173 @@ class TestGenerateFanResponse:
             text, fallback = await generate_fan_response("Hello", "en", None)
 
         assert fallback is True
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Emergency AI service — fallback path coverage
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestEmergencyAIFallback:
+    """Covers the emergency.py fallback paths (67% → target ~90%)."""
+
+    TRIAGE = {
+        "priority_level": "HIGH",
+        "action_plan": ["Evacuate zone", "Call medical"],
+        "requires_police": False,
+        "requires_medical": True,
+    }
+
+    async def test_fallback_when_client_is_none(self) -> None:
+        """No client → immediate deterministic fallback."""
+        from app.services.ai_service.emergency import generate_emergency_brief
+
+        with patch(
+            "app.services.ai_service.emergency._get_client", return_value=None
+        ):
+            result = await generate_emergency_brief(
+                "medical", 3, "north_stand", self.TRIAGE
+            )
+
+        assert "medical" in result.lower() or "north_stand" in result.lower()
+
+    async def test_fallback_on_exception(self) -> None:
+        """When AI raises RuntimeError, returns fallback string."""
+        from app.services.ai_service.emergency import generate_emergency_brief
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            side_effect=RuntimeError("API down")
+        )
+
+        with patch(
+            "app.services.ai_service.emergency._get_client", return_value=mock_client
+        ):
+            result = await generate_emergency_brief(
+                "fire", 5, "gate_a", self.TRIAGE
+            )
+
+        # Should return the fallback brief, not raise
+        assert isinstance(result, str)
+        assert len(result) > 0
+
+    async def test_fallback_on_empty_response(self) -> None:
+        """Empty AI response triggers fallback."""
+        from app.services.ai_service.emergency import generate_emergency_brief
+
+        mock_response = MagicMock()
+        mock_response.text = ""
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            return_value=mock_response
+        )
+
+        with patch(
+            "app.services.ai_service.emergency._get_client", return_value=mock_client
+        ):
+            result = await generate_emergency_brief(
+                "crowd_crush", 4, "section_c", self.TRIAGE
+            )
+
+        assert isinstance(result, str)
+
+    async def test_success_returns_ai_text(self) -> None:
+        """When AI succeeds, return the AI-generated brief."""
+        from app.services.ai_service.emergency import generate_emergency_brief
+
+        mock_response = MagicMock()
+        mock_response.text = "Security teams have been dispatched to Gate A."
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            return_value=mock_response
+        )
+
+        with patch(
+            "app.services.ai_service.emergency._get_client", return_value=mock_client
+        ):
+            result = await generate_emergency_brief(
+                "violence", 2, "gate_a", self.TRIAGE
+            )
+
+        assert result == "Security teams have been dispatched to Gate A."
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Navigation AI service — fallback path coverage
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestNavigationAIFallback:
+    """Covers the navigation.py fallback paths (77% → target ~90%)."""
+
+    ROUTE_RESULT = {
+        "path": ["gate_a", "concourse_n", "section_101"],
+        "steps": [
+            {"from": "gate_a", "to": "concourse_n", "minutes": 3},
+            {"from": "concourse_n", "to": "section_101", "minutes": 2},
+        ],
+        "total_minutes": 5,
+        "accessible": True,
+    }
+
+    async def test_fallback_when_client_is_none(self) -> None:
+        """No client → immediate deterministic fallback."""
+        from app.services.ai_service.navigation import generate_navigation_narrative
+
+        with patch(
+            "app.services.ai_service.navigation._get_client", return_value=None
+        ):
+            narrative, source = await generate_navigation_narrative(self.ROUTE_RESULT)
+
+        assert source == "fallback"
+        assert "5 minutes" in narrative
+
+    async def test_fallback_on_exception(self) -> None:
+        """When AI raises RuntimeError, returns fallback narrative."""
+        from app.services.ai_service.navigation import generate_navigation_narrative
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            side_effect=RuntimeError("API down")
+        )
+
+        with patch(
+            "app.services.ai_service.navigation._get_client", return_value=mock_client
+        ):
+            narrative, source = await generate_navigation_narrative(self.ROUTE_RESULT)
+
+        assert source == "fallback"
+        assert isinstance(narrative, str)
+
+    async def test_fallback_on_empty_path(self) -> None:
+        """Empty path → immediate fallback before any client call."""
+        from app.services.ai_service.navigation import generate_navigation_narrative
+
+        empty_route = {**self.ROUTE_RESULT, "path": [], "steps": []}
+        narrative, source = await generate_navigation_narrative(empty_route)
+
+        assert source == "fallback"
+        assert "No route" in narrative
+
+    async def test_success_returns_ai_narrative(self) -> None:
+        """When AI succeeds, returns AI narrative with source 'genai'."""
+        from app.services.ai_service.navigation import generate_navigation_narrative
+
+        mock_response = MagicMock()
+        mock_response.text = "Head to Gate A, then follow signs to Section 101."
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            return_value=mock_response
+        )
+
+        with patch(
+            "app.services.ai_service.navigation._get_client", return_value=mock_client
+        ):
+            narrative, source = await generate_navigation_narrative(
+                self.ROUTE_RESULT, language="en"
+            )
+
+        assert source == "genai"
+        assert narrative == "Head to Gate A, then follow signs to Section 101."
+

@@ -43,6 +43,8 @@ function renderLayout() {
   return render(
     <MemoryRouter initialEntries={['/dashboard']}>
       <Routes>
+        {/* Absorb the post-logout redirect so navigation doesn't 404 in tests */}
+        <Route path="/login" element={<div>Login page</div>} />
         <Route element={<OperatorLayout />}>
           <Route path="/dashboard" element={<div>Dashboard content</div>} />
           <Route path="/dashboard/accessibility" element={<div>Accessibility</div>} />

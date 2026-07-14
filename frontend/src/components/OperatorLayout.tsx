@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   { to: '/dashboard/navigate',     label: 'Navigate',        icon: Compass,         end: false },
   { to: '/dashboard/transport',    label: 'Transport',       icon: Bus,             end: false },
   { to: '/dashboard/emergency',    label: 'Emergency',       icon: ShieldAlert,     end: false },
+  { to: '/dashboard/volunteer',    label: 'Volunteers',      icon: Users,           end: false },
   { to: '/dashboard/accessibility',label: 'Accessibility',   icon: Accessibility,   end: false },
   { to: '/dashboard/sustainability',label:'Sustainability',  icon: Leaf,            end: false },
   { to: '/dashboard/report',       label: 'Report',          icon: FileText,        end: false },

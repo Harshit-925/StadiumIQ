@@ -15,6 +15,7 @@ const NavigationPanel = lazy(() => import('./components/NavigationPanel').then(m
 const TransportPanel = lazy(() => import('./components/TransportPanel').then(module => ({ default: module.TransportPanel })));
 const EmergencyPanel = lazy(() => import('./components/EmergencyPanel').then(module => ({ default: module.EmergencyPanel })));
 const OverviewPanel = lazy(() => import('./components/OverviewPanel').then(module => ({ default: module.OverviewPanel })));
+const VolunteerPanel = lazy(() => import('./components/VolunteerPanel').then(module => ({ default: module.VolunteerPanel })));
 
 // Simple fallback for Suspense
 const PageLoader = () => (
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/dashboard/navigate" element={<NavigationPanel />} />
           <Route path="/dashboard/transport" element={<TransportPanel />} />
           <Route path="/dashboard/emergency" element={<EmergencyPanel />} />
+          <Route path="/dashboard/volunteer" element={<VolunteerPanel />} />
           <Route path="/dashboard/report" element={<ReportExport />} />
         </Route>
       </Routes>

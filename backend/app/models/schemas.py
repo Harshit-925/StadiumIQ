@@ -231,3 +231,110 @@ class EmergencyResponse(BaseModel):
     ai_brief: str
     escalated_due_to_crowd: bool = False
     crowd_level: str = "safe"
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  VOLUNTEER MODELS                                                      ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+class VolunteerZone(BaseModel):
+    """A single zone entry for volunteer allocation input."""
+
+    id: str = Field(..., min_length=1, description="Zone identifier")
+    capacity: int = Field(..., ge=1, le=100_000, description="Zone capacity")
+    risk_level: str = Field(
+        ...,
+        pattern=r"^(CRITICAL|WARNING|MODERATE|SAFE)$",
+        description="Risk level: CRITICAL | WARNING | MODERATE | SAFE",
+    )
+
+
+class VolunteerRequest(BaseModel):
+    """Request body for ``POST /api/volunteer/allocate``."""
+
+    zones: list[VolunteerZone] = Field(
+        ...,
+        min_length=1,
+        description="List of zones to allocate volunteers across",
+    )
+    available_staff: int = Field(
+        ..., ge=1, le=10_000, description="Total available volunteers"
+    )
+
+    @field_validator("zones")
+    @classmethod
+    def zone_ids_must_be_unique(cls, v: list[VolunteerZone]) -> list[VolunteerZone]:
+        """Ensure no duplicate zone IDs."""
+        ids = [z.id for z in v]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Zone IDs must be unique.")
+        return v
+
+
+class VolunteerRelocation(BaseModel):
+    """A single volunteer relocation suggestion."""
+
+    from_zone: str
+    to_zone: str
+    count: int
+
+
+class VolunteerResponse(BaseModel):
+    """Response body for ``POST /api/volunteer/allocate``."""
+
+    allocations: dict[str, int]
+    relocations: list[VolunteerRelocation]
+    total_allocated: int
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  PREDICTION MODELS                                                     ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+
+class PredictionRequest(BaseModel):
+    """Request body for ``POST /api/prediction/trend``."""
+
+    historical_densities: list[float] = Field(
+        ...,
+        min_length=2,
+        description="Ordered density readings (pax/m²), oldest first. Min 2 required.",
+    )
+    minutes_ahead: int = Field(
+        ..., ge=1, le=120, description="Minutes ahead to project (1-120)"
+    )
+    current_queue: int = Field(
+        default=0, ge=0, description="Current gate queue length (persons)"
+    )
+    arrival_rate: float = Field(
+        default=1.0, gt=0, description="Arrivals per minute at the gate"
+    )
+
+    @field_validator("historical_densities")
+    @classmethod
+    def densities_in_valid_range(cls, v: list[float]) -> list[float]:
+        """Ensure each density value is between 0 and 10 pax/m²."""
+        for d in v:
+            if d < 0 or d > 10:
+                raise ValueError("Density values must be between 0 and 10 pax/m².")
+        return v
+
+
+class PredictionResponse(BaseModel):
+    """Response body for ``POST /api/prediction/trend``."""
+
+    projected_density: float = Field(
+        description="Projected density (pax/m²) at the requested time horizon."
+    )
+    estimated_wait_minutes: int = Field(
+        description="Estimated gate wait time in minutes."
+    )
+    minutes_ahead: int
+    model_note: str = Field(
+        default=(
+            "Simple linear extrapolation and Little's Law — directional signal only, "
+            "not a trained ML model."
+        )
+    )
+

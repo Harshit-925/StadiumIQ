@@ -8,7 +8,9 @@ from app.routes.emergency import router as emergency_router
 from app.routes.fan_assist import router as fan_assist_router
 from app.routes.health import router as health_router
 from app.routes.navigation import router as navigation_router
+from app.routes.prediction import router as prediction_router
 from app.routes.transport import router as transport_router
+from app.routes.volunteer import router as volunteer_router
 
 router = APIRouter(prefix="/api", tags=["StadiumIQ"])
 
@@ -18,3 +20,6 @@ router.include_router(navigation_router)
 router.include_router(transport_router)
 router.include_router(emergency_router)
 router.include_router(fan_assist_router)
+router.include_router(volunteer_router)
+router.include_router(prediction_router)
+

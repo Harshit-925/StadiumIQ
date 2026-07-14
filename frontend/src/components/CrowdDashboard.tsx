@@ -22,6 +22,7 @@ import { ComparisonBar } from './ComparisonBar';
 import { ReportExport } from './ReportExport';
 import { ZoneCard } from './ZoneCard';
 import { StadiumPulse } from './StadiumPulse';
+import { PredictionPanel } from './PredictionPanel';
 import type { ZoneAnalysis } from '../types';
 
 type Tier = 'safe' | 'moderate' | 'warning' | 'critical';
@@ -185,10 +186,16 @@ export function CrowdDashboard() {
         </section>
       </div>
 
-      {/* History Chart */}
+      {/* Analysis History */}
       <section aria-label="Analysis history">
         <h2 className="mb-4 text-heading-sm text-text-primary">Analysis History</h2>
         <HistoryChart />
+      </section>
+
+      {/* Crowd Trend Forecast */}
+      <section aria-label="Crowd trend forecast">
+        <h2 className="mb-4 text-heading-sm text-text-primary">Crowd Trend Forecast</h2>
+        <PredictionPanel />
       </section>
 
       {/* Goals + Benchmark + Export */}
