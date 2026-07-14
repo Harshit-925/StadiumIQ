@@ -3,9 +3,10 @@ import { z } from 'zod';
 /** Schema for venue analysis form */
 export const venueAnalysisSchema = z.object({
   venue_id: z.string().min(1, 'Venue is required'),
-  zone_densities: z
-    .array(z.number().min(0, 'Density cannot be negative').max(10, 'Density cannot exceed 10'))
-    .min(1, 'At least one zone density is required'),
+  zone_densities: z.record(
+    z.string(),
+    z.number().min(0, 'Density cannot be negative').max(10, 'Density cannot exceed 10')
+  ),
   waste_recycled_kg: z
     .number()
     .min(0, 'Cannot be negative'),
