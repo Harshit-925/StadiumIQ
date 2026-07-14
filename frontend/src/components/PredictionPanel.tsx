@@ -14,7 +14,7 @@ interface PredictionResult {
   projected_density: number;
   estimated_wait_minutes: number;
   minutes_ahead: number;
-  model_note: string;
+  methodology_note: string;
 }
 
 function DensityBadge({ density }: { density: number }) {
@@ -184,22 +184,29 @@ export function PredictionPanel() {
             <DensityBadge density={result.projected_density} />
           </div>
 
-          <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-1">
-            <p className="text-label-sm text-text-secondary uppercase tracking-wide flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-              Estimated Gate Wait
-            </p>
-            <div className="flex items-baseline gap-2">
-              <span className="font-data text-data-2xl text-text-primary">
-                {result.estimated_wait_minutes}
-              </span>
-              <span className="text-body-sm text-text-secondary">
-                {result.estimated_wait_minutes === 1 ? 'minute' : 'minutes'}
-              </span>
+          <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-1 flex flex-col justify-between">
+            <div>
+              <p className="text-label-sm text-text-secondary uppercase tracking-wide flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                Estimated Gate Wait
+              </p>
+              <div className="flex items-baseline gap-2">
+                <span className="font-data text-data-2xl text-text-primary">
+                  {result.estimated_wait_minutes}
+                </span>
+                <span className="text-body-sm text-text-secondary">
+                  {result.estimated_wait_minutes === 1 ? 'minute' : 'minutes'}
+                </span>
+              </div>
+              {currentQueue === 0 && (
+                <p className="text-label-sm text-crowd-safe">No queue</p>
+              )}
             </div>
-            {currentQueue === 0 && (
-              <p className="text-label-sm text-crowd-safe">No queue</p>
-            )}
+            
+            <p className="text-body-sm text-text-muted mt-2 italic flex items-start gap-1.5 bg-gray-100/50 p-2 rounded">
+              <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span>{result.methodology_note}</span>
+            </p>
           </div>
         </div>
       )}

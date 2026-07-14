@@ -76,3 +76,59 @@ async def test_prediction_route_registered(client: AsyncClient, mock_auth) -> No
     }
     response = await client.post("/api/prediction/trend", json=payload)
     assert response.status_code == 200
+
+
+@pytest.mark.anyio
+async def test_lifespan_supabase_reachable(app) -> None:
+    """Lifespan should log success when Supabase is reachable."""
+    from unittest.mock import patch
+
+    from asgi_lifespan import LifespanManager
+
+    from app.core.config import get_settings
+
+    # Force settings so the block executes
+    settings = get_settings()
+    with patch.object(settings, "supabase_url", "http://mock-supabase"), patch("httpx.AsyncClient.get") as mock_get:
+        mock_get.return_value.status_code = 200
+        with patch("app.main.logger.info") as mock_logger:
+            async with LifespanManager(app):
+                pass
+            mock_logger.assert_any_call("Supabase is reachable at %s", "http://mock-supabase")
+
+
+@pytest.mark.anyio
+async def test_lifespan_supabase_unreachable(app) -> None:
+    """Lifespan should log warning on HTTP error."""
+    from unittest.mock import patch
+
+    import httpx
+    from asgi_lifespan import LifespanManager
+
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    with patch.object(settings, "supabase_url", "http://mock-supabase"), patch("httpx.AsyncClient.get") as mock_get:
+        mock_get.side_effect = httpx.HTTPError("mock error")
+        with patch("app.main.logger.warning") as mock_logger:
+            async with LifespanManager(app):
+                pass
+            assert any("Supabase unreachable at startup" in call.args[0] for call in mock_logger.call_args_list)
+
+
+@pytest.mark.anyio
+async def test_lifespan_supabase_bad_status(app) -> None:
+    """Lifespan should log warning on bad status (e.g. 500)."""
+    from unittest.mock import patch
+
+    from asgi_lifespan import LifespanManager
+
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    with patch.object(settings, "supabase_url", "http://mock-supabase"), patch("httpx.AsyncClient.get") as mock_get:
+        mock_get.return_value.status_code = 500
+        with patch("app.main.logger.warning") as mock_logger:
+            async with LifespanManager(app):
+                pass
+            mock_logger.assert_any_call("Supabase returned status %d at startup", 500)

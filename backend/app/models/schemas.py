@@ -331,10 +331,9 @@ class PredictionResponse(BaseModel):
         description="Estimated gate wait time in minutes."
     )
     minutes_ahead: int
-    model_note: str = Field(
+    methodology_note: str = Field(
         default=(
             "Simple linear extrapolation and Little's Law — directional signal only, "
             "not a trained ML model."
         )
     )
-
