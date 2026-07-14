@@ -97,7 +97,7 @@ class TestGenerateCrowdInsights:
         mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
-            "app.services.ai_service.crowd_insights._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ), patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
@@ -113,7 +113,7 @@ class TestGenerateCrowdInsights:
         mock_client.aio.models.generate_content = AsyncMock(side_effect=RuntimeError("API down"))
 
         with patch(
-            "app.services.ai_service.crowd_insights._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ), patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
@@ -132,7 +132,7 @@ class TestGenerateCrowdInsights:
         mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
-            "app.services.ai_service.crowd_insights._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ), patch("app.services.ai_service.crowd_insights.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
@@ -170,7 +170,7 @@ class TestGenerateFanResponse:
         mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
         with patch(
-            "app.services.ai_service.fan_assist._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ), patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
@@ -188,7 +188,7 @@ class TestGenerateFanResponse:
         mock_client.aio.models.generate_content = AsyncMock(side_effect=ConnectionError("offline"))
 
         with patch(
-            "app.services.ai_service.fan_assist._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ), patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
@@ -209,7 +209,7 @@ class TestGenerateFanResponse:
         venue_ctx = {"name": "Estadio Azteca", "city": "Mexico City", "capacity": 83000}
 
         with patch(
-            "app.services.ai_service.fan_assist._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ), patch("app.services.ai_service.fan_assist.get_settings") as mock_settings:
             mock_settings.return_value.use_ai = True
             mock_settings.return_value.gemini_api_key = "test-key"
@@ -254,7 +254,7 @@ class TestEmergencyAIFallback:
         from app.services.ai_service.emergency import generate_emergency_brief
 
         with patch(
-            "app.services.ai_service.emergency._get_client", return_value=None
+            "app.services.ai_service._shared._get_client", return_value=None
         ):
             result = await generate_emergency_brief(
                 "medical", 3, "north_stand", self.TRIAGE
@@ -272,7 +272,7 @@ class TestEmergencyAIFallback:
         )
 
         with patch(
-            "app.services.ai_service.emergency._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ):
             result = await generate_emergency_brief(
                 "fire", 5, "gate_a", self.TRIAGE
@@ -295,7 +295,7 @@ class TestEmergencyAIFallback:
         )
 
         with patch(
-            "app.services.ai_service.emergency._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ):
             result = await generate_emergency_brief(
                 "crowd_crush", 4, "section_c", self.TRIAGE
@@ -316,7 +316,7 @@ class TestEmergencyAIFallback:
         )
 
         with patch(
-            "app.services.ai_service.emergency._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ):
             result = await generate_emergency_brief(
                 "violence", 2, "gate_a", self.TRIAGE
@@ -347,7 +347,7 @@ class TestNavigationAIFallback:
         from app.services.ai_service.navigation import generate_navigation_narrative
 
         with patch(
-            "app.services.ai_service.navigation._get_client", return_value=None
+            "app.services.ai_service._shared._get_client", return_value=None
         ):
             narrative, source = await generate_navigation_narrative(self.ROUTE_RESULT)
 
@@ -364,7 +364,7 @@ class TestNavigationAIFallback:
         )
 
         with patch(
-            "app.services.ai_service.navigation._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ):
             narrative, source = await generate_navigation_narrative(self.ROUTE_RESULT)
 
@@ -394,7 +394,7 @@ class TestNavigationAIFallback:
         )
 
         with patch(
-            "app.services.ai_service.navigation._get_client", return_value=mock_client
+            "app.services.ai_service._shared._get_client", return_value=mock_client
         ):
             narrative, source = await generate_navigation_narrative(
                 self.ROUTE_RESULT, language="en"
