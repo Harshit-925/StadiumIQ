@@ -97,10 +97,11 @@ export function EmergencyPanel() {
               </div>
 
               <div>
-                <label className="block text-label-sm text-text-secondary mb-1">
+                <label htmlFor="severity_input" className="block text-label-sm text-text-secondary mb-1">
                   Severity Level: {severity} ({severity >= 4 ? 'Critical' : severity === 3 ? 'Moderate' : 'Low'})
                 </label>
                 <input 
+                  id="severity_input"
                   type="range" 
                   min="1" 
                   max="5" 

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { TransportPanel } from '../src/components/TransportPanel';
 import { describe, it, expect, vi } from 'vitest';
 import { getTransportOptions } from '../src/api/client';
@@ -29,5 +30,36 @@ describe('TransportPanel', () => {
       expect(screen.getByText('Lot A')).toBeInTheDocument();
       expect(screen.getByText('Bus 42')).toBeInTheDocument();
     });
+  });
+
+  it('passes axe accessibility check on initial render', async () => {
+    (getTransportOptions as any).mockResolvedValueOnce({ parking: [], transit: [] });
+    let container: HTMLElement;
+    await waitFor(() => {
+      container = render(<TransportPanel />).container;
+    });
+    const results = await axe(container!);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('passes axe accessibility check with results displayed', async () => {
+    (getTransportOptions as any).mockResolvedValueOnce({
+      parking: [
+        { id: '1', name: 'Lot A', capacity: 100, occupancy_pct: 50, walk_time_mins: 5, accessible_spaces: 10, status: 'Open' }
+      ],
+      transit: [
+        { id: 't1', name: 'Bus 42', type: 'Bus', frequency_mins: 15, crowd_level: 'Low', accessible: true, status: 'On Time' }
+      ],
+    });
+
+    const { container } = render(<TransportPanel />);
+    fireEvent.click(screen.getByText('Refresh'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Lot A')).toBeInTheDocument();
+    });
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

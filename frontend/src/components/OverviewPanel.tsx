@@ -106,9 +106,9 @@ export function OverviewPanel() {
               </span>
             </div>
             
-            <h3 className="text-heading-md font-display mb-2 group-hover:text-pitch-blue transition-colors">
+            <h2 className="text-heading-md font-display mb-2 group-hover:text-pitch-blue transition-colors">
               {tile.title}
-            </h3>
+            </h2>
             
             <p className="text-body-sm text-text-secondary mb-6 flex-grow">
               {tile.description}
