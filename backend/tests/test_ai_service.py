@@ -407,3 +407,77 @@ class TestNavigationAIFallback:
         assert source == "genai"
         assert narrative == "Head to Gate A, then follow signs to Section 101."
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Transport AI service — fallback path coverage
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestTransportAIFallback:
+    """Covers the transport.py fallback paths."""
+
+    PARKING_OPTIONS = [{"name": "Lot A", "walk_time_mins": 5, "occupancy_pct": 20}]
+    TRANSIT_OPTIONS = [{"name": "Bus 101", "status": "On time"}]
+
+    async def test_fallback_when_client_is_none(self) -> None:
+        """No client → immediate deterministic fallback."""
+        from app.services.ai_service.transport import generate_transport_narrative
+
+        with patch("app.services.ai_service._shared._get_client", return_value=None):
+            result = await generate_transport_narrative(self.PARKING_OPTIONS, self.TRANSIT_OPTIONS)
+
+        assert "Lot A" in result
+
+    async def test_fallback_on_exception(self) -> None:
+        """When AI raises RuntimeError, returns fallback narrative."""
+        from app.services.ai_service.transport import generate_transport_narrative
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            side_effect=RuntimeError("API down")
+        )
+
+        with patch("app.services.ai_service._shared._get_client", return_value=mock_client):
+            result = await generate_transport_narrative(self.PARKING_OPTIONS, self.TRANSIT_OPTIONS)
+
+        assert "Lot A" in result
+
+    async def test_fallback_on_empty_response(self) -> None:
+        """Empty AI response triggers fallback."""
+        from app.services.ai_service.transport import generate_transport_narrative
+
+        mock_response = MagicMock()
+        mock_response.text = ""
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            return_value=mock_response
+        )
+
+        with patch("app.services.ai_service._shared._get_client", return_value=mock_client), \
+             patch("app.services.ai_service._shared.get_settings") as mock_settings:
+            mock_settings.return_value.use_ai = True
+            mock_settings.return_value.gemini_api_key = "test-key"
+            result = await generate_transport_narrative(self.PARKING_OPTIONS, self.TRANSIT_OPTIONS)
+
+        assert "Lot A" in result
+
+    async def test_success_returns_ai_narrative(self) -> None:
+        """When AI succeeds, returns AI narrative."""
+        from app.services.ai_service.transport import generate_transport_narrative
+
+        mock_response = MagicMock()
+        mock_response.text = "Park in Lot A, it's very close."
+
+        mock_client = MagicMock()
+        mock_client.aio.models.generate_content = AsyncMock(
+            return_value=mock_response
+        )
+
+        with patch("app.services.ai_service._shared._get_client", return_value=mock_client), \
+             patch("app.services.ai_service._shared.get_settings") as mock_settings:
+            mock_settings.return_value.use_ai = True
+            mock_settings.return_value.gemini_api_key = "test-key"
+            result = await generate_transport_narrative(self.PARKING_OPTIONS, self.TRANSIT_OPTIONS)
+
+        assert result == "Park in Lot A, it's very close."
+

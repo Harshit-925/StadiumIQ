@@ -8,6 +8,55 @@ from typing import Any
 from app.data.venue_graph import VENUE_GRAPH
 
 
+def _get_excluded_zones(accessible_only: bool) -> set[str]:
+    """Return a set of zone IDs to exclude based on accessibility."""
+    if not accessible_only:
+        return set()
+    return {z for z, meta in VENUE_GRAPH.items() if not meta["accessible"]}
+
+
+def _run_dijkstra(origin: str, destination: str, excluded: set[str]) -> tuple[dict[str, float], dict[str, str]]:
+    """Run Dijkstra's algorithm to find the shortest path."""
+    dist: dict[str, float] = {origin: 0.0}
+    prev: dict[str, str] = {}
+    visited: set[str] = set()
+    heap = [(0.0, origin)]
+
+    while heap:
+        d, node = heapq.heappop(heap)
+        if node in visited:
+            continue
+        visited.add(node)
+        if node == destination:
+            break
+        for neighbor, weight in VENUE_GRAPH[node]["neighbors"]:
+            if neighbor in excluded or neighbor in visited:
+                continue
+            nd = d + float(weight)
+            if nd < dist.get(neighbor, float("inf")):
+                dist[neighbor] = nd
+                prev[neighbor] = node
+                heapq.heappush(heap, (nd, neighbor))
+
+    return dist, prev
+
+
+def _reconstruct_path(origin: str, destination: str, prev: dict[str, str]) -> tuple[list[str], list[dict[str, Any]]]:
+    """Reconstruct the path and step instructions from the previous node map."""
+    path = [destination]
+    while path[-1] != origin:
+        path.append(prev[path[-1]])
+    path.reverse()
+
+    steps = []
+    for i in range(len(path) - 1):
+        a, b = path[i], path[i + 1]
+        minutes = next(w for n, w in VENUE_GRAPH[a]["neighbors"] if n == b)
+        steps.append({"from": a, "to": b, "minutes": minutes})
+
+    return path, steps
+
+
 def find_route(
     origin: str,
     destination: str,
@@ -30,55 +79,26 @@ def find_route(
         accessible), and ``steps`` (list of {from, to, minutes} dicts).
         If no route exists, ``path`` is empty and ``total_minutes`` is 0.
     """
+    empty_result: dict[str, Any] = {"path": [], "total_minutes": 0.0, "accessible": False, "steps": []}
+
     if origin not in VENUE_GRAPH or destination not in VENUE_GRAPH:
-        return {"path": [], "total_minutes": 0.0, "accessible": False, "steps": []}
+        return empty_result
 
-    excluded = (
-        {z for z, meta in VENUE_GRAPH.items() if not meta["accessible"]}
-        if accessible_only else set()
-    )
+    excluded = _get_excluded_zones(accessible_only)
     if origin in excluded or destination in excluded:
-        return {"path": [], "total_minutes": 0.0, "accessible": False, "steps": []}
+        return empty_result
 
-    # Dijkstra
-    dist: dict[str, float] = {origin: 0.0}
-    prev: dict[str, str] = {}
-    visited: set[str] = set()
-    heap = [(0.0, origin)]
-
-    while heap:
-        d, node = heapq.heappop(heap)
-        if node in visited:
-            continue
-        visited.add(node)
-        if node == destination:
-            break
-        for neighbor, weight in VENUE_GRAPH[node]["neighbors"]:
-            if neighbor in excluded or neighbor in visited:
-                continue
-            nd = d + float(weight)
-            if nd < dist.get(neighbor, float("inf")):
-                dist[neighbor] = nd
-                prev[neighbor] = node
-                heapq.heappush(heap, (nd, neighbor))
+    dist, prev = _run_dijkstra(origin, destination, excluded)
 
     if destination not in dist:
-        return {"path": [], "total_minutes": 0.0, "accessible": False, "steps": []}
+        return empty_result
 
-    # Reconstruct path
-    path = [destination]
-    while path[-1] != origin:
-        path.append(prev[path[-1]])
-    path.reverse()
-
-    steps = []
-    for i in range(len(path) - 1):
-        a, b = path[i], path[i + 1]
-        minutes = next(w for n, w in VENUE_GRAPH[a]["neighbors"] if n == b)
-        steps.append({"from": a, "to": b, "minutes": minutes})
-
+    path, steps = _reconstruct_path(origin, destination, prev)
     accessible = all(VENUE_GRAPH[z]["accessible"] for z in path)
+
     return {
-        "path": path, "total_minutes": dist[destination],
-        "accessible": accessible, "steps": steps,
+        "path": path,
+        "total_minutes": dist[destination],
+        "accessible": accessible,
+        "steps": steps,
     }

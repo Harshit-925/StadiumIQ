@@ -59,8 +59,10 @@ async def safe_ai_call(
 _client: genai.Client | None = None
 
 # ── Caching ──────────────────────────────────────────────────────────────
+from collections import OrderedDict
+
 # (venue_id, bucket, match_phase) -> (narrative_text, timestamp)
-_insight_cache: dict[tuple[str, str, str], tuple[str, float]] = {}
+_insight_cache: OrderedDict[tuple[str, str, str], tuple[str, float]] = OrderedDict()
 CACHE_TTL_SECONDS = 60.0
 
 

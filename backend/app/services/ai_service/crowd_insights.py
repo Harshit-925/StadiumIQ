@@ -49,6 +49,7 @@ async def generate_crowd_insights(
                 "AI insight served from cache",
                 extra={"extra_data": {"cache_key": str(cache_key)}},
             )
+            _insight_cache.move_to_end(cache_key)
             return cached_text, False
 
     prompt = (
@@ -75,8 +76,8 @@ async def generate_crowd_insights(
             )
             return _build_fallback_text(engine_result), True
 
-        if len(_insight_cache) > 1000:
-            _insight_cache.clear()
+        if len(_insight_cache) >= 1000:
+            _insight_cache.popitem(last=False)
         _insight_cache[cache_key] = (text, time.time())
         return text, False
 

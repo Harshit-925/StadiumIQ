@@ -76,7 +76,7 @@ export function EmergencyPanel() {
                 <label htmlFor="incident_select" className="block text-label-sm text-text-secondary mb-1">Incident Type</label>
                 <select 
                   id="incident_select"
-                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-status-critical focus:ring-1 focus:ring-status-critical outline-none"
+                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-status-critical focus:ring-2 focus:ring-status-critical focus:ring-offset-2 focus-visible:outline-none"
                   value={incidentType}
                   onChange={e => setIncidentType(e.target.value)}
                 >
@@ -88,7 +88,7 @@ export function EmergencyPanel() {
                 <label htmlFor="zone_select" className="block text-label-sm text-text-secondary mb-1">Zone Location</label>
                 <select 
                   id="zone_select"
-                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-status-critical focus:ring-1 focus:ring-status-critical outline-none"
+                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-status-critical focus:ring-2 focus:ring-status-critical focus:ring-offset-2 focus-visible:outline-none"
                   value={zone}
                   onChange={e => setZone(e.target.value)}
                 >

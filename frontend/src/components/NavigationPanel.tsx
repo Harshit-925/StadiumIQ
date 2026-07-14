@@ -70,7 +70,7 @@ export function NavigationPanel() {
                 <label htmlFor="origin_select" className="block text-label-sm text-text-secondary mb-1">Starting Point</label>
                 <select 
                   id="origin_select"
-                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-pitch-blue focus:ring-1 focus:ring-pitch-blue outline-none"
+                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-pitch-blue focus:ring-2 focus:ring-pitch-blue focus:ring-offset-2 focus-visible:outline-none"
                   value={origin}
                   onChange={e => setOrigin(e.target.value)}
                 >
@@ -82,7 +82,7 @@ export function NavigationPanel() {
                 <label htmlFor="destination_select" className="block text-label-sm text-text-secondary mb-1">Destination</label>
                 <select 
                   id="destination_select"
-                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-pitch-blue focus:ring-1 focus:ring-pitch-blue outline-none"
+                  className="w-full rounded-input border border-gray-200 px-3 py-2 text-body-sm focus:border-pitch-blue focus:ring-2 focus:ring-pitch-blue focus:ring-offset-2 focus-visible:outline-none"
                   value={destination}
                   onChange={e => setDestination(e.target.value)}
                 >
