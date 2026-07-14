@@ -34,5 +34,6 @@ export default defineConfig({
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/vite-env.d.ts', 'src/main.tsx'],
     },
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'e2e/**'],
   },
 });

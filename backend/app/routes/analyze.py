@@ -1,7 +1,5 @@
 """Stadium analysis route — POST /api/analyze."""
 
-from __future__ import annotations
-
 import logging
 from datetime import UTC, datetime
 from typing import Any

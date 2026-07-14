@@ -1,7 +1,5 @@
 """Navigation route — POST /api/navigate."""
 
-from __future__ import annotations
-
 import logging
 
 from fastapi import APIRouter, HTTPException, Request

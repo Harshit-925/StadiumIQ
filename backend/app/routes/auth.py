@@ -10,8 +10,6 @@ This module is intentionally minimal. It is kept so that:
   natural home.
 """
 
-from __future__ import annotations
-
 from fastapi import APIRouter
 
 auth_router = APIRouter(prefix="/api/auth", tags=["Auth"])

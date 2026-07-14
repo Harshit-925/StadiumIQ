@@ -1,7 +1,5 @@
 """Emergency triage route — POST /api/emergency."""
 
-from __future__ import annotations
-
 from fastapi import APIRouter, Request
 
 from app.core.rate_limit import RATE_LIMIT_AI, limiter
