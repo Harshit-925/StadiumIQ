@@ -216,6 +216,7 @@ class TransitOption(BaseModel):
 class TransportResponse(BaseModel):
     parking: list[ParkingOption]
     transit: list[TransitOption]
+    ai_insights: str = Field(default="")
 
 class EmergencyRequest(BaseModel):
     incident_type: str = Field(..., description="Type of emergency (medical, violence, etc)")

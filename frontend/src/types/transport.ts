@@ -21,4 +21,5 @@ export interface TransitOption {
 export interface TransportResponse {
   parking: ParkingOption[];
   transit: TransitOption[];
+  ai_insights?: string;
 }

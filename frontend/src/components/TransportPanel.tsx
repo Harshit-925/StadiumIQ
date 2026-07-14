@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Bus, Car, AlertTriangle, RefreshCcw } from 'lucide-react';
+import { Bus, Car, AlertTriangle, RefreshCcw, Sparkles } from 'lucide-react';
 import { getTransportOptions } from '../api/client';
 import type { TransportResponse } from '../types';
 
@@ -68,7 +68,20 @@ export function TransportPanel() {
       )}
 
       {!error && data && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <>
+          {data.ai_insights && (
+            <div className="mb-6 rounded-card border border-stadium-green/20 bg-stadium-green/5 p-4 flex gap-4 items-start shadow-sm">
+              <div className="rounded-full bg-stadium-green/20 p-2 text-stadium-green shrink-0 mt-0.5">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-body-sm font-semibold text-text-secondary uppercase tracking-wider mb-1">AI Recommendation</h3>
+                <p className="text-body-md text-text-primary leading-relaxed">{data.ai_insights}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Parking Options */}
           <div className="space-y-4">
             <h2 className="text-heading-md font-display flex items-center gap-2">
@@ -163,7 +176,8 @@ export function TransportPanel() {
               </div>
             )}
           </div>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
