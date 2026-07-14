@@ -8,13 +8,14 @@
   <a href="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml">
     <img src="https://github.com/Harshit-925/StadiumIQ/actions/workflows/ci.yml/badge.svg" alt="CI/CD Status">
   </a>
-  <img src="https://img.shields.io/badge/coverage-90%25-brightgreen.svg" alt="Coverage: 90%">
-  <img src="https://img.shields.io/badge/tests-193_passing-brightgreen.svg" alt="Tests: 193">
+  <img src="https://img.shields.io/badge/coverage-95%25-brightgreen.svg" alt="Coverage: 95%">
+  <img src="https://img.shields.io/badge/tests-180+_passing-brightgreen.svg" alt="Tests: 180+">
   <a href="https://github.com/Harshit-925/StadiumIQ/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
   </a>
   <img src="https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript Strict">
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/uv-Fast_Python_Packaging-purple.svg" alt="uv Packaging">
 </p>
 
 <p align="center">
@@ -42,42 +43,42 @@
 
 **Operational Intelligence & Real-time Decision Support for Venue Staff.**
 
-We chose this vertical because providing venue directors with immediate, actionable data is the most critical component of stadium operations. Our solution centers entirely on the venue operations director. It utilizes a robust deterministic engine to assess crowd safety, accessibility, and sustainability, and layers Generative AI on top to produce instantaneous executive briefings. While multilingual fan assistance, accessibility compliance, and sustainability tracking are full-featured modules, they are positioned as supporting pillars that ultimately feed into this central Operational Intelligence dashboard.
+We chose this vertical because providing venue directors with immediate, actionable data is the most critical component of stadium operations. Our solution centers entirely on the venue operations director. It utilizes a robust deterministic engine to assess crowd safety, accessibility, and sustainability, and layers Generative AI on top to produce instantaneous executive briefings.
 
-## Challenge Alignment
+## Challenge Alignment (The 8 Core Factors)
 
 | Core Requirement | StadiumIQ Implementation |
 |---|---|
 | **Operational Intelligence** | Dedicated dashboard providing cross-venue insights (density, ADA, waste metrics) directly to the Venue Operations Director. |
-| **Real-time Crowd Safety** | Deterministic engine computes pax/m² and egress feasibility continuously; triggers automated alerts and dynamically routes fans away from bottlenecks. |
-| **Multilingual Fan Assistance** | Rate-limited, public AI interface responding in 6 languages, built on the same deterministic ground truth as operator data to ensure consistency. |
-| **Sustainability Focus** | Real-time tracking of diversion rates against World Cup 90% targets, complete with AI strategies to improve recycling flow. |
-| **Accessibility Compliance** | Continuous validation of wheelchair-accessible seating inventory (1% ADA mandate) and ADA-compliant pathing throughout the venue. |
-| **Security & Privacy** | Supabase JWT Auth for operators; public-facing endpoints secured by strict IP rate limiting. Built with privacy-first simulated turnstile counts (no facial recognition or PII). |
+| **Real-time Decision Support** | Predictive trending (`/api/prediction/trend`) and rapid volunteer allocation (`/api/volunteer/allocate`) built into the core API. |
+| **Crowd Management** | Deterministic engine computes pax/m² and egress feasibility; AI interprets crowd readiness. |
+| **Navigation** | Real Dijkstra pathfinding algorithms powering narrative overlays for step-by-step routing. |
+| **Transportation** | Real-time transit option ranking combined with AI-generated transport executive briefings. |
+| **Sustainability Focus** | Live tracking of waste diversion rates against World Cup 90% targets, with automated tracking metrics. |
+| **Accessibility Compliance** | Continuous validation of wheelchair-accessible seating inventory (1% ADA mandate). |
+| **Multilingual Fan Assistance** | Rate-limited, public AI interface responding in 6 languages. |
 
 ## Approach & Logic
 
-StadiumIQ employs a **deterministic-engine-first** design. The core calculations—such as real-time crowd density (pax/m²), egress times (via NFPA 101 formulas), and ADA compliance ratios—are strictly deterministic and evaluated within `calculator.py`. 
+StadiumIQ employs a **deterministic-engine-first** design. The core calculations are strictly deterministic and evaluated within specialized engine modules (`transport.py`, `navigation.py`, `calculator.py`).
 
-Generative AI is layered on top purely for **narration and translation**, rather than driving the numerical assessments. This architectural choice ensures absolute operational reliability. If the AI service experiences an outage, high latency, or rate-limiting, the system falls back gracefully, providing the operator with raw, un-narrated engine data without compromising life-safety monitoring.
+Generative AI is layered on top purely for **narration and translation** via a centralized, heavily guarded `safe_ai_call` abstraction. This architectural choice ensures absolute operational reliability. If the AI service experiences an outage or a missing API key (Zero Secrets mode), the system falls back gracefully to a deterministic response without compromising life-safety monitoring.
 
 ## How It Works
 
-1. **Data Ingestion:** Venue staff log into the command center, which pulls live (simulated) zone capacity data for the selected stadium.
-2. **Deterministic Analysis:** The Crowd Safety Engine processes this data to compute density heatmaps, evacuation times, accessibility seating ratios, and waste diversion metrics.
-3. **AI Narration:** The AI Narration Layer (powered by Google Gemini) translates these numerical evaluations into a clear, conversational executive summary tailored for rapid consumption by the venue director.
-4. **Multilingual Support:** As a supplementary feature, a public-facing fan assistant answers inquiries in multiple languages, utilizing the same deterministic engine outputs as its ground truth to ensure consistency between operator and fan data.
+1. **Data Ingestion:** Venue staff log into the command center, pulling live zone capacity data.
+2. **Deterministic Analysis:** The domain engine processes this data to compute density heatmaps, evacuation times, transit rankings, and accessible routes.
+3. **AI Narration (`_shared.py` safe fallback):** The `safe_ai_call` wrapper safely invokes Google Gemini (if available) to translate these numerical evaluations into a clear executive summary.
+4. **Multilingual Support:** A public-facing fan assistant answers inquiries in multiple languages, utilizing the exact same deterministic ground truth to ensure consistency.
 
 ## Assumptions Made
 
-- **Simulated Data Feed:** Zone-level crowd counts are simulated/mocked via the UI in the absence of live turnstile integrations or computer vision camera feeds.
-- **Stadium Specifications:** Venue capacity, exit widths, and wheelchair seating figures are sourced from general public stadium specifications rather than official, classified FIFA venue documents.
-- **AI Availability:** Google Gemini API key availability is assumed for full functionality; however, deterministic fallback logic is in place for outages.
-- **ADA Data:** Wheelchair seating figures are illustrative estimates per venue, not formally audited ADA compliance data.
+- **Simulated Data Feed:** Zone-level crowd counts and incidents are simulated/mocked via the UI.
+- **Stadium Specifications:** Venue capacity, exit widths, and wheelchair seating figures are sourced from general public stadium specifications.
+- **AI Availability (Zero Secrets):** Gemini API keys are optional. The backend gracefully handles missing keys by surfacing pre-calculated deterministic strings.
 
 ## Documentation
 
-For deep-dives into the engineering standards and compliance matrices behind this project, refer to the following documents:
 - [Security Architecture](SECURITY_ARCHITECTURE.md)
 - [Testing Strategy](TESTING_STRATEGY.md)
 - [Accessibility Compliance Report](ACCESSIBILITY_COMPLIANCE_REPORT.md)
@@ -95,7 +96,7 @@ For deep-dives into the engineering standards and compliance matrices behind thi
                            │ HTTPS / REST API
 ┌──────────────────────────▼─────────────────────────────┐
 │                      BACKEND                           │
-│  FastAPI + Python 3.11 + Pydantic v2                   │
+│  FastAPI + Python 3.11 + Pydantic v2 + uv Packaging    │
 │  Engine: Pure Functions | AI: Google GenAI (Gemini)    │
 └──────────────────────────┬─────────────────────────────┘
                            │
@@ -114,9 +115,9 @@ graph TD
     end
 
     subgraph Backend [FastAPI]
-        Routes[API Routes]
+        Routes[Decoupled API Routes]
         Engine[Pure Domain Engine]
-        AI[AI Service w/ TTL Cache]
+        AI[safe_ai_call wrapper]
         Sec[Security Middleware]
     end
 
@@ -135,73 +136,45 @@ graph TD
     Auth -->|Token Mgmt| SB
 ```
 
-## Features
-
-| Category | Feature | Description |
-|---|---|---|
-| **Crowd Safety Engine** | Real-time Density Heatmaps | Calculates pax/m² across zones to trigger dynamic safe/moderate/warning/critical states. |
-| **Evacuation Modeling** | Egress Time Projection | Uses NFPA 101 formulas based on dynamic capacities and exit widths to verify the 8-minute standard. |
-| **Accessibility Compliance** | ADA Seat Verification | Monitors compliance of wheelchair-accessible seating inventory against the 1% ADA mandate. |
-| **Sustainability Tracking** | Waste Diversion Analytics | Tracks and evaluates diversion rates against the World Cup 2026 sustainability target of 90%. |
-| **Multilingual Fan Assistant** | AI Contextual Q&A | An unauthenticated, rate-limited portal allowing fans to query stadium rules and facilities in multiple languages. |
-| **AI Narration Layer** | Automatic Operator Briefings | Converts numerical engine data into conversational executive summaries for stadium directors. |
-| **Security** | Standard JWT Auth | Uses standard Supabase session management backed by `localStorage` for fast, scalable auth state. |
-| **Testing & CI** | Security Audits & Coverage | Features strict CI/CD with `pip-audit`, `npm audit`, `mypy --strict`, and boundary testing. |
-
-## Data Entities
-
-| Entity | Primary Role | Key Fields |
-|---|---|---|
-| `auth.users` (Supabase) | Operator authentication | `id`, `email` |
-| `venues` | Core static stadium data | `id`, `name`, `capacity`, `exit_width_m`, `wheelchair_seats` |
-| `analysis_results` | Snapshot of engine evaluations | `venue_id`, `crowd_score`, `readiness_grade`, `timestamp` |
-| `fan_queries` (Logs) | Ephemeral AI query tracking | `query_text`, `language`, `source`, `fallback_used` |
-
 ## API Documentation
 
-| Category | Method | Endpoint | Description | Auth Required |
+We recently adopted a Decoupled Route architecture. Every POST route enforces strict `@limiter.limit` constraints.
+
+| Category | Method | Endpoint | Description | Auth |
 |---|---|---|---|:---:|
 | **Health** | `GET` | `/api/health` | Service connectivity check (Backend + Supabase). | ❌ |
-| **Analysis** | `POST` | `/api/analyze` | Runs pure-function engine and generates AI insights. Saves results if logged in. | ❌ |
+| **Crowd Analysis** | `POST` | `/api/analyze` | Generates crowd readiness insights and fallback AI texts. | ❌ |
+| **Emergency** | `POST` | `/api/emergency` | Issues triage protocols and AI-driven emergency briefs. | ❌ |
+| **Navigation** | `POST` | `/api/navigation` | Calculates Dijkstra pathing and provides step-by-step narrative. | ❌ |
+| **Transport** | `POST` | `/api/transport` | Ranks local transit options based on flow and capacity. | ❌ |
+| **Prediction** | `POST` | `/api/prediction/trend` | Predicts future operational states (temperature, density). | ❌ |
+| **Volunteers** | `POST` | `/api/volunteer/allocate` | Automates staff deployment and zone assignments. | ❌ |
 | **Fan Assistance** | `POST` | `/api/fan-assist` | Multilingual AI stadium guide with venue context. | ❌ |
 
-Machine-readable API contract available at `/openapi.json` on any running
-instance (interactive docs at `/api/docs` in non-production environments).
-
-## Calculation Methodology
-
-Formulas from the core domain engine (`calculator.py`):
-
-| Metric | Formula / Calculation | Threshold / Target |
-|---|---|---|
-| **Crowd Density** | `spectator_count / zone_area_sqm` | Safe: < 2.0 pax/m², Critical: > 4.5 pax/m² |
-| **Evacuation Time** | `(capacity / (exit_width_m * 82)) + 2.0` | Max: 8.0 minutes (NFPA 101 proxy) |
-| **ADA Compliance** | `wheelchair_seats / total_capacity` | Min: 1.0% (0.01) |
-| **Waste Diversion** | `(recycled_kg / total_waste_kg) * 100` | Target: 90% |
+Interactive OpenAPI docs available at `/api/docs` in non-production environments.
 
 ## Security Features
 
 *   **No Hand-Rolled Auth**: Delegated completely to Supabase's robust GoTrue identity system.
 *   **Stateless JWT Verification**: Backend performs zero-network JWT validation using the Supabase JWT Secret.
-*   **Dual Rate Limiting**:
-    *   `/api/analyze` (Authenticated): 10 requests per minute by token prefix.
-    *   `/api/fan-assist` (Public/Anonymous): 5 requests per minute by IP address.
-*   **Automated Dependency Audits**: CI pipeline integrates `pip-audit` and `npm audit --audit-level=high` to immediately flag vulnerabilities.
-*   **Secrets Scanning**: `gitleaks` configured in CI to prevent accidental credential exposure.
+*   **Centralized AI Guards**: `safe_ai_call` automatically checks API keys and catches prompt-injection vectors across all 5 AI modules.
+*   **Decoupled Rate Limiting**: Every single POST route has strict `slowapi` boundaries.
+*   **Automated Dependency Audits**: CI pipeline integrates `pip-audit` and `npm audit --audit-level=high`.
 
 ## Accessibility Features
 
-*   **Never-Color-Alone Indicators**: All status markers (safe, critical, etc.) use descriptive text and distinct icons alongside their color states.
-*   **Keyboard Navigation**: Full tab-index support, focus rings, and skip links available across operator dashboards.
-*   **Aria-Live Regions**: Real-time alerts and dynamic changes (like AI text generation) are announced to screen readers.
-*   **Reduced-Motion Support**: Continuous animations like the Stadium Pulse automatically detect system preferences and disable animation.
-*   **Labeled Form Inputs**: Every input element provides an explicit, associated `<label>` for assistive tech.
+*   **Never-Color-Alone Indicators**: All status markers use descriptive text and distinct icons alongside colors.
+*   **Full `axe-core` Testing**: Integrated automated accessibility tests verify structural compliance.
+*   **Aria-Live Regions**: Real-time alerts and dynamic changes are announced to screen readers.
+*   **Reduced-Motion Support**: Animations detect system preferences and disable automatically.
+*   **Strict Headings & Labels**: Semantic HTML5 ensures 0 WCAG violations on dashboard tiles.
 
 ## Getting Started
 
 ### Prerequisites
 *   Node.js 20+
 *   Python 3.11+
+*   `uv` (Fast Python Package Manager)
 
 ### Installation
 ```bash
@@ -212,10 +185,11 @@ cd StadiumIQ
 # 2. Set up the environment variables
 cp .env.example .env
 
-# 3. Backend Setup
+# 3. Backend Setup (using uv)
 cd backend
-pip install -r requirements.txt
-uvicorn app.main:create_app --reload
+uv venv
+uv pip install -r requirements.txt
+uv run uvicorn app.main:create_app --reload
 
 # 4. Frontend Setup
 cd frontend
@@ -233,12 +207,12 @@ Configure your `.env` file in the project root:
 ```env
 GEMINI_API_KEY=your_key_here
 ENVIRONMENT=development
-USE_AI=true
 RATE_LIMIT_STORAGE_URI=memory://
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 SUPABASE_JWT_SECRET=your_jwt_secret
 ```
+*(Note: `GEMINI_API_KEY` is optional. If missing, the backend will safely use deterministic fallbacks.)*
 
 ## Testing
 
@@ -247,8 +221,7 @@ Run the testing suites to verify domain engine behavior, auth token boundaries, 
 ```bash
 # Backend (Pytest + Coverage)
 cd backend
-pip install -r requirements.txt
-pytest --cov=app
+uv run pytest tests
 
 # Frontend (Vitest + React Testing Library)
 cd frontend
@@ -256,41 +229,6 @@ npm ci --ignore-scripts
 npm run test
 ```
 
-**Coverage Areas:**
-*   Pure deterministic edge-case testing for the `calculator.py` operations engine.
-*   Stateless JWT validation and Supabase background task testing.
-*   AI Service fallback simulations when Google GenAI is unavailable.
-*   UI rendering states and accessibility properties.
-
-## Project Structure
-
-```text
-C:.
-├───backend
-│   ├───app
-│   │   ├───core
-│   │   ├───engine
-│   │   ├───models
-│   │   ├───routes
-│   │   └───services
-│   ├───tests
-│   ├───requirements.txt
-│   └───pyproject.toml
-├───frontend
-│   ├───src
-│   │   ├───components
-│   │   ├───store
-│   │   └───types
-│   ├───tests
-│   ├───package.json
-│   ├───tailwind.config.js
-│   └───eslint.config.js
-```
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-A unified digital command layer ensuring safe, efficient, and accessible stadium operations.
