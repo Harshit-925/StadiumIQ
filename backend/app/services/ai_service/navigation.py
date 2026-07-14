@@ -5,10 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from app.services.ai_service._shared import (
-    _get_client,
-    _is_safe_prompt,
-)
+
 
 logger = logging.getLogger("stadiumiq")
 
@@ -40,14 +37,6 @@ async def generate_navigation_narrative(
         "Please follow the steps provided."
     )
 
-    client = _get_client()
-    if not client:
-        return (fallback_narrative, "fallback")
-
-    if not _is_safe_prompt(steps_str):
-        logger.warning("Prompt injection attempt detected in navigation input.")
-        return (fallback_narrative, "fallback")
-
     prompt = f"""
 You are a friendly StadiumIQ assistant.
 Convert the following route steps into a warm, 2-4 sentence narrative guide.
@@ -63,8 +52,11 @@ Rules:
 3. If accessible is True, reassure them it is step-free.
 4. Provide the answer in language code: {language}.
 """
-    try:
-        from google.genai.types import GenerateContentConfig  # noqa: PLC0415
+
+    from google import genai  # noqa: PLC0415
+    from google.genai.types import GenerateContentConfig  # noqa: PLC0415
+
+    async def _generate(client: genai.Client) -> tuple[str, str]:
         response = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
@@ -76,6 +68,11 @@ Rules:
         if response and response.text:
             return (response.text.strip(), "genai")
         return (fallback_narrative, "fallback")
-    except Exception as e:
-        logger.error(f"Error generating navigation narrative: {e}")
-        return (fallback_narrative, "fallback")
+
+    from app.services.ai_service._shared import safe_ai_call
+    return await safe_ai_call(
+        steps_str, 
+        (fallback_narrative, "fallback"), 
+        _generate, 
+        "navigation"
+    )

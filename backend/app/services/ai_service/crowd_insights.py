@@ -9,13 +9,11 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from google.genai.types import GenerateContentResponse
 
-from app.core.config import get_settings
+
 from app.services.ai_service._shared import (
     CACHE_TTL_SECONDS,
     _build_fallback_text,
-    _get_client,
     _insight_cache,
-    _is_safe_prompt,
     _strip_json_fences,
 )
 
@@ -34,7 +32,6 @@ async def generate_crowd_insights(
         A tuple of (insights_text, fallback_used).  If AI is unavailable or
         disabled, returns a deterministic summary built from the engine data.
     """
-    settings = get_settings()
 
     # Build cache key based on venue and readiness score bucket
     venue_id = engine_result.get("venue", {}).get("venue_id", "unknown")
@@ -53,17 +50,6 @@ async def generate_crowd_insights(
             )
             return cached_text, False
 
-    if not settings.use_ai or not settings.gemini_api_key:
-        logger.info(
-            "AI disabled or no API key — using fallback",
-            extra={"extra_data": {"reason": "ai_disabled_or_no_key"}},
-        )
-        return _build_fallback_text(engine_result), True
-
-    if not _is_safe_prompt(str(engine_result)):
-        logger.warning("Prompt injection attempt detected in engine input.")
-        return _build_fallback_text(engine_result), True
-
     prompt = (
         "You are StadiumIQ, a FIFA World Cup 2026 stadium operations analyst. "
         "Analyze the following stadium data and provide actionable insights "
@@ -73,9 +59,8 @@ async def generate_crowd_insights(
         f"Data: {engine_result}"
     )
 
-    try:
-
-        client = _get_client()
+    from google import genai  # noqa: PLC0415
+    async def _generate(client: genai.Client) -> tuple[str, bool]:
         response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
@@ -95,11 +80,10 @@ async def generate_crowd_insights(
         _insight_cache[cache_key] = (text, time.time())
         return text, False
 
-    except Exception as exc:
-        logger.warning(
-            "AI insight generation failed — using fallback",
-            extra={
-                "extra_data": {"reason": str(exc), "error_type": type(exc).__name__}
-            },
-        )
-        return _build_fallback_text(engine_result), True
+    from app.services.ai_service._shared import safe_ai_call
+    return await safe_ai_call(
+        str(engine_result), 
+        (_build_fallback_text(engine_result), True), 
+        _generate, 
+        "crowd_insights"
+    )

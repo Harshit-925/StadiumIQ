@@ -8,10 +8,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from google.genai.types import GenerateContentResponse
 
-from app.core.config import get_settings
+
 from app.services.ai_service._shared import (
-    _get_client,
-    _is_safe_prompt,
     _strip_json_fences,
 )
 
@@ -33,24 +31,11 @@ async def generate_fan_response(
     Returns:
         A tuple of (response_text, fallback_used).
     """
-    settings = get_settings()
-
     generic_fallback = (
         "Thank you for your question! For the latest information about "
         "FIFA World Cup 2026 venues, please visit the official FIFA website "
         "or contact the stadium's guest services team."
     )
-
-    if not settings.use_ai or not settings.gemini_api_key:
-        logger.info(
-            "AI disabled or no API key — using fan-assist fallback",
-            extra={"extra_data": {"reason": "ai_disabled_or_no_key"}},
-        )
-        return generic_fallback, True
-
-    if not _is_safe_prompt(query):
-        logger.warning("Prompt injection attempt detected in fan query.")
-        return generic_fallback, True
 
     venue_info = ""
     if venue_context:
@@ -69,9 +54,8 @@ async def generate_fan_response(
         f"Fan question: {query}"
     )
 
-    try:
-        client = _get_client()
-
+    from google import genai  # noqa: PLC0415
+    async def _generate(client: genai.Client) -> tuple[str, bool]:
         response: GenerateContentResponse = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
@@ -88,11 +72,5 @@ async def generate_fan_response(
 
         return text, False
 
-    except Exception as exc:
-        logger.warning(
-            "Fan-assist AI failed — using fallback",
-            extra={
-                "extra_data": {"reason": str(exc), "error_type": type(exc).__name__}
-            },
-        )
-        return generic_fallback, True
+    from app.services.ai_service._shared import safe_ai_call
+    return await safe_ai_call(query, (generic_fallback, True), _generate, "fan_assist")
