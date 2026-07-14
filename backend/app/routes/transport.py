@@ -16,12 +16,12 @@ async def get_transport(request: Request, body: TransportRequest) -> TransportRe
     from app.services.ai_service.transport import generate_transport_narrative  # noqa: PLC0415
 
     result = get_transport_options(body.accessible_only)
-    
+
     narrative = await generate_transport_narrative(
         parking_options=result["parking"],
         transit_options=result["transit"],
     )
-    
+
     result["ai_insights"] = narrative
-    
+
     return TransportResponse(**result)

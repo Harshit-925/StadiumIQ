@@ -19,10 +19,16 @@ async def generate_transport_narrative(
 ) -> str:
     """Generate a quick executive brief recommending the best transport options."""
     fallback_brief = "Review ranked parking and transit options below."
-    
+
     if parking_options:
         top_parking = parking_options[0]
         fallback_brief = f"Recommended Parking: {top_parking['name']} ({top_parking['walk_time_mins']} min walk, {top_parking['occupancy_pct']}% full)."
+
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    if not settings.use_ai or not settings.gemini_api_key:
+        return fallback_brief
 
     client = _get_client()
     if not client:
