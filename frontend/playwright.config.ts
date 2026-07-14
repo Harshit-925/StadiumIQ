@@ -25,6 +25,8 @@ export default defineConfig({
       timeout: 120 * 1000,
       env: {
         VITE_API_URL: 'http://127.0.0.1:8000/api',
+        VITE_SUPABASE_URL: 'http://127.0.0.1:8000',
+        VITE_SUPABASE_ANON_KEY: 'test-key',
       }
     },
     {
