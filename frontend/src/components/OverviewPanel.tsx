@@ -114,6 +114,7 @@ export function OverviewPanel() {
           <Link 
             key={idx} 
             to={tile.path}
+            aria-label={`Open ${tile.title}: ${tile.description}`}
             className={`group rounded-card p-6 bg-surface border transition-all hover:shadow-md hover:border-pitch-blue/40 flex flex-col h-full ${tile.border}`}
           >
             <div className="flex items-start justify-between mb-4">

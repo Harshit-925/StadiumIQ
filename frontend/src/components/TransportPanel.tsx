@@ -50,6 +50,7 @@ export function TransportPanel() {
           <button 
             onClick={fetchTransport}
             disabled={loading}
+            aria-label="Refresh transport options"
             className="flex items-center gap-2 rounded bg-surface px-3 py-1.5 text-body-sm border border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <RefreshCcw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />

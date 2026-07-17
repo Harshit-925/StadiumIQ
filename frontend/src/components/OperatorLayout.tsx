@@ -76,11 +76,71 @@ function BottomTab({ to, label, icon: Icon, end }: typeof NAV_ITEMS[number]) {
   );
 }
 
+/**
+ * StatusTicker — persistent banner showing real-time venue status.
+ *
+ * Three states, all derived from data the engine already computes:
+ * 1. Critical — one or more zones at critical density
+ * 2. Warning  — evacuation time exceeds the 8-min SGSA standard
+ * 3. Normal   — venue readiness grade + score
+ */
+function StatusTicker() {
+  const analysisResult = useAppStore((s) => s.analysisResult);
+  const selectedVenue = useAppStore((s) => s.selectedVenue);
+
+  if (!analysisResult) {
+    return (
+      <div className="bg-pitch-blue text-white py-1.5 px-4 sm:px-6 flex items-center gap-4 text-xs sm:text-sm font-semibold shadow-sm z-10 shrink-0">
+        <span className="flex items-center gap-1.5">
+          <span className="status-dot-live bg-white" aria-hidden="true" />
+          {selectedVenue.name}
+        </span>
+        <span className="text-white/80">Awaiting analysis…</span>
+      </div>
+    );
+  }
+
+  const critical = analysisResult.zone_analyses.filter(
+    (z) => z.classification?.level === 'critical'
+  ).length;
+
+  const isCritical = critical > 0;
+  const evacWarning = !analysisResult.evacuation_feasible;
+
+  let message: string;
+  if (isCritical) {
+    message = `⚠ ${critical} zone${critical > 1 ? 's' : ''} at critical density — review dashboard`;
+  } else if (evacWarning) {
+    message = `Evacuation time exceeds standard (${analysisResult.evacuation_time_minutes.toFixed(1)} min)`;
+  } else {
+    message = `Venue readiness: ${analysisResult.overall_grade} (${analysisResult.crowd_score.toFixed(0)}/100)`;
+  }
+
+  const bgClass = isCritical
+    ? 'bg-crowd-critical text-white'
+    : evacWarning
+      ? 'bg-status-warning text-gray-900'
+      : 'bg-pitch-blue text-white';
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className={`${bgClass} py-1.5 px-4 sm:px-6 flex items-center gap-4 text-xs sm:text-sm font-semibold shadow-sm z-10 shrink-0`}
+    >
+      <span className="flex items-center gap-1.5">
+        <span className="status-dot-live bg-white" aria-hidden="true" />
+        {selectedVenue.name}
+      </span>
+      <span>{message}</span>
+    </div>
+  );
+}
+
 export function OperatorLayout() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const selectedVenue = useAppStore((s) => s.selectedVenue);
-  const analysisResult = useAppStore((s) => s.analysisResult);
   const globalLanguage = useAppStore((s) => s.language);
   const setGlobalLanguage = useAppStore((s) => s.setLanguage);
   const navigate = useNavigate();
@@ -176,29 +236,8 @@ export function OperatorLayout() {
         className="pt-[60px] pb-[64px] lg:ml-[260px] lg:pb-0 flex flex-col min-h-screen"
         tabIndex={-1}
       >
-        {/* ── Live Ticker Banner ────────────────────────────────────────── */}
-        <div className="bg-pitch-blue text-white py-1.5 px-4 sm:px-6 flex items-center justify-between text-xs sm:text-sm font-semibold shadow-sm z-10 shrink-0">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="flex items-center gap-1.5">
-              <span className="status-dot-live bg-white" aria-hidden="true" />
-              Live Status: {selectedVenue.name}
-            </span>
-            <span className="hidden sm:inline opacity-40">|</span>
-            {analysisResult ? (
-              <>
-                <span>Grade: {analysisResult.overall_grade}</span>
-                <span className="hidden sm:inline opacity-40">|</span>
-                <span>Occupancy: {Math.round(analysisResult.average_density * 100)}%</span>
-                <span className="hidden sm:inline opacity-40">|</span>
-                <span className={analysisResult.evacuation_feasible ? 'text-green-300' : 'text-red-300'}>
-                  Emergency: {analysisResult.evacuation_feasible ? 'Clear' : 'Critical'}
-                </span>
-              </>
-            ) : (
-              <span className="text-white/80">Awaiting Real-time Analysis...</span>
-            )}
-          </div>
-        </div>
+        {/* ── Live Status Ticker ────────────────────────────────────── */}
+        <StatusTicker />
 
         <Outlet />
       </main>

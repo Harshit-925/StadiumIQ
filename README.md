@@ -58,6 +58,19 @@ We chose this vertical because providing venue directors with immediate, actiona
 | **Accessibility Compliance** | Continuous validation of wheelchair-accessible seating inventory (1% ADA mandate). |
 | **Multilingual Fan Assistance** | Rate-limited, public AI interface responding in 6 languages. |
 
+### Challenge 4 — Feature-to-Implementation Map
+
+| Challenge Parameter | Feature | Where |
+|---|---|---|
+| Navigation | Dijkstra-based zone routing | `engine/navigation.py` + Navigation Panel |
+| Crowd management | Real-time density classification, evacuation modeling | `engine/calculator.py` + Dashboard |
+| Accessibility | ADA wheelchair-ratio compliance tracking | Accessibility Panel |
+| Transportation | Ranked parking/transit options + AI narration | `engine/transport.py` + Transport Panel |
+| Sustainability | Waste diversion tracking vs. EPA target | Sustainability Tracker |
+| Multilingual assistance | 6-language Fan Assistant + global language selector | Fan Assistant + all dashboard pages |
+| Operational intelligence | AI-narrated venue readiness briefings | Dashboard + Overview Panel |
+| Real-time decision support | Live incident triage + AI briefing | Emergency Panel |
+
 ## Approach & Logic
 
 StadiumIQ employs a **deterministic-engine-first** design. The core calculations are strictly deterministic and evaluated within specialized engine modules (`transport.py`, `navigation.py`, `calculator.py`).
