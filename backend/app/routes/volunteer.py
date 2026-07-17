@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Request
 
 from app.core.rate_limit import RATE_LIMIT_AI, limiter
-from app.models.schemas import (
+from app.models.volunteer_schemas import (
     VolunteerRelocation,
     VolunteerRequest,
     VolunteerResponse,

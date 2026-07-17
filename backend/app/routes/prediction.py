@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Request
 
 from app.core.rate_limit import RATE_LIMIT_AI, limiter
-from app.models.schemas import PredictionRequest, PredictionResponse
+from app.models.prediction_schemas import PredictionRequest, PredictionResponse
 
 router = APIRouter()
 
